@@ -4,97 +4,860 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CiscoLearn — Cisco Networking Reference</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0a0a0a; --s1:#111; --s2:#1a1a1a; --s3:#222;
+  --border:#2a2a2a; --border2:#383838;
+  --text:#e8e4dc; --muted:#888; --muted2:#555;
+  --accent:#6c8dfa; --green:#4ade80; --red:#f87171; --orange:#fb923c;
+  --r:6px; --r2:10px;
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.6; min-height:100vh; }
+
+/* NAV */
+nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(10,10,10,.88); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); height:52px; display:flex; align-items:center; padding:0 2rem; gap:0; }
+.nav-logo { font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-weight:600; color:var(--text); text-decoration:none; letter-spacing:.04em; margin-right:2rem; white-space:nowrap; cursor:pointer; }
+.nav-logo span { color:var(--accent); }
+.nav-links { display:flex; align-items:center; gap:.1rem; flex:1; overflow-x:auto; }
+.nav-links button { background:none; border:none; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:.8rem; font-weight:500; letter-spacing:.05em; text-transform:uppercase; padding:6px 12px; border-radius:var(--r); cursor:pointer; transition:color .15s,background .15s; white-space:nowrap; }
+.nav-links button:hover { color:var(--text); background:var(--s2); }
+.nav-links button.active { color:var(--accent); background:rgba(108,141,250,.1); }
+
+/* PAGES */
+.page { display:none; padding-top:52px; min-height:100vh; }
+.page.active { display:block; }
+.container { max-width:1100px; margin:0 auto; padding:0 2rem; }
+.container-sm { max-width:760px; margin:0 auto; padding:0 2rem; }
+
+/* HERO */
+.hero { padding:4.5rem 0 3rem; border-bottom:1px solid var(--border); }
+.hero-eyebrow { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--accent); letter-spacing:.12em; text-transform:uppercase; margin-bottom:.9rem; }
+.hero h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2.6rem,6vw,4.8rem); font-weight:300; line-height:1.1; letter-spacing:-.01em; margin-bottom:1.1rem; }
+.hero h1 em { font-style:italic; color:var(--accent); }
+.hero p { font-size:1rem; color:var(--muted); max-width:540px; line-height:1.7; }
+
+/* SECTION */
+.section { padding:3rem 0; }
+.section+.section { border-top:1px solid var(--border); }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); letter-spacing:.12em; text-transform:uppercase; margin-bottom:.5rem; }
+.section h2 { font-family:'Cormorant Garamond',serif; font-size:clamp(1.5rem,3vw,2.2rem); font-weight:300; margin-bottom:.4rem; }
+.section h2 em { font-style:italic; color:var(--accent); }
+.section-sub { color:var(--muted); font-size:.9rem; margin-bottom:1.75rem; }
+
+/* CARDS */
+.card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r2); padding:1.5rem; transition:border-color .2s,transform .2s; }
+.card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1rem; }
+.card-nav { text-decoration:none; color:inherit; display:block; cursor:pointer; }
+.card-nav:hover .card { border-color:var(--accent); transform:translateY(-2px); }
+.card-icon { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--accent); letter-spacing:.08em; text-transform:uppercase; margin-bottom:.7rem; }
+.card h3 { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:400; margin-bottom:.35rem; }
+.card p { font-size:.84rem; color:var(--muted); line-height:1.6; }
+
+/* BADGE */
+.badge { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.66rem; padding:2px 8px; border-radius:4px; letter-spacing:.06em; text-transform:uppercase; }
+.badge-blue   { background:rgba(108,141,250,.14); color:var(--accent); border:1px solid rgba(108,141,250,.25); }
+.badge-green  { background:rgba(74,222,128,.1);   color:var(--green);  border:1px solid rgba(74,222,128,.2); }
+.badge-orange { background:rgba(251,146,60,.1);   color:var(--orange); border:1px solid rgba(251,146,60,.2); }
+.badge-red    { background:rgba(248,113,113,.1);  color:var(--red);    border:1px solid rgba(248,113,113,.2); }
+
+/* INPUTS */
+input[type=text],input[type=number],textarea,select { width:100%; background:var(--s2); border:1px solid var(--border); border-radius:var(--r); color:var(--text); padding:.55rem .85rem; font-family:'DM Sans',sans-serif; font-size:.9rem; transition:border-color .15s; outline:none; }
+input:focus,textarea:focus,select:focus { border-color:var(--accent); }
+select option { background:var(--s1); }
+textarea { resize:vertical; font-family:'JetBrains Mono',monospace; font-size:.82rem; }
+label { display:block; font-size:.72rem; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:.3rem; }
+.form-group { margin-bottom:1.2rem; }
+
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:.55rem 1.3rem; border-radius:var(--r); font-family:'DM Sans',sans-serif; font-weight:700; font-size:.84rem; letter-spacing:.02em; cursor:pointer; border:none; transition:opacity .15s,transform .1s; white-space:nowrap; }
+.btn:active { transform:scale(.97); }
+.btn-primary { background:var(--accent); color:#fff; } .btn-primary:hover { opacity:.88; }
+.btn-ghost   { background:transparent; color:var(--text); border:1px solid var(--border); } .btn-ghost:hover { border-color:var(--border2); background:var(--s2); }
+.btn-sm { padding:.35rem .85rem; font-size:.76rem; }
+
+/* CODE */
+pre,code { font-family:'JetBrains Mono',monospace; }
+pre { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:1.1rem; overflow-x:auto; font-size:.8rem; line-height:1.75; color:var(--text); }
+code { background:var(--s2); border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:.8em; color:var(--accent); }
+
+/* TABLE */
+table { width:100%; border-collapse:collapse; font-size:.87rem; }
+th { font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); text-align:left; padding:.55rem 1rem; border-bottom:1px solid var(--border); background:var(--s1); }
+td { padding:.7rem 1rem; border-bottom:1px solid var(--border); vertical-align:top; line-height:1.5; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:var(--s2); }
+.table-wrap { border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
+
+/* SEARCH */
+.search-bar { position:relative; }
+.search-bar input { padding-left:2.4rem; font-size:.92rem; }
+.search-icon { position:absolute; left:.8rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.82rem; pointer-events:none; font-family:'JetBrains Mono',monospace; }
+
+/* FEEDBACK */
+.feedback { border-radius:var(--r); padding:.9rem 1.1rem; font-size:.87rem; margin-top:1rem; line-height:1.6; }
+.feedback.correct { background:rgba(74,222,128,.07);  border:1px solid rgba(74,222,128,.2);  color:var(--green); }
+.feedback.wrong   { background:rgba(248,113,113,.07); border:1px solid rgba(248,113,113,.2); color:var(--red); }
+.feedback.info    { background:rgba(108,141,250,.07); border:1px solid rgba(108,141,250,.2); color:var(--accent); }
+
+/* INTRO BOX */
+.intro-box { background:var(--s1); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:var(--r); padding:1.1rem 1.4rem; margin-bottom:1.75rem; font-size:.87rem; color:var(--muted); line-height:1.75; }
+.intro-box strong { color:var(--text); }
+
+/* STEP */
+.step { display:flex; gap:1.1rem; margin-bottom:1.6rem; }
+.step-num { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--accent); background:rgba(108,141,250,.1); border:1px solid rgba(108,141,250,.2); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.step-body h4 { font-weight:700; font-size:.9rem; margin-bottom:.25rem; }
+.step-body p { font-size:.85rem; color:var(--muted); margin-bottom:.5rem; }
+.step-body pre { margin-top:.4rem; }
+
+/* ACCORDION */
+.accordion-item { border-bottom:1px solid var(--border); }
+.accordion-trigger { width:100%; background:none; border:none; padding:1rem 0; text-align:left; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.93rem; font-weight:500; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+.accordion-trigger:hover { color:var(--accent); }
+.accordion-icon { font-family:'JetBrains Mono',monospace; font-size:.85rem; color:var(--muted); flex-shrink:0; transition:transform .2s; }
+.accordion-trigger[aria-expanded=true] .accordion-icon { transform:rotate(45deg); color:var(--accent); }
+.accordion-body { display:none; padding-bottom:1.25rem; }
+.accordion-body.open { display:block; }
+
+/* SUBNETTING */
+.answer-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:.7rem; margin:1.4rem 0; }
+.answer-cell label { margin-bottom:.25rem; }
+.answer-cell input { font-family:'JetBrains Mono',monospace; font-size:.88rem; }
+.answer-cell input.correct { border-color:var(--green); background:rgba(74,222,128,.05); }
+.answer-cell input.wrong   { border-color:var(--red);   background:rgba(248,113,113,.05); }
+
+/* EXPLAINER */
+.explain-line { display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:.7rem 0; border-bottom:1px solid var(--border); font-size:.86rem; align-items:start; }
+.explain-line:last-child { border-bottom:none; }
+.explain-code { font-family:'JetBrains Mono',monospace; color:var(--accent); word-break:break-all; }
+.explain-desc { color:var(--muted); line-height:1.6; }
+.explain-section { font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted2); padding:.9rem 0 .2rem; }
+
+/* QUIZ */
+.quiz-option { width:100%; text-align:left; background:var(--s2); border:1px solid var(--border); border-radius:var(--r); padding:.7rem 1rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.88rem; cursor:pointer; transition:border-color .15s,background .15s; margin-bottom:.45rem; display:block; }
+.quiz-option:hover { border-color:var(--accent); background:var(--s3); }
+.quiz-option.correct { border-color:var(--green);  background:rgba(74,222,128,.07);  color:var(--green); }
+.quiz-option.wrong   { border-color:var(--red);    background:rgba(248,113,113,.07); color:var(--red); }
+.quiz-option:disabled { cursor:default; opacity:.75; }
+.quiz-progress { height:3px; background:var(--border); border-radius:2px; margin-bottom:1.75rem; overflow:hidden; }
+.quiz-progress-bar { height:100%; background:var(--accent); border-radius:2px; transition:width .3s ease; }
+.score-big { font-family:'Cormorant Garamond',serif; font-size:5rem; font-weight:300; line-height:1; color:var(--accent); }
+.score-label { font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:.4rem; }
+
+/* FOOTER */
+footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem; }
+
+@media(max-width:700px){
+  .container,.container-sm { padding:0 1rem; }
+  nav { padding:0 1rem; }
+  .nav-logo { margin-right:.75rem; font-size:1.1rem; }
+  .explain-line { grid-template-columns:1fr; }
+  .hero { padding:3rem 0 2rem; }
+}
+</style>
 </head>
 <body>
-<div class="page">
 
-  <!-- Hero -->
+<!-- NAV -->
+<nav>
+  <span class="nav-logo" onclick="showPage('home')">Cisco<span>Learn</span></span>
+  <div class="nav-links">
+    <button onclick="showPage('home')"     class="active" id="nav-home">Home</button>
+    <button onclick="showPage('commands')" id="nav-commands">Commands</button>
+    <button onclick="showPage('subnetting')" id="nav-subnetting">Subnetting</button>
+    <button onclick="showPage('explainer')" id="nav-explainer">Config Explainer</button>
+    <button onclick="showPage('guides')"   id="nav-guides">PT Guides</button>
+    <button onclick="showPage('quiz')"     id="nav-quiz">Quiz</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HOME
+═══════════════════════════════════════════ -->
+<div class="page active" id="page-home">
   <section class="hero">
     <div class="container">
       <p class="hero-eyebrow">// cisco networking reference</p>
       <h1>Learn<br><em>Cisco</em><br>the right way.</h1>
-      <p>A practical reference for students and engineers working with Cisco IOS, Packet Tracer, and real networks. From subnetting to full router configs — all in one place.</p>
+      <p>A practical reference for students and engineers working with Cisco IOS and Packet Tracer. Subnetting, commands, configs, guides and quizzes — all in one place.</p>
     </div>
   </section>
 
-  <!-- Beginner intro -->
   <section class="section">
     <div class="container-sm">
       <p class="section-label">// new here?</p>
       <h2>Getting <em>started</em></h2>
-      <p class="section-sub">Never touched a Cisco device before? Start here.</p>
-
+      <p class="section-sub">Never touched a Cisco device before? Read this first.</p>
       <div class="intro-box">
-        <strong>What is Cisco IOS?</strong> IOS (Internetwork Operating System) is the software that runs on Cisco routers and switches. You interact with it through a command-line interface (CLI) — a text-based terminal where you type commands to configure the device.<br><br>
-        <strong>What is Packet Tracer?</strong> Cisco Packet Tracer is a free network simulation tool. It lets you build virtual networks with routers, switches, and PCs — no physical hardware required. It's the standard tool for learning and practicing Cisco configurations.<br><br>
-        <strong>Where do I start?</strong> Check out the <a href="guides.html" style="color:var(--accent);">PT Guides</a> for step-by-step walkthroughs, or browse the <a href="commands.html" style="color:var(--accent);">Command Library</a> to get familiar with the CLI.
+        <strong>What is Cisco IOS?</strong> IOS (Internetwork Operating System) is the software that runs on Cisco routers and switches. You interact with it through a command-line interface (CLI) — a text terminal where you type commands to configure the device.<br><br>
+        <strong>What is Packet Tracer?</strong> A free Cisco simulation tool. Build virtual networks with routers, switches, and PCs — no physical hardware needed. Standard tool for learning and exam preparation.<br><br>
+        <strong>Where do I start?</strong> Check out <strong>PT Guides</strong> for step-by-step walkthroughs, or browse the <strong>Command Library</strong> to learn the CLI.
       </div>
     </div>
   </section>
 
-  <!-- Module cards -->
   <section class="section">
     <div class="container">
       <p class="section-label">// modules</p>
-      <h2>What do you want to <em>learn</em>?</h2>
+      <h2>What do you want to <em>learn?</em></h2>
       <p class="section-sub">Five modules covering the core skills for Cisco networking.</p>
-
       <div class="card-grid">
-
-        <a href="commands.html" class="card-link">
-          <div class="card">
-            <div class="card-icon">01 — commands</div>
-            <h3>Command Library</h3>
-            <p>Searchable reference of Cisco IOS commands — with descriptions, examples, and categories.</p>
-          </div>
-        </a>
-
-        <a href="subnetting.html" class="card-link">
-          <div class="card">
-            <div class="card-icon">02 — subnetting</div>
-            <h3>Subnetting Trainer</h3>
-            <p>Practice calculating network addresses, broadcast addresses, and host ranges — with instant feedback.</p>
-          </div>
-        </a>
-
-        <a href="explainer.html" class="card-link">
-          <div class="card">
-            <div class="card-icon">03 — explainer</div>
-            <h3>Config Explainer</h3>
-            <p>Paste any Cisco IOS configuration and get a plain-English breakdown of what each line does.</p>
-          </div>
-        </a>
-
-        <a href="guides.html" class="card-link">
-          <div class="card">
-            <div class="card-icon">04 — guides</div>
-            <h3>Packet Tracer Guides</h3>
-            <p>Step-by-step configuration guides for common Packet Tracer scenarios. Commands included.</p>
-          </div>
-        </a>
-
-        <a href="quiz.html" class="card-link">
-          <div class="card">
-            <div class="card-icon">05 — quiz</div>
-            <h3>Quiz</h3>
-            <p>Test your knowledge with multiple-choice questions on subnetting, VLANs, routing, and more.</p>
-          </div>
-        </a>
-
+        <span class="card-nav" onclick="showPage('commands')"><div class="card"><div class="card-icon">01 — commands</div><h3>Command Library</h3><p>Searchable reference of Cisco IOS commands with descriptions and examples.</p></div></span>
+        <span class="card-nav" onclick="showPage('subnetting')"><div class="card"><div class="card-icon">02 — subnetting</div><h3>Subnetting Trainer</h3><p>Practice calculating network addresses, broadcasts and host ranges with instant feedback.</p></div></span>
+        <span class="card-nav" onclick="showPage('explainer')"><div class="card"><div class="card-icon">03 — explainer</div><h3>Config Explainer</h3><p>Paste any Cisco IOS configuration and get a plain-English breakdown of every line.</p></div></span>
+        <span class="card-nav" onclick="showPage('guides')"><div class="card"><div class="card-icon">04 — guides</div><h3>Packet Tracer Guides</h3><p>Step-by-step configuration guides for common Packet Tracer scenarios.</p></div></span>
+        <span class="card-nav" onclick="showPage('quiz')"><div class="card"><div class="card-icon">05 — quiz</div><h3>Quiz</h3><p>Test your knowledge with multiple-choice questions on subnetting, VLANs, routing and more.</p></div></span>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer style="border-top:1px solid var(--border); padding:2rem 0; margin-top:2rem;">
-    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);">CiscoLearn — for educational use</span>
-      <a href="https://github.com/cgarmann/ciscolearn" style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);text-decoration:none;" target="_blank">GitHub ↗</a>
-    </div>
-  </footer>
-
+  <footer><div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);">CiscoLearn — for educational use</span>
+    <a href="https://github.com/cgarmann/ciscolearn" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-decoration:none;">GitHub ↗</a>
+  </div></footer>
 </div>
-<script src="nav.js"></script>
+
+<!-- ══════════════════════════════════════════
+     COMMANDS
+═══════════════════════════════════════════ -->
+<div class="page" id="page-commands">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// 01 — commands</p>
+    <h1>Command <em>Library</em></h1>
+    <p>Searchable reference of common Cisco IOS commands, organized by category.</p>
+  </div></section>
+
+  <section class="section"><div class="container">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;">
+      <div class="search-bar" style="flex:1;min-width:200px;">
+        <span class="search-icon">&gt;_</span>
+        <input type="text" id="cmdSearch" placeholder="Search commands..." autocomplete="off" />
+      </div>
+      <select id="cmdCatFilter" style="width:auto;min-width:150px;">
+        <option value="">All categories</option>
+        <option value="global">Global Config</option>
+        <option value="interface">Interface</option>
+        <option value="vlan">VLANs</option>
+        <option value="routing">Routing</option>
+        <option value="dhcp">DHCP</option>
+        <option value="security">Security / SSH</option>
+        <option value="diagnostics">Diagnostics</option>
+      </select>
+    </div>
+    <p id="cmdCount" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);margin-bottom:1rem;"></p>
+    <div class="table-wrap">
+      <table><thead><tr><th style="width:30%">Command</th><th style="width:36%">Description</th><th>Example</th><th style="width:90px">Category</th></tr></thead>
+      <tbody id="cmdBody"></tbody></table>
+    </div>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SUBNETTING
+═══════════════════════════════════════════ -->
+<div class="page" id="page-subnetting">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// 02 — subnetting</p>
+    <h1>Subnetting <em>Trainer</em></h1>
+    <p>Practice calculating subnet values. You get a random IP and prefix — figure out the rest.</p>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <div class="intro-box">
+      <strong>How subnetting works:</strong> An IP address has two parts — the <em>network</em> portion (set by the prefix length) and the <em>host</em> portion. The network address has all host bits = 0. The broadcast has all host bits = 1. Usable hosts = 2ⁿ − 2, where n = number of host bits.
+    </div>
+
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+        <div>
+          <p class="section-label" style="margin-bottom:.2rem;">Given IP address</p>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:1.55rem;color:var(--accent);" id="subIpDisplay">—</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="subNewQ()">New question →</button>
+      </div>
+      <div class="answer-grid">
+        <div class="answer-cell"><label>Network Address</label><input type="text" id="sub-network" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label>Broadcast Address</label><input type="text" id="sub-broadcast" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label>First Usable Host</label><input type="text" id="sub-first" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label>Last Usable Host</label><input type="text" id="sub-last" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label>Usable Hosts</label><input type="number" id="sub-hosts" placeholder="number" autocomplete="off" /></div>
+        <div class="answer-cell"><label>Subnet Mask</label><input type="text" id="sub-mask" placeholder="255.x.x.x" autocomplete="off" /></div>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.4rem;">
+        <button class="btn btn-primary" onclick="subCheck()">Check Answers</button>
+        <button class="btn btn-ghost" onclick="subShow()">Show Answers</button>
+      </div>
+      <div id="subFeedback" style="margin-top:1rem;"></div>
+    </div>
+    <div style="display:flex;gap:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);">
+      <span>Correct: <span id="subCorrect" style="color:var(--green);">0</span></span>
+      <span>Attempts: <span id="subTotal" style="color:var(--text);">0</span></span>
+    </div>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <p class="section-label">// reference</p>
+    <h2>CIDR <em>Quick Reference</em></h2>
+    <p class="section-sub">Common prefix lengths and their subnet masks.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Prefix</th><th>Subnet Mask</th><th>Usable Hosts</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td><code>/30</code></td><td>255.255.255.252</td><td>2</td><td>WAN point-to-point links</td></tr>
+        <tr><td><code>/29</code></td><td>255.255.255.248</td><td>6</td><td>Small WAN / management</td></tr>
+        <tr><td><code>/28</code></td><td>255.255.255.240</td><td>14</td><td>Small office segment</td></tr>
+        <tr><td><code>/27</code></td><td>255.255.255.224</td><td>30</td><td>Small LAN</td></tr>
+        <tr><td><code>/26</code></td><td>255.255.255.192</td><td>62</td><td>Medium LAN</td></tr>
+        <tr><td><code>/25</code></td><td>255.255.255.128</td><td>126</td><td>Half a /24</td></tr>
+        <tr><td><code>/24</code></td><td>255.255.255.0</td><td>254</td><td>Standard LAN — most common</td></tr>
+        <tr><td><code>/23</code></td><td>255.255.254.0</td><td>510</td><td>Larger LAN</td></tr>
+        <tr><td><code>/22</code></td><td>255.255.252.0</td><td>1022</td><td>Campus network segment</td></tr>
+        <tr><td><code>/16</code></td><td>255.255.0.0</td><td>65534</td><td>Large enterprise / ISP block</td></tr>
+      </tbody>
+    </table></div>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     EXPLAINER
+═══════════════════════════════════════════ -->
+<div class="page" id="page-explainer">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// 03 — explainer</p>
+    <h1>Config <em>Explainer</em></h1>
+    <p>Paste any Cisco IOS configuration and get a plain-English explanation of every line.</p>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <div class="form-group">
+      <label>Paste configuration</label>
+      <textarea id="expInput" rows="13" placeholder="hostname Router-A&#10;interface GigabitEthernet0/0/0&#10; ip address 192.168.1.1 255.255.255.0&#10; no shutdown&#10;..."></textarea>
+    </div>
+    <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:2rem;">
+      <button class="btn btn-primary" onclick="expExplain()">Explain Config</button>
+      <button class="btn btn-ghost"   onclick="expClear()">Clear</button>
+      <button class="btn btn-ghost btn-sm" onclick="expLoadExample()">Load example</button>
+    </div>
+    <div id="expOutput" style="display:none;">
+      <p class="section-label" style="margin-bottom:.9rem;">// explanation</p>
+      <div class="table-wrap"><div id="expBody" style="padding:0 1rem;"></div></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     GUIDES
+═══════════════════════════════════════════ -->
+<div class="page" id="page-guides">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// 04 — guides</p>
+    <h1>Packet Tracer <em>Guides</em></h1>
+    <p>Step-by-step configuration walkthroughs for common Cisco Packet Tracer scenarios.</p>
+  </div></section>
+
+  <section class="section"><div class="container-sm" id="guidesContainer"></div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     QUIZ
+═══════════════════════════════════════════ -->
+<div class="page" id="page-quiz">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// 05 — quiz</p>
+    <h1>Test Your <em>Knowledge</em></h1>
+    <p>Multiple-choice questions on Cisco networking. Up to 20 questions, randomized order.</p>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <div id="quizStart">
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:2rem;">
+        <button class="btn btn-primary" onclick="quizStart('all')">All Topics</button>
+        <button class="btn btn-ghost"   onclick="quizStart('subnetting')">Subnetting</button>
+        <button class="btn btn-ghost"   onclick="quizStart('vlan')">VLANs</button>
+        <button class="btn btn-ghost"   onclick="quizStart('routing')">Routing</button>
+        <button class="btn btn-ghost"   onclick="quizStart('commands')">Commands</button>
+        <button class="btn btn-ghost"   onclick="quizStart('security')">Security</button>
+      </div>
+    </div>
+
+    <div id="quizScreen" style="display:none;">
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quizBar"></div></div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);margin-bottom:1.4rem;" id="quizCounter"></p>
+      <div class="card" style="margin-bottom:1.25rem;">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent);margin-bottom:.7rem;" id="quizCat"></p>
+        <h3 style="font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;margin-bottom:1.1rem;line-height:1.55;" id="quizQ"></h3>
+        <div id="quizOpts"></div>
+        <div id="quizFb"></div>
+      </div>
+      <button class="btn btn-primary" id="quizNextBtn" style="display:none;" onclick="quizNext()">Next →</button>
+    </div>
+
+    <div id="quizScore" style="display:none;">
+      <div style="text-align:center;padding:3rem 1rem;">
+        <div class="score-big" id="quizFinalScore"></div>
+        <div class="score-label" id="quizScoreLabel"></div>
+        <p style="color:var(--muted);margin-top:.9rem;font-size:.87rem;" id="quizScoreMsg"></p>
+        <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" id="quizAgainBtn">Try Again</button>
+          <button class="btn btn-ghost"   onclick="quizShowStart()">Back to Menu</button>
+        </div>
+      </div>
+      <div id="quizReview" style="margin-top:1.5rem;"></div>
+    </div>
+  </div></section>
+</div>
+
+<script>
+// ── PAGE NAVIGATION ──────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── COMMANDS ─────────────────────────────────────────────────────────────────
+const COMMANDS = [
+  {cmd:'enable',                                desc:'Enter privileged EXEC mode from user mode.',                                        example:'> enable',                                               cat:'global'},
+  {cmd:'configure terminal',                    desc:'Enter global configuration mode.',                                                  example:'# configure terminal',                                   cat:'global'},
+  {cmd:'hostname &lt;name&gt;',                 desc:'Set the device hostname.',                                                          example:'(config)# hostname Router-A',                            cat:'global'},
+  {cmd:'no ip domain-lookup',                   desc:'Disable DNS lookup for mistyped commands — prevents long CLI pauses.',             example:'(config)# no ip domain-lookup',                          cat:'global'},
+  {cmd:'enable secret &lt;password&gt;',        desc:'Set an encrypted password for privileged EXEC mode.',                              example:'(config)# enable secret Str0ng',                         cat:'global'},
+  {cmd:'service password-encryption',           desc:'Encrypt all plaintext passwords stored in the config.',                            example:'(config)# service password-encryption',                  cat:'global'},
+  {cmd:'banner motd # &lt;message&gt; #',       desc:'Set a message-of-the-day banner shown at login.',                                  example:'(config)# banner motd # Authorized only. #',             cat:'global'},
+  {cmd:'copy running-config startup-config',    desc:'Save the current config to NVRAM so it persists after reboot.',                   example:'# copy running-config startup-config',                   cat:'global'},
+  {cmd:'write memory',                          desc:'Shorthand for saving the running config.',                                          example:'# write memory',                                         cat:'global'},
+  {cmd:'erase startup-config',                  desc:'Delete the saved config — device boots blank on next restart.',                   example:'# erase startup-config',                                 cat:'global'},
+  {cmd:'reload',                                desc:'Reboot the device.',                                                               example:'# reload',                                               cat:'global'},
+  {cmd:'ip domain-name &lt;domain&gt;',         desc:'Set the domain name. Required for SSH key generation.',                           example:'(config)# ip domain-name co.local',                      cat:'global'},
+  {cmd:'ip routing',                            desc:'Enable Layer 3 routing on a multilayer switch.',                                   example:'(config)# ip routing',                                   cat:'global'},
+  {cmd:'show running-config',                   desc:'Display the current active configuration.',                                        example:'# show running-config',                                  cat:'diagnostics'},
+  {cmd:'show startup-config',                   desc:'Display the saved configuration in NVRAM.',                                        example:'# show startup-config',                                  cat:'diagnostics'},
+  {cmd:'show ip interface brief',               desc:'Summary of all interfaces: IP, status, and protocol.',                             example:'# show ip interface brief',                              cat:'diagnostics'},
+  {cmd:'show interfaces',                       desc:'Detailed counters and status for all interfaces.',                                 example:'# show interfaces Gi0/0/0',                              cat:'diagnostics'},
+  {cmd:'show ip route',                         desc:'Display the routing table.',                                                       example:'# show ip route',                                        cat:'diagnostics'},
+  {cmd:'show version',                          desc:'IOS version, uptime, hardware model, RAM/flash info.',                            example:'# show version',                                         cat:'diagnostics'},
+  {cmd:'show cdp neighbors',                    desc:'List directly connected Cisco devices via CDP.',                                   example:'# show cdp neighbors',                                   cat:'diagnostics'},
+  {cmd:'show vlan brief',                       desc:'Summary of all VLANs and their assigned ports.',                                   example:'# show vlan brief',                                      cat:'diagnostics'},
+  {cmd:'show mac address-table',                desc:'Display the MAC address table on a switch.',                                       example:'# show mac address-table',                               cat:'diagnostics'},
+  {cmd:'show spanning-tree',                    desc:'Display STP state for all VLANs.',                                                 example:'# show spanning-tree',                                   cat:'diagnostics'},
+  {cmd:'show ip ospf neighbor',                 desc:'List OSPF neighbors and their state.',                                             example:'# show ip ospf neighbor',                                cat:'diagnostics'},
+  {cmd:'show ip protocols',                     desc:'Show active routing protocols and their settings.',                                example:'# show ip protocols',                                    cat:'diagnostics'},
+  {cmd:'ping &lt;ip&gt;',                       desc:'Test reachability to an IP address.',                                              example:'# ping 192.168.1.1',                                     cat:'diagnostics'},
+  {cmd:'traceroute &lt;ip&gt;',                 desc:'Trace the path packets take to a destination.',                                    example:'# traceroute 8.8.8.8',                                   cat:'diagnostics'},
+  {cmd:'interface &lt;type&gt; &lt;num&gt;',    desc:'Enter interface configuration mode.',                                              example:'(config)# interface Gi0/0/0',                            cat:'interface'},
+  {cmd:'ip address &lt;ip&gt; &lt;mask&gt;',   desc:'Assign an IP address and subnet mask to an interface.',                           example:'(config-if)# ip address 192.168.1.1 255.255.255.0',     cat:'interface'},
+  {cmd:'no shutdown',                           desc:'Enable an interface (router interfaces are shutdown by default).',                 example:'(config-if)# no shutdown',                               cat:'interface'},
+  {cmd:'shutdown',                              desc:'Administratively disable an interface.',                                           example:'(config-if)# shutdown',                                  cat:'interface'},
+  {cmd:'description &lt;text&gt;',              desc:'Add a human-readable label to an interface.',                                     example:'(config-if)# description Uplink to Core',                cat:'interface'},
+  {cmd:'duplex {full|half|auto}',               desc:'Set duplex mode on an interface.',                                                 example:'(config-if)# duplex full',                               cat:'interface'},
+  {cmd:'speed {10|100|1000|auto}',              desc:'Set interface speed in Mbps.',                                                    example:'(config-if)# speed 1000',                                cat:'interface'},
+  {cmd:'interface loopback &lt;num&gt;',        desc:'Create a virtual loopback interface — always up, used for router IDs.',          example:'(config)# interface loopback 0',                         cat:'interface'},
+  {cmd:'vlan &lt;id&gt;',                       desc:'Create a VLAN and enter VLAN config mode.',                                        example:'(config)# vlan 10',                                      cat:'vlan'},
+  {cmd:'name &lt;name&gt;',                     desc:'Assign a name to a VLAN.',                                                         example:'(config-vlan)# name Management',                         cat:'vlan'},
+  {cmd:'switchport mode access',                desc:'Set port to access mode — one VLAN, for end devices.',                            example:'(config-if)# switchport mode access',                    cat:'vlan'},
+  {cmd:'switchport access vlan &lt;id&gt;',     desc:'Assign an access port to a specific VLAN.',                                        example:'(config-if)# switchport access vlan 10',                 cat:'vlan'},
+  {cmd:'switchport mode trunk',                 desc:'Set port to trunk mode — carries multiple VLANs.',                                example:'(config-if)# switchport mode trunk',                     cat:'vlan'},
+  {cmd:'switchport trunk allowed vlan &lt;list&gt;', desc:'Specify which VLANs are allowed on a trunk port.',                          example:'(config-if)# switchport trunk allowed vlan 10,20',       cat:'vlan'},
+  {cmd:'interface vlan &lt;id&gt;',             desc:'Create/enter a Switched Virtual Interface (SVI) — used as a VLAN gateway.',     example:'(config)# interface vlan 10',                            cat:'vlan'},
+  {cmd:'no switchport',                         desc:'Convert a switch port to a Layer 3 routed port.',                                 example:'(config-if)# no switchport',                             cat:'vlan'},
+  {cmd:'ip route &lt;dest&gt; &lt;mask&gt; &lt;next-hop&gt;', desc:'Add a static route. Use 0.0.0.0 0.0.0.0 for a default route.',  example:'(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.1',          cat:'routing'},
+  {cmd:'router ospf &lt;pid&gt;',               desc:'Enable an OSPF routing process.',                                                  example:'(config)# router ospf 1',                                cat:'routing'},
+  {cmd:'network &lt;ip&gt; &lt;wildcard&gt; area &lt;area&gt;', desc:'Advertise a network in OSPF.',                                   example:'(config-router)# network 192.168.1.0 0.0.0.255 area 0',  cat:'routing'},
+  {cmd:'router-id &lt;id&gt;',                  desc:'Manually set the OSPF router ID.',                                                 example:'(config-router)# router-id 1.1.1.1',                     cat:'routing'},
+  {cmd:'passive-interface &lt;int&gt;',         desc:'Stop OSPF hellos on an interface while still advertising the network.',          example:'(config-router)# passive-interface Gi0/0/0',             cat:'routing'},
+  {cmd:'router eigrp &lt;as&gt;',               desc:'Enable an EIGRP routing process.',                                                 example:'(config)# router eigrp 100',                             cat:'routing'},
+  {cmd:'no auto-summary',                       desc:'Disable automatic route summarization in EIGRP/RIP.',                             example:'(config-router)# no auto-summary',                       cat:'routing'},
+  {cmd:'ip dhcp pool &lt;name&gt;',             desc:'Create a named DHCP pool.',                                                        example:'(config)# ip dhcp pool LAN',                             cat:'dhcp'},
+  {cmd:'network &lt;ip&gt; &lt;mask&gt;',       desc:'Define the network range for the DHCP pool.',                                     example:'(dhcp-config)# network 192.168.1.0 255.255.255.0',       cat:'dhcp'},
+  {cmd:'default-router &lt;ip&gt;',             desc:'Set the default gateway given to DHCP clients.',                                  example:'(dhcp-config)# default-router 192.168.1.1',              cat:'dhcp'},
+  {cmd:'dns-server &lt;ip&gt;',                 desc:'Set the DNS server given to DHCP clients.',                                       example:'(dhcp-config)# dns-server 8.8.8.8',                      cat:'dhcp'},
+  {cmd:'ip dhcp excluded-address &lt;start&gt; &lt;end&gt;', desc:'Exclude a range of IPs from DHCP allocation.',                     example:'(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.10', cat:'dhcp'},
+  {cmd:'show ip dhcp binding',                  desc:'Show all current DHCP leases.',                                                   example:'# show ip dhcp binding',                                 cat:'dhcp'},
+  {cmd:'crypto key generate rsa modulus 2048',  desc:'Generate RSA keys for SSH. Requires hostname and domain-name.',                  example:'(config)# crypto key generate rsa modulus 2048',         cat:'security'},
+  {cmd:'ip ssh version 2',                      desc:'Force SSHv2 (more secure than v1).',                                              example:'(config)# ip ssh version 2',                             cat:'security'},
+  {cmd:'line vty 0 15',                         desc:'Enter configuration for virtual terminal lines (remote access).',                 example:'(config)# line vty 0 15',                                cat:'security'},
+  {cmd:'transport input ssh',                   desc:'Allow only SSH on VTY lines — disables Telnet.',                                  example:'(config-line)# transport input ssh',                     cat:'security'},
+  {cmd:'login local',                           desc:'Use the local username database for authentication.',                             example:'(config-line)# login local',                             cat:'security'},
+  {cmd:'username &lt;name&gt; secret &lt;pass&gt;', desc:'Create a local user account with an encrypted password.',                    example:'(config)# username admin secret Str0ng',                 cat:'security'},
+  {cmd:'access-list &lt;num&gt; permit|deny &lt;ip&gt; &lt;wc&gt;', desc:'Create a numbered standard ACL entry.',                    example:'(config)# access-list 10 permit 192.168.1.0 0.0.0.255',  cat:'security'},
+  {cmd:'ip access-group &lt;num&gt; {in|out}',  desc:'Apply an ACL to an interface.',                                                   example:'(config-if)# ip access-group 10 in',                     cat:'security'},
+];
+
+function renderCmds(data) {
+  document.getElementById('cmdBody').innerHTML = data.map(r=>`
+    <tr>
+      <td><code>${r.cmd}</code></td>
+      <td style="color:var(--muted)">${r.desc}</td>
+      <td><pre style="margin:0;padding:.35rem .65rem;font-size:.76rem;">${r.example}</pre></td>
+      <td><span class="badge badge-blue">${r.cat}</span></td>
+    </tr>`).join('');
+  document.getElementById('cmdCount').textContent = `${data.length} commands`;
+}
+
+function filterCmds() {
+  const q=document.getElementById('cmdSearch').value.toLowerCase();
+  const c=document.getElementById('cmdCatFilter').value;
+  renderCmds(COMMANDS.filter(r=>(!c||r.cat===c)&&(!q||r.cmd.toLowerCase().includes(q)||r.desc.toLowerCase().includes(q))));
+}
+
+document.getElementById('cmdSearch').addEventListener('input',filterCmds);
+document.getElementById('cmdCatFilter').addEventListener('change',filterCmds);
+renderCmds(COMMANDS);
+
+// ── SUBNETTING ───────────────────────────────────────────────────────────────
+let subCurrent=null, subCorrect=0, subTotal=0;
+function ipToInt(ip){return ip.split('.').reduce((a,o)=>(a<<8)+parseInt(o),0)>>>0;}
+function intToIp(n){return[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');}
+
+function subNewQ(){
+  const prefix=Math.floor(Math.random()*23)+8;
+  const mask=prefix===0?0:(0xFFFFFFFF<<(32-prefix))>>>0;
+  const netInt=(Math.random()*0xFFFFFFFF)>>>0;
+  const net=(netInt&mask)>>>0;
+  const bc=(net|(~mask>>>0))>>>0;
+  const host=net+1+Math.floor(Math.random()*Math.max(1,bc-net-2));
+  const ip=intToIp(Math.min(host,bc-1));
+  subCurrent={ip,prefix,network:intToIp(net),broadcast:intToIp(bc),first:intToIp(net+1),last:intToIp(bc-1),hosts:Math.pow(2,32-prefix)-2,mask:intToIp(mask)};
+  document.getElementById('subIpDisplay').textContent=`${ip} /${prefix}`;
+  ['network','broadcast','first','last','hosts','mask'].forEach(k=>{const el=document.getElementById('sub-'+k);el.value='';el.className='';el.disabled=false;});
+  document.getElementById('subFeedback').innerHTML='';
+}
+
+function subCheck(){
+  if(!subCurrent)return;
+  let ok=true;
+  ['network','broadcast','first','last','hosts','mask'].forEach(k=>{
+    const el=document.getElementById('sub-'+k);
+    const correct=String(subCurrent[k]);
+    el.className=el.value.trim()===correct?'correct':'wrong';
+    if(el.value.trim()!==correct)ok=false;
+  });
+  subTotal++;
+  if(ok)subCorrect++;
+  document.getElementById('subFeedback').innerHTML=`<div class="feedback ${ok?'correct':'wrong'}">${ok?'All correct! Well done.':'Some answers are wrong — red fields need fixing.'}</div>`;
+  document.getElementById('subCorrect').textContent=subCorrect;
+  document.getElementById('subTotal').textContent=subTotal;
+}
+
+function subShow(){
+  if(!subCurrent)return;
+  ['network','broadcast','first','last','hosts','mask'].forEach(k=>{const el=document.getElementById('sub-'+k);el.value=subCurrent[k];el.className='correct';el.disabled=true;});
+  document.getElementById('subFeedback').innerHTML='<div class="feedback info">Answers revealed. Click "New question" to continue.</div>';
+}
+
+subNewQ();
+
+// ── EXPLAINER ────────────────────────────────────────────────────────────────
+const EXP_EXAMPLE=`hostname Router-A
+no ip domain-lookup
+ip domain-name company.local
+enable secret Str0ngP@ss
+service password-encryption
+banner motd # Authorized access only. #
+!
+interface GigabitEthernet0/0/0
+ description LAN uplink
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown
+!
+interface Serial0/1/0
+ description WAN to Site-B
+ ip address 10.0.0.1 255.255.255.252
+ no shutdown
+!
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+!
+router ospf 1
+ router-id 1.1.1.1
+ network 192.168.1.0 0.0.0.255 area 0
+ passive-interface GigabitEthernet0/0/0
+!
+ip dhcp excluded-address 192.168.1.1 192.168.1.10
+ip dhcp pool LAN
+ network 192.168.1.0 255.255.255.0
+ default-router 192.168.1.1
+ dns-server 8.8.8.8
+!
+crypto key generate rsa modulus 2048
+ip ssh version 2
+!
+line vty 0 15
+ transport input ssh
+ login local
+!
+username admin secret Cisco123
+copy running-config startup-config`;
+
+const EXP_RULES=[
+  {re:/^hostname\s+(\S+)/i,          sec:'Global Configuration', fn:m=>`Sets the device hostname to <strong>${m[1]}</strong>. Appears in the CLI prompt and is required for SSH.`},
+  {re:/^no ip domain-lookup/i,        fn:()=>`Disables DNS lookup for mistyped commands. Without this, the router tries to resolve unknown input as hostnames, causing 30-second pauses.`},
+  {re:/^ip domain-name\s+(\S+)/i,     fn:m=>`Sets the domain name to <strong>${m[1]}</strong>. Required before generating RSA keys for SSH.`},
+  {re:/^enable secret\s+/i,           fn:()=>`Sets an encrypted privileged EXEC password. Stored as MD5 hash — not reversible. Always prefer this over <code>enable password</code>.`},
+  {re:/^service password-encryption/i,fn:()=>`Encrypts all plaintext passwords in the config. Weak encryption — <code>enable secret</code> is still recommended for privileged access.`},
+  {re:/^banner motd/i,                fn:()=>`Sets a login banner displayed to anyone who connects. Should warn unauthorized users.`},
+  {re:/^ip routing/i,                 fn:()=>`Enables Layer 3 routing on a multilayer switch. Without this, the switch only forwards at Layer 2.`},
+  {re:/^interface\s+(\S+)/i,          sec:'Interface Configuration', fn:m=>`Enters configuration mode for interface <strong>${m[1]}</strong>. All following commands apply to this interface.`},
+  {re:/^\s+description\s+(.*)/i,      fn:m=>`Adds a label: <em>"${m[1]}"</em>. No operational effect — documentation only.`},
+  {re:/^\s+ip address\s+([\d.]+)\s+([\d.]+)/i, fn:m=>`Assigns IP <code>${m[1]}</code> with mask <code>${m[2]}</code> to this interface.`},
+  {re:/^\s+no shutdown/i,             fn:()=>`Enables the interface. Router interfaces are administratively <em>shutdown</em> by default.`},
+  {re:/^\s+shutdown/i,                fn:()=>`Administratively disables the interface.`},
+  {re:/^\s+switchport mode access/i,  fn:()=>`Sets this port to access mode — carries exactly one VLAN. Used for end devices.`},
+  {re:/^\s+switchport access vlan\s+(\d+)/i, fn:m=>`Assigns this access port to VLAN <strong>${m[1]}</strong>.`},
+  {re:/^\s+switchport mode trunk/i,   fn:()=>`Sets this port to trunk mode — carries multiple VLANs using 802.1Q tagging.`},
+  {re:/^\s+switchport trunk allowed vlan\s+(.*)/i, fn:m=>`Restricts this trunk to VLANs: <strong>${m[1]}</strong>.`},
+  {re:/^\s+no switchport/i,           fn:()=>`Converts this switch port to a Layer 3 routed port. You can then assign an IP address to it.`},
+  {re:/^\s+encapsulation dot1q\s+(\d+)/i, fn:m=>`Configures 802.1Q VLAN tagging for VLAN <strong>${m[1]}</strong>. Used on sub-interfaces for Router-on-a-Stick.`},
+  {re:/^\s+clock rate\s+(\d+)/i,      fn:m=>`Sets the clock rate to <strong>${m[1]} bps</strong> on a DCE serial interface.`},
+  {re:/^ip route\s+([\d.]+)\s+([\d.]+)\s+(\S+)/i, sec:'Routing',
+    fn:m=>m[1]==='0.0.0.0'&&m[2]==='0.0.0.0'?`Adds a <strong>default route</strong> — all unmatched traffic is forwarded to <code>${m[3]}</code> (gateway of last resort).`:`Adds a static route to <code>${m[1]}/${m[2]}</code> via <code>${m[3]}</code>.`},
+  {re:/^router ospf\s+(\d+)/i,        fn:m=>`Starts OSPF process <strong>${m[1]}</strong>. The process ID is local — it doesn't need to match neighbors.`},
+  {re:/^\s+router-id\s+([\d.]+)/i,    fn:m=>`Sets OSPF router ID to <code>${m[1]}</code>. Recommended to set manually for stability.`},
+  {re:/^\s+network\s+([\d.]+)\s+([\d.]+)\s+area\s+(\d+)/i, fn:m=>`Advertises network <code>${m[1]}</code> (wildcard <code>${m[2]}</code>) in OSPF area <strong>${m[3]}</strong>.`},
+  {re:/^\s+passive-interface\s+(\S+)/i, fn:m=>`Stops OSPF hellos on <strong>${m[1]}</strong>. Network is still advertised — no adjacency forms here. Best practice on LAN ports.`},
+  {re:/^router eigrp\s+(\d+)/i,       fn:m=>`Enables EIGRP with AS number <strong>${m[1]}</strong>. All neighbors must use the same AS number.`},
+  {re:/^\s+no auto-summary/i,         fn:()=>`Disables automatic route summarization. Prevents routing issues with discontiguous networks.`},
+  {re:/^ip dhcp excluded-address\s+([\d.]+)\s+([\d.]+)/i, sec:'DHCP',
+    fn:m=>`Excludes IPs <code>${m[1]}</code>–<code>${m[2]}</code> from DHCP. Reserved for static devices (gateways, servers, printers).`},
+  {re:/^ip dhcp excluded-address\s+([\d.]+)$/i, fn:m=>`Excludes single IP <code>${m[1]}</code> from DHCP allocation.`},
+  {re:/^ip dhcp pool\s+(\S+)/i,       fn:m=>`Creates DHCP pool <strong>${m[1]}</strong>.`},
+  {re:/^\s+network\s+([\d.]+)\s+([\d.]+)/i, fn:m=>`DHCP scope: clients receive addresses from <code>${m[1]}/${m[2]}</code>.`},
+  {re:/^\s+default-router\s+([\d.]+)/i, fn:m=>`DHCP clients use <code>${m[1]}</code> as their default gateway.`},
+  {re:/^\s+dns-server\s+([\d.]+)/i,   fn:m=>`DHCP clients use <code>${m[1]}</code> as their DNS server.`},
+  {re:/^crypto key generate rsa modulus\s+(\d+)/i, sec:'Security & SSH',
+    fn:m=>`Generates a <strong>${m[1]}-bit RSA key pair</strong>. Required for SSH. Needs hostname and domain-name set first.`},
+  {re:/^ip ssh version\s+(\d)/i,      fn:m=>`Forces SSH version <strong>${m[1]}</strong>. SSHv2 is required — SSHv1 has known vulnerabilities.`},
+  {re:/^line vty\s+(\d+)\s+(\d+)/i,  fn:m=>`Configures virtual terminal lines ${m[1]}–${m[2]}. Controls remote access (SSH/Telnet).`},
+  {re:/^\s+transport input\s+(.*)/i,  fn:m=>`Allows only <strong>${m[1]}</strong> on these VTY lines. <code>ssh</code> disables Telnet, which sends credentials in plaintext.`},
+  {re:/^\s+login local/i,             fn:()=>`Authenticate using the local username database.`},
+  {re:/^\s+exec-timeout\s+(\d+)\s+(\d+)/i, fn:m=>`Auto-logout after <strong>${m[1]}m ${m[2]}s</strong> of inactivity.`},
+  {re:/^username\s+(\S+)\s+secret\s+(.*)/i, fn:m=>`Creates local user <strong>${m[1]}</strong> with an encrypted password.`},
+  {re:/^access-list\s+(\d+)\s+(permit|deny)\s+(.*)/i, fn:m=>`ACL ${m[1]}: <strong>${m[2]}s</strong> traffic from <code>${m[3]}</code>.`},
+  {re:/^\s+ip access-group\s+(\S+)\s+(in|out)/i, fn:m=>`Applies ACL <code>${m[1]}</code> to this interface — <strong>${m[2]}bound</strong> direction.`},
+  {re:/^copy running-config startup-config/i, sec:'Saving',
+    fn:()=>`Saves the running config to NVRAM. Without this, all changes are lost on reload.`},
+  {re:/^write memory/i,               fn:()=>`Shorthand for <code>copy running-config startup-config</code>.`},
+  {re:/^end/i,                        fn:()=>`Exits configuration mode and returns to privileged EXEC mode.`},
+  {re:/^exit/i,                       fn:()=>`Exits the current configuration context.`},
+  {re:/^!/,                           fn:()=>null},
+];
+
+function expExplain(){
+  const text=document.getElementById('expInput').value.trim();
+  if(!text)return;
+  const lines=text.split('\n');
+  const out=[]; let sec=null;
+  lines.forEach(line=>{
+    const t=line.trimEnd();
+    if(!t)return;
+    for(const rule of EXP_RULES){
+      const m=t.match(rule.re);
+      if(m){
+        const desc=rule.fn(m);
+        if(desc===null)return;
+        if(rule.sec&&rule.sec!==sec){sec=rule.sec;out.push({type:'section',text:sec});}
+        out.push({type:'line',code:t.trim(),desc});
+        return;
+      }
+    }
+    out.push({type:'line',code:t.trim(),desc:'<span style="color:var(--muted2)">No explanation available.</span>'});
+  });
+  document.getElementById('expBody').innerHTML=out.map(r=>
+    r.type==='section'
+      ?`<p class="explain-section">${r.text}</p>`
+      :`<div class="explain-line"><div class="explain-code">${r.code}</div><div class="explain-desc">${r.desc}</div></div>`
+  ).join('');
+  document.getElementById('expOutput').style.display='block';
+  document.getElementById('expOutput').scrollIntoView({behavior:'smooth'});
+}
+function expClear(){document.getElementById('expInput').value='';document.getElementById('expOutput').style.display='none';}
+function expLoadExample(){document.getElementById('expInput').value=EXP_EXAMPLE;document.getElementById('expOutput').style.display='none';}
+
+// ── GUIDES ───────────────────────────────────────────────────────────────────
+const GUIDES=[
+  {badge:'badge-green',level:'Beginner',title:'Basic Router Setup',desc:'Configure a router from scratch — hostname, password, interface with IP, and save.',steps:[
+    {n:'01',h:'Enter privileged EXEC mode',p:'Click the router, go to the CLI tab, press Enter.',code:'Router> enable\nRouter#'},
+    {n:'02',h:'Enter global configuration mode',code:'Router# configure terminal\nRouter(config)#'},
+    {n:'03',h:'Set hostname and disable DNS lookup',code:'Router(config)# hostname Router-A\nRouter-A(config)# no ip domain-lookup'},
+    {n:'04',h:'Set enable secret',code:'Router-A(config)# enable secret Cisco123'},
+    {n:'05',h:'Configure a LAN interface',p:'Replace interface name with the correct one for your model.',code:'Router-A(config)# interface GigabitEthernet0/0/0\nRouter-A(config-if)# ip address 192.168.1.1 255.255.255.0\nRouter-A(config-if)# description LAN\nRouter-A(config-if)# no shutdown\nRouter-A(config-if)# exit'},
+    {n:'06',h:'Save',code:'Router-A(config)# end\nRouter-A# copy running-config startup-config'},
+    {n:'07',h:'Verify',code:'Router-A# show ip interface brief\nRouter-A# show running-config'},
+  ]},
+  {badge:'badge-green',level:'Beginner',title:'VLANs on a 2960 Switch',desc:'Create VLANs, assign access ports, and configure a trunk to a router.',steps:[
+    {n:'01',h:'Create VLANs',code:'Switch(config)# vlan 10\nSwitch(config-vlan)# name Management\nSwitch(config-vlan)# exit\nSwitch(config)# vlan 20\nSwitch(config-vlan)# name Employees\nSwitch(config-vlan)# exit'},
+    {n:'02',h:'Assign access ports',p:'Repeat for each PC-facing port.',code:'Switch(config)# interface FastEthernet0/1\nSwitch(config-if)# switchport mode access\nSwitch(config-if)# switchport access vlan 10\nSwitch(config-if)# exit'},
+    {n:'03',h:'Configure trunk port to router',code:'Switch(config)# interface GigabitEthernet0/1\nSwitch(config-if)# switchport mode trunk\nSwitch(config-if)# exit'},
+    {n:'04',h:'Verify',code:'Switch# show vlan brief\nSwitch# show interfaces trunk'},
+  ]},
+  {badge:'badge-blue',level:'Intermediate',title:'Router-on-a-Stick (Inter-VLAN Routing)',desc:'Route between VLANs using sub-interfaces on a single router port.',steps:[
+    {n:'01',h:'On the switch — trunk the uplink',code:'Switch(config)# interface GigabitEthernet0/1\nSwitch(config-if)# switchport mode trunk'},
+    {n:'02',h:'Enable the physical interface on the router',code:'Router(config)# interface GigabitEthernet0/0/0\nRouter(config-if)# no shutdown\nRouter(config-if)# exit'},
+    {n:'03',h:'Create sub-interfaces for each VLAN',code:'Router(config)# interface GigabitEthernet0/0/0.10\nRouter(config-subif)# encapsulation dot1q 10\nRouter(config-subif)# ip address 192.168.10.1 255.255.255.0\nRouter(config-subif)# exit\n\nRouter(config)# interface GigabitEthernet0/0/0.20\nRouter(config-subif)# encapsulation dot1q 20\nRouter(config-subif)# ip address 192.168.20.1 255.255.255.0'},
+    {n:'04',h:'Set PC default gateways',p:'VLAN 10 PCs → 192.168.10.1 &nbsp;|&nbsp; VLAN 20 PCs → 192.168.20.1'},
+    {n:'05',h:'Verify',code:'Router# show ip route\nRouter# show ip interface brief'},
+  ]},
+  {badge:'badge-blue',level:'Intermediate',title:'DHCP on a Router',desc:'Configure the router to automatically assign IPs to clients.',steps:[
+    {n:'01',h:'Exclude static addresses',p:'Reserve the first 10 IPs for network devices.',code:'Router(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.10'},
+    {n:'02',h:'Create the DHCP pool',code:'Router(config)# ip dhcp pool LAN\nRouter(dhcp-config)# network 192.168.1.0 255.255.255.0\nRouter(dhcp-config)# default-router 192.168.1.1\nRouter(dhcp-config)# dns-server 8.8.8.8\nRouter(dhcp-config)# exit'},
+    {n:'03',h:'Set PCs to use DHCP',p:'In Packet Tracer: PC → Desktop → IP Configuration → select <strong>DHCP</strong>.'},
+    {n:'04',h:'Verify',code:'Router# show ip dhcp binding\nRouter# show ip dhcp pool'},
+  ]},
+  {badge:'badge-blue',level:'Intermediate',title:'Static Routes Between Two Sites',desc:'Connect two routers via serial and configure static routes.',steps:[
+    {n:'01',h:'Configure serial interfaces',code:'-- Router-A --\nRouter-A(config)# interface Serial0/1/0\nRouter-A(config-if)# ip address 10.0.0.1 255.255.255.252\nRouter-A(config-if)# no shutdown\n\n-- Router-B --\nRouter-B(config)# interface Serial0/1/0\nRouter-B(config-if)# ip address 10.0.0.2 255.255.255.252\nRouter-B(config-if)# no shutdown'},
+    {n:'02',h:'Add static routes',p:'Each router needs a route to the other site\'s LAN.',code:'-- Router-A: route to Site-B LAN --\nRouter-A(config)# ip route 192.168.2.0 255.255.255.0 10.0.0.2\n\n-- Router-B: route to Site-A LAN --\nRouter-B(config)# ip route 192.168.1.0 255.255.255.0 10.0.0.1'},
+    {n:'03',h:'Verify',code:'Router-A# show ip route\nRouter-A# ping 192.168.2.1'},
+  ]},
+  {badge:'badge-orange',level:'Advanced',title:'OSPF Between Multiple Routers',desc:'Replace static routes with OSPF for automatic route discovery.',steps:[
+    {n:'01',h:'Configure OSPF on Router-A',code:'Router-A(config)# router ospf 1\nRouter-A(config-router)# router-id 1.1.1.1\nRouter-A(config-router)# network 192.168.1.0 0.0.0.255 area 0\nRouter-A(config-router)# network 10.0.0.0 0.0.0.3 area 0\nRouter-A(config-router)# passive-interface GigabitEthernet0/0/0'},
+    {n:'02',h:'Configure OSPF on Router-B',code:'Router-B(config)# router ospf 1\nRouter-B(config-router)# router-id 2.2.2.2\nRouter-B(config-router)# network 192.168.2.0 0.0.0.255 area 0\nRouter-B(config-router)# network 10.0.0.0 0.0.0.3 area 0\nRouter-B(config-router)# passive-interface GigabitEthernet0/0/0'},
+    {n:'03',h:'Verify adjacency and routes',code:'Router-A# show ip ospf neighbor\nRouter-A# show ip route ospf',p:'Routes marked with <code>O</code> in the routing table = learned via OSPF.'},
+  ]},
+  {badge:'badge-orange',level:'Advanced',title:'SSH Hardening',desc:'Secure remote access using SSHv2 and disable Telnet.',steps:[
+    {n:'01',h:'Set hostname and domain name',code:'Router(config)# hostname Router-A\nRouter-A(config)# ip domain-name company.local'},
+    {n:'02',h:'Generate RSA keys',code:'Router-A(config)# crypto key generate rsa modulus 2048'},
+    {n:'03',h:'Enable SSHv2 and create a local user',code:'Router-A(config)# ip ssh version 2\nRouter-A(config)# username admin secret Str0ngP@ss'},
+    {n:'04',h:'Restrict VTY lines to SSH only',code:'Router-A(config)# line vty 0 15\nRouter-A(config-line)# transport input ssh\nRouter-A(config-line)# login local\nRouter-A(config-line)# exec-timeout 5 0\nRouter-A(config-line)# exit'},
+    {n:'05',h:'Verify',code:'Router-A# show ip ssh\nRouter-A# show users'},
+  ]},
+];
+
+function renderGuides(){
+  document.getElementById('guidesContainer').innerHTML=GUIDES.map((g,i)=>`
+    <div class="accordion-item" id="g${i}">
+      <button class="accordion-trigger" aria-expanded="false" onclick="toggleGuide('g${i}')">
+        <span><span class="badge ${g.badge}" style="margin-right:.5rem">${g.level}</span>${g.title}</span>
+        <span class="accordion-icon">+</span>
+      </button>
+      <div class="accordion-body">
+        <p style="color:var(--muted);font-size:.86rem;margin-bottom:1.4rem;">${g.desc}</p>
+        ${g.steps.map(s=>`
+          <div class="step">
+            <div class="step-num">${s.n}</div>
+            <div class="step-body">
+              <h4>${s.h}</h4>
+              ${s.p?`<p>${s.p}</p>`:''}
+              ${s.code?`<pre>${s.code}</pre>`:''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggleGuide(id){
+  const item=document.getElementById(id);
+  const btn=item.querySelector('.accordion-trigger');
+  const body=item.querySelector('.accordion-body');
+  const open=btn.getAttribute('aria-expanded')==='true';
+  btn.setAttribute('aria-expanded',String(!open));
+  body.classList.toggle('open',!open);
+}
+
+renderGuides();
+
+// ── QUIZ ─────────────────────────────────────────────────────────────────────
+const QUIZ_QS=[
+  {cat:'subnetting',q:'What is the network address of 192.168.1.130/26?',opts:['192.168.1.0','192.168.1.128','192.168.1.64','192.168.1.192'],ans:1,explain:'A /26 creates blocks of 64. 130 falls in the block starting at 128.'},
+  {cat:'subnetting',q:'How many usable hosts does a /28 subnet provide?',opts:['14','16','30','12'],ans:0,explain:'2⁴ = 16 total − 2 (network + broadcast) = 14 usable hosts.'},
+  {cat:'subnetting',q:'What is the broadcast address of 10.0.0.0/30?',opts:['10.0.0.1','10.0.0.2','10.0.0.3','10.0.0.4'],ans:2,explain:'/30 has 4 addresses: .0 (network), .1, .2 (hosts), .3 (broadcast).'},
+  {cat:'subnetting',q:'Which subnet mask equals /25?',opts:['255.255.255.0','255.255.255.128','255.255.255.192','255.255.254.0'],ans:1,explain:'/25 = 25 ones = 255.255.255.128.'},
+  {cat:'subnetting',q:'A /30 subnet is typically used for what type of link?',opts:['Large LAN','WAN point-to-point','Server farm','Wireless access'],ans:1,explain:'/30 gives exactly 2 usable hosts — perfect for connecting two router interfaces.'},
+  {cat:'subnetting',q:'What is the wildcard mask for /24?',opts:['255.255.255.0','0.0.0.0','0.0.0.255','255.0.0.0'],ans:2,explain:'Wildcard = inverse of subnet mask. /24 = 255.255.255.0 → wildcard = 0.0.0.255.'},
+  {cat:'subnetting',q:'How many subnets when splitting 192.168.1.0/24 into /26?',opts:['2','4','8','6'],ans:1,explain:'2^(26−24) = 4 subnets of 64 addresses each.'},
+  {cat:'vlan',q:'What command assigns a switch port to VLAN 20?',opts:['switchport vlan 20','switchport access vlan 20','vlan access 20','set vlan 20'],ans:1,explain:'"switchport access vlan <id>" assigns the port after setting it to access mode.'},
+  {cat:'vlan',q:'What is the purpose of a trunk port?',opts:['Carry one VLAN only','Connect to end devices','Carry multiple VLANs between switches','Block unauthorized VLANs'],ans:2,explain:'Trunk ports use 802.1Q tagging to carry multiple VLANs on one link.'},
+  {cat:'vlan',q:'What is an SVI?',opts:['A physical switch port','A virtual VLAN gateway on an L3 switch','A WAN serial interface','A loopback address'],ans:1,explain:'SVIs (interface vlan <id>) act as Layer 3 gateways for VLANs on multilayer switches.'},
+  {cat:'vlan',q:'Which command enables Layer 3 routing on a 3560 switch?',opts:['enable routing','ip routing','switchport routing enable','route enable'],ans:1,explain:'"ip routing" must be enabled before a multilayer switch can route between VLANs.'},
+  {cat:'vlan',q:'Which protocol is used for VLAN tagging on trunk links?',opts:['ISL','802.1Q','802.3','CDP'],ans:1,explain:'IEEE 802.1Q is the standard for VLAN tagging. ISL is Cisco-proprietary and deprecated.'},
+  {cat:'routing',q:'What does "gateway of last resort" mean?',opts:['The fastest route','The default route for unmatched traffic','The lowest-metric route','The directly connected route'],ans:1,explain:'A default route (0.0.0.0/0) is used when no more specific route exists.'},
+  {cat:'routing',q:'Which command adds a default route via 10.0.0.1?',opts:['ip route default 10.0.0.1','ip route 0.0.0.0 0.0.0.0 10.0.0.1','ip default-route 10.0.0.1','route 0.0.0.0/0 10.0.0.1'],ans:1,explain:'"ip route 0.0.0.0 0.0.0.0 <next-hop>" is the IOS syntax for a default route.'},
+  {cat:'routing',q:'What does "passive-interface" do in OSPF?',opts:['Shuts down the interface','Stops OSPF hellos while still advertising the network','Removes the network from OSPF','Increases OSPF cost'],ans:1,explain:'passive-interface prevents OSPF adjacencies but still advertises the connected network.'},
+  {cat:'routing',q:'What is the administrative distance of OSPF?',opts:['90','110','120','1'],ans:1,explain:'AD: Connected=0, Static=1, EIGRP=90, OSPF=110, RIP=120. Lower = more trusted.'},
+  {cat:'routing',q:'What does "O" mean in the routing table?',opts:['Default route','Directly connected','OSPF-learned route','Old/outdated route'],ans:2,explain:'"O" = OSPF. C = connected, S = static, D = EIGRP, R = RIP.'},
+  {cat:'commands',q:'What does "no shutdown" do on a router interface?',opts:['Disables it','Enables it','Removes the IP','Resets counters'],ans:1,explain:'Router interfaces are shutdown by default. "no shutdown" enables them.'},
+  {cat:'commands',q:'Which command shows interface status and IPs in summary?',opts:['show interfaces','show ip route','show ip interface brief','show running-config'],ans:2,explain:'"show ip interface brief" gives a compact table of all interfaces and their status.'},
+  {cat:'commands',q:'What does "no ip domain-lookup" do?',opts:['Disables DNS for clients','Prevents DNS lookup for mistyped commands','Removes the domain name','Disables DHCP'],ans:1,explain:'Without this, mistyped commands trigger a DNS lookup that pauses the CLI for 30+ seconds.'},
+  {cat:'commands',q:'What does "copy running-config startup-config" do?',opts:['Loads saved config','Saves current config to NVRAM','Backs up to TFTP','Compares configs'],ans:1,explain:'Saves the active config to NVRAM — persists across reboots.'},
+  {cat:'security',q:'What is required before generating RSA keys for SSH?',opts:['An ACL must be applied','Hostname and domain-name must be set','VTY lines must be configured','Enable secret must be set'],ans:1,explain:'"crypto key generate rsa" requires hostname and ip domain-name first.'},
+  {cat:'security',q:'What does "transport input ssh" on VTY lines do?',opts:['Enables SSH and Telnet','Disables SSH','Allows only SSH — blocks Telnet','Requires a certificate'],ans:2,explain:'Telnet sends credentials in plaintext. SSH only on VTY is basic hardening.'},
+  {cat:'security',q:'Difference between "enable password" and "enable secret"?',opts:['They are identical','enable secret uses MD5; enable password is plaintext by default','enable password is more secure','enable secret only works on switches'],ans:1,explain:'Always use "enable secret" — MD5-hashed. "enable password" is plaintext unless service password-encryption is set.'},
+  {cat:'security',q:'Which ACL type filters only on source IP?',opts:['Extended ACL','Named ACL','Standard ACL','Reflexive ACL'],ans:2,explain:'Standard ACLs (1–99) match source IP only. Extended ACLs also match destination, protocol and port.'},
+];
+
+let quizQs=[],quizIdx=0,quizScore=0,quizAnswered=false,quizLastCat='all',quizReviewData=[];
+
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+
+function quizStart(cat){
+  quizLastCat=cat;
+  const pool=cat==='all'?QUIZ_QS:QUIZ_QS.filter(q=>q.cat===cat);
+  quizQs=shuffle(pool).slice(0,Math.min(20,pool.length));
+  quizIdx=0;quizScore=0;quizReviewData=[];
+  document.getElementById('quizStart').style.display='none';
+  document.getElementById('quizScore').style.display='none';
+  document.getElementById('quizScreen').style.display='block';
+  quizRender();
+}
+
+function quizRender(){
+  quizAnswered=false;
+  const q=quizQs[quizIdx],total=quizQs.length;
+  document.getElementById('quizBar').style.width=`${(quizIdx/total)*100}%`;
+  document.getElementById('quizCounter').textContent=`Question ${quizIdx+1} of ${total}`;
+  document.getElementById('quizCat').textContent=`// ${q.cat}`;
+  document.getElementById('quizQ').textContent=q.q;
+  document.getElementById('quizFb').innerHTML='';
+  document.getElementById('quizNextBtn').style.display='none';
+  document.getElementById('quizOpts').innerHTML=q.opts.map((o,i)=>`<button class="quiz-option" onclick="quizAnswer(${i})">${o}</button>`).join('');
+}
+
+function quizAnswer(i){
+  if(quizAnswered)return;
+  quizAnswered=true;
+  const q=quizQs[quizIdx];
+  document.querySelectorAll('.quiz-option').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.quiz-option')[i].classList.add(i===q.ans?'correct':'wrong');
+  if(i!==q.ans)document.querySelectorAll('.quiz-option')[q.ans].classList.add('correct');
+  if(i===q.ans)quizScore++;
+  quizReviewData.push({q:q.q,your:q.opts[i],correct:q.opts[q.ans],ok:i===q.ans,explain:q.explain});
+  document.getElementById('quizFb').innerHTML=`<div class="feedback ${i===q.ans?'correct':'wrong'}">${i===q.ans?'Correct!':'Wrong — correct: <strong>'+q.opts[q.ans]+'</strong>'}<br><span style="opacity:.85">${q.explain}</span></div>`;
+  const nb=document.getElementById('quizNextBtn');
+  nb.style.display='inline-flex';
+  nb.textContent=quizIdx+1<quizQs.length?'Next →':'See Results';
+}
+
+function quizNext(){
+  quizIdx++;
+  if(quizIdx<quizQs.length){quizRender();}
+  else{
+    document.getElementById('quizScreen').style.display='none';
+    document.getElementById('quizScore').style.display='block';
+    const pct=Math.round((quizScore/quizQs.length)*100);
+    document.getElementById('quizFinalScore').textContent=`${quizScore}/${quizQs.length}`;
+    document.getElementById('quizScoreLabel').textContent=`${pct}% correct`;
+    document.getElementById('quizScoreMsg').textContent=pct>=80?'Excellent! You clearly know your Cisco.':pct>=60?'Good effort. Review the missed questions below.':'Keep studying — use the guides and command library to fill the gaps.';
+    document.getElementById('quizAgainBtn').onclick=()=>quizStart(quizLastCat);
+    document.getElementById('quizReview').innerHTML=`
+      <p class="section-label" style="margin-bottom:1rem;">// review</p>
+      ${quizReviewData.map(r=>`
+        <div class="card" style="margin-bottom:.65rem;border-color:${r.ok?'rgba(74,222,128,.2)':'rgba(248,113,113,.2)'};">
+          <p style="font-size:.75rem;font-family:'JetBrains Mono',monospace;color:${r.ok?'var(--green)':'var(--red)'};margin-bottom:.35rem;">${r.ok?'✓ correct':'✗ wrong'}</p>
+          <p style="font-size:.88rem;margin-bottom:.4rem;font-weight:500;">${r.q}</p>
+          ${!r.ok?`<p style="font-size:.82rem;color:var(--muted);">Your answer: <span style="color:var(--red)">${r.your}</span> — Correct: <span style="color:var(--green)">${r.correct}</span></p>`:''}
+          <p style="font-size:.8rem;color:var(--muted);margin-top:.3rem;">${r.explain}</p>
+        </div>`).join('')}`;
+  }
+}
+
+function quizShowStart(){
+  document.getElementById('quizScore').style.display='none';
+  document.getElementById('quizScreen').style.display='none';
+  document.getElementById('quizStart').style.display='block';
+}
+</script>
 </body>
 </html>
