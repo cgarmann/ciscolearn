@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CiscoLearn — Cisco Networking Reference</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">// cisco networking reference</p>
+      <h1>Learn<br><em>Cisco</em><br>the right way.</h1>
+      <p>A practical reference for students and engineers working with Cisco IOS, Packet Tracer, and real networks. From subnetting to full router configs — all in one place.</p>
+    </div>
+  </section>
+
+  <!-- Beginner intro -->
+  <section class="section">
+    <div class="container-sm">
+      <p class="section-label">// new here?</p>
+      <h2>Getting <em>started</em></h2>
+      <p class="section-sub">Never touched a Cisco device before? Start here.</p>
+
+      <div class="intro-box">
+        <strong>What is Cisco IOS?</strong> IOS (Internetwork Operating System) is the software that runs on Cisco routers and switches. You interact with it through a command-line interface (CLI) — a text-based terminal where you type commands to configure the device.<br><br>
+        <strong>What is Packet Tracer?</strong> Cisco Packet Tracer is a free network simulation tool. It lets you build virtual networks with routers, switches, and PCs — no physical hardware required. It's the standard tool for learning and practicing Cisco configurations.<br><br>
+        <strong>Where do I start?</strong> Check out the <a href="guides.html" style="color:var(--accent);">PT Guides</a> for step-by-step walkthroughs, or browse the <a href="commands.html" style="color:var(--accent);">Command Library</a> to get familiar with the CLI.
+      </div>
+    </div>
+  </section>
+
+  <!-- Module cards -->
+  <section class="section">
+    <div class="container">
+      <p class="section-label">// modules</p>
+      <h2>What do you want to <em>learn</em>?</h2>
+      <p class="section-sub">Five modules covering the core skills for Cisco networking.</p>
+
+      <div class="card-grid">
+
+        <a href="commands.html" class="card-link">
+          <div class="card">
+            <div class="card-icon">01 — commands</div>
+            <h3>Command Library</h3>
+            <p>Searchable reference of Cisco IOS commands — with descriptions, examples, and categories.</p>
+          </div>
+        </a>
+
+        <a href="subnetting.html" class="card-link">
+          <div class="card">
+            <div class="card-icon">02 — subnetting</div>
+            <h3>Subnetting Trainer</h3>
+            <p>Practice calculating network addresses, broadcast addresses, and host ranges — with instant feedback.</p>
+          </div>
+        </a>
+
+        <a href="explainer.html" class="card-link">
+          <div class="card">
+            <div class="card-icon">03 — explainer</div>
+            <h3>Config Explainer</h3>
+            <p>Paste any Cisco IOS configuration and get a plain-English breakdown of what each line does.</p>
+          </div>
+        </a>
+
+        <a href="guides.html" class="card-link">
+          <div class="card">
+            <div class="card-icon">04 — guides</div>
+            <h3>Packet Tracer Guides</h3>
+            <p>Step-by-step configuration guides for common Packet Tracer scenarios. Commands included.</p>
+          </div>
+        </a>
+
+        <a href="quiz.html" class="card-link">
+          <div class="card">
+            <div class="card-icon">05 — quiz</div>
+            <h3>Quiz</h3>
+            <p>Test your knowledge with multiple-choice questions on subnetting, VLANs, routing, and more.</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="border-top:1px solid var(--border); padding:2rem 0; margin-top:2rem;">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);">CiscoLearn — for educational use</span>
+      <a href="https://github.com/cgarmann/ciscolearn" style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);text-decoration:none;" target="_blank">GitHub ↗</a>
+    </div>
+  </footer>
+
+</div>
+<script src="nav.js"></script>
+</body>
+</html>

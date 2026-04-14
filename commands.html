@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Command Library — CiscoLearn</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">// 01 — commands</p>
+      <h1>Command <em>Library</em></h1>
+      <p>A searchable reference of common Cisco IOS commands, organized by category.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;">
+        <div class="search-bar" style="flex:1;min-width:220px;margin-bottom:0;">
+          <span class="search-icon">&gt;_</span>
+          <input type="text" id="searchInput" placeholder="Search commands..." autocomplete="off" />
+        </div>
+        <select id="categoryFilter" style="width:auto;min-width:160px;">
+          <option value="">All categories</option>
+          <option value="global">Global Config</option>
+          <option value="interface">Interface</option>
+          <option value="vlan">VLANs</option>
+          <option value="routing">Routing</option>
+          <option value="dhcp">DHCP</option>
+          <option value="security">Security / SSH</option>
+          <option value="diagnostics">Diagnostics</option>
+        </select>
+      </div>
+
+      <p id="resultCount" style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:1rem;"></p>
+
+      <div class="table-wrap">
+        <table id="cmdTable">
+          <thead>
+            <tr>
+              <th style="width:32%">Command</th>
+              <th style="width:35%">Description</th>
+              <th>Example</th>
+              <th style="width:100px">Category</th>
+            </tr>
+          </thead>
+          <tbody id="cmdBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<script src="nav.js"></script>
+<script>
+const COMMANDS = [
+  // Global Config
+  { cmd:'enable',                               desc:'Enter privileged EXEC mode from user mode.',                                         example:'> enable',                                              cat:'global' },
+  { cmd:'configure terminal',                   desc:'Enter global configuration mode.',                                                   example:'# configure terminal',                                  cat:'global' },
+  { cmd:'hostname <name>',                      desc:'Set the device hostname.',                                                           example:'(config)# hostname Router-A',                           cat:'global' },
+  { cmd:'no ip domain-lookup',                  desc:'Disable DNS lookup for mistyped commands — prevents long pauses in the CLI.',       example:'(config)# no ip domain-lookup',                         cat:'global' },
+  { cmd:'enable secret <password>',             desc:'Set an encrypted password for privileged EXEC mode.',                               example:'(config)# enable secret Str0ngP@ss',                    cat:'global' },
+  { cmd:'service password-encryption',          desc:'Encrypt all plaintext passwords stored in the config.',                             example:'(config)# service password-encryption',                 cat:'global' },
+  { cmd:'banner motd # <message> #',            desc:'Set a message-of-the-day banner shown at login.',                                   example:'(config)# banner motd # Authorized access only. #',     cat:'global' },
+  { cmd:'copy running-config startup-config',   desc:'Save the current config to NVRAM so it persists after reboot.',                    example:'# copy running-config startup-config',                  cat:'global' },
+  { cmd:'write memory',                         desc:'Shorthand for saving the running config. Same as copy run start.',                  example:'# write memory',                                        cat:'global' },
+  { cmd:'erase startup-config',                 desc:'Delete the saved config — device boots blank on next restart.',                    example:'# erase startup-config',                                cat:'global' },
+  { cmd:'reload',                               desc:'Reboot the device.',                                                                example:'# reload',                                              cat:'global' },
+  { cmd:'ip domain-name <domain>',              desc:'Set the domain name. Required for SSH key generation.',                            example:'(config)# ip domain-name company.local',                cat:'global' },
+
+  // Diagnostics
+  { cmd:'show running-config',                  desc:'Display the current active configuration.',                                         example:'# show running-config',                                 cat:'diagnostics' },
+  { cmd:'show startup-config',                  desc:'Display the saved configuration in NVRAM.',                                         example:'# show startup-config',                                 cat:'diagnostics' },
+  { cmd:'show ip interface brief',              desc:'Summary of all interfaces: IP, status, and protocol.',                              example:'# show ip interface brief',                             cat:'diagnostics' },
+  { cmd:'show interfaces',                      desc:'Detailed counters and status for all interfaces.',                                  example:'# show interfaces GigabitEthernet0/0/0',                cat:'diagnostics' },
+  { cmd:'show ip route',                        desc:'Display the routing table.',                                                        example:'# show ip route',                                       cat:'diagnostics' },
+  { cmd:'show version',                         desc:'IOS version, uptime, hardware model, and RAM/flash info.',                         example:'# show version',                                        cat:'diagnostics' },
+  { cmd:'show cdp neighbors',                   desc:'List directly connected Cisco devices via CDP.',                                    example:'# show cdp neighbors',                                  cat:'diagnostics' },
+  { cmd:'show vlan brief',                      desc:'Summary of all VLANs and their assigned ports.',                                    example:'# show vlan brief',                                     cat:'diagnostics' },
+  { cmd:'show mac address-table',               desc:'Display the MAC address table on a switch.',                                        example:'# show mac address-table',                              cat:'diagnostics' },
+  { cmd:'show spanning-tree',                   desc:'Display STP state for all VLANs.',                                                  example:'# show spanning-tree',                                  cat:'diagnostics' },
+  { cmd:'show ip ospf neighbor',                desc:'List OSPF neighbors and their state.',                                              example:'# show ip ospf neighbor',                               cat:'diagnostics' },
+  { cmd:'show ip protocols',                    desc:'Show active routing protocols and their settings.',                                 example:'# show ip protocols',                                   cat:'diagnostics' },
+  { cmd:'ping <ip>',                            desc:'Test reachability to an IP address.',                                               example:'# ping 192.168.1.1',                                    cat:'diagnostics' },
+  { cmd:'traceroute <ip>',                      desc:'Trace the path packets take to a destination.',                                     example:'# traceroute 8.8.8.8',                                  cat:'diagnostics' },
+  { cmd:'debug ip ospf events',                 desc:'Real-time OSPF event debugging. Use undebug all to stop.',                         example:'# debug ip ospf events',                                cat:'diagnostics' },
+
+  // Interface
+  { cmd:'interface <type> <number>',            desc:'Enter interface configuration mode.',                                               example:'(config)# interface GigabitEthernet0/0/0',              cat:'interface' },
+  { cmd:'ip address <ip> <mask>',               desc:'Assign an IP address and subnet mask to an interface.',                            example:'(config-if)# ip address 192.168.1.1 255.255.255.0',    cat:'interface' },
+  { cmd:'no shutdown',                          desc:'Enable an interface (interfaces are shutdown by default on routers).',             example:'(config-if)# no shutdown',                              cat:'interface' },
+  { cmd:'shutdown',                             desc:'Administratively disable an interface.',                                            example:'(config-if)# shutdown',                                 cat:'interface' },
+  { cmd:'description <text>',                   desc:'Add a human-readable label to an interface.',                                      example:'(config-if)# description Uplink to Core-SW',           cat:'interface' },
+  { cmd:'duplex {full|half|auto}',              desc:'Set duplex mode on an interface.',                                                  example:'(config-if)# duplex full',                              cat:'interface' },
+  { cmd:'speed {10|100|1000|auto}',             desc:'Set interface speed in Mbps.',                                                     example:'(config-if)# speed 1000',                               cat:'interface' },
+  { cmd:'no ip address',                        desc:'Remove the IP address from an interface.',                                          example:'(config-if)# no ip address',                            cat:'interface' },
+  { cmd:'interface loopback <number>',          desc:'Create a virtual loopback interface (always up, used for router IDs).',           example:'(config)# interface loopback 0',                        cat:'interface' },
+
+  // VLANs
+  { cmd:'vlan <id>',                            desc:'Create a VLAN and enter VLAN config mode.',                                         example:'(config)# vlan 10',                                     cat:'vlan' },
+  { cmd:'name <name>',                          desc:'Assign a name to a VLAN.',                                                          example:'(config-vlan)# name Management',                        cat:'vlan' },
+  { cmd:'switchport mode access',               desc:'Set port to access mode (one VLAN, for end devices).',                             example:'(config-if)# switchport mode access',                   cat:'vlan' },
+  { cmd:'switchport access vlan <id>',          desc:'Assign an access port to a specific VLAN.',                                         example:'(config-if)# switchport access vlan 10',               cat:'vlan' },
+  { cmd:'switchport mode trunk',                desc:'Set port to trunk mode (carries multiple VLANs, for switch-to-switch links).',    example:'(config-if)# switchport mode trunk',                    cat:'vlan' },
+  { cmd:'switchport trunk allowed vlan <list>', desc:'Specify which VLANs are allowed on a trunk port.',                                 example:'(config-if)# switchport trunk allowed vlan 10,20,30',  cat:'vlan' },
+  { cmd:'interface vlan <id>',                  desc:'Create or enter a Switched Virtual Interface (SVI) — used as a gateway on L3 switches.', example:'(config)# interface vlan 10',               cat:'vlan' },
+  { cmd:'ip routing',                           desc:'Enable Layer 3 routing on a multilayer switch.',                                   example:'(config)# ip routing',                                  cat:'vlan' },
+  { cmd:'no switchport',                        desc:'Convert a switch port to a routed (Layer 3) port.',                                example:'(config-if)# no switchport',                            cat:'vlan' },
+
+  // Routing
+  { cmd:'ip route <dest> <mask> <next-hop>',    desc:'Add a static route. Use 0.0.0.0 0.0.0.0 for a default route.',                   example:'(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.1',         cat:'routing' },
+  { cmd:'router ospf <process-id>',             desc:'Enable an OSPF routing process.',                                                   example:'(config)# router ospf 1',                               cat:'routing' },
+  { cmd:'network <ip> <wildcard> area <area>',  desc:'Advertise a network in OSPF.',                                                     example:'(config-router)# network 192.168.1.0 0.0.0.255 area 0',cat:'routing' },
+  { cmd:'router-id <id>',                       desc:'Manually set the OSPF router ID (recommended).',                                   example:'(config-router)# router-id 1.1.1.1',                   cat:'routing' },
+  { cmd:'passive-interface <interface>',        desc:'Stop OSPF hello packets on an interface (use on LAN-facing ports).',              example:'(config-router)# passive-interface GigabitEthernet0/0/0',cat:'routing' },
+  { cmd:'router eigrp <as>',                    desc:'Enable an EIGRP routing process.',                                                  example:'(config)# router eigrp 100',                            cat:'routing' },
+  { cmd:'no auto-summary',                      desc:'Disable automatic route summarization in EIGRP/RIP.',                              example:'(config-router)# no auto-summary',                      cat:'routing' },
+  { cmd:'router bgp <as>',                      desc:'Enable BGP for the specified AS number.',                                           example:'(config)# router bgp 65001',                            cat:'routing' },
+  { cmd:'neighbor <ip> remote-as <as>',         desc:'Define a BGP neighbor and their AS.',                                              example:'(config-router)# neighbor 10.0.0.2 remote-as 65002',   cat:'routing' },
+
+  // DHCP
+  { cmd:'ip dhcp pool <name>',                  desc:'Create a named DHCP pool.',                                                         example:'(config)# ip dhcp pool LAN-POOL',                       cat:'dhcp' },
+  { cmd:'network <ip> <mask>',                  desc:'Define the network range for the DHCP pool.',                                      example:'(dhcp-config)# network 192.168.1.0 255.255.255.0',      cat:'dhcp' },
+  { cmd:'default-router <ip>',                  desc:'Set the default gateway given to DHCP clients.',                                   example:'(dhcp-config)# default-router 192.168.1.1',             cat:'dhcp' },
+  { cmd:'dns-server <ip>',                      desc:'Set the DNS server given to DHCP clients.',                                        example:'(dhcp-config)# dns-server 8.8.8.8',                     cat:'dhcp' },
+  { cmd:'ip dhcp excluded-address <start> <end>',desc:'Exclude a range of IPs from DHCP allocation (reserve for static devices).',      example:'(config)# ip dhcp excluded-address 192.168.1.1 192.168.1.10', cat:'dhcp' },
+  { cmd:'show ip dhcp binding',                 desc:'Show all current DHCP leases.',                                                     example:'# show ip dhcp binding',                                cat:'dhcp' },
+
+  // Security / SSH
+  { cmd:'crypto key generate rsa modulus 2048', desc:'Generate RSA keys for SSH. Requires hostname and domain-name to be set.',         example:'(config)# crypto key generate rsa modulus 2048',        cat:'security' },
+  { cmd:'ip ssh version 2',                     desc:'Force SSHv2 (more secure than v1).',                                               example:'(config)# ip ssh version 2',                            cat:'security' },
+  { cmd:'line vty 0 15',                        desc:'Enter configuration for virtual terminal lines (remote access).',                  example:'(config)# line vty 0 15',                               cat:'security' },
+  { cmd:'transport input ssh',                  desc:'Allow only SSH on VTY lines (disable Telnet).',                                    example:'(config-line)# transport input ssh',                    cat:'security' },
+  { cmd:'login local',                          desc:'Use the local username database for authentication on VTY/console.',               example:'(config-line)# login local',                            cat:'security' },
+  { cmd:'username <name> secret <pass>',        desc:'Create a local user account with an encrypted password.',                         example:'(config)# username admin secret Str0ngP@ss',            cat:'security' },
+  { cmd:'access-list <num> permit|deny <ip> <wildcard>', desc:'Create a numbered standard ACL entry.',                                  example:'(config)# access-list 10 permit 192.168.1.0 0.0.0.255', cat:'security' },
+  { cmd:'ip access-group <num> {in|out}',       desc:'Apply an ACL to an interface in the inbound or outbound direction.',              example:'(config-if)# ip access-group 10 in',                    cat:'security' },
+];
+
+function renderTable(data) {
+  const tbody = document.getElementById('cmdBody');
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td><code>${r.cmd}</code></td>
+      <td style="color:var(--muted)">${r.desc}</td>
+      <td><pre style="margin:0;padding:0.4rem 0.7rem;font-size:0.78rem;">${r.example}</pre></td>
+      <td><span class="badge badge-blue">${r.cat}</span></td>
+    </tr>
+  `).join('');
+  document.getElementById('resultCount').textContent = `${data.length} commands`;
+}
+
+function filter() {
+  const q   = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('categoryFilter').value;
+  const res = COMMANDS.filter(r =>
+    (!cat || r.cat === cat) &&
+    (!q || r.cmd.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q))
+  );
+  renderTable(res);
+}
+
+document.getElementById('searchInput').addEventListener('input', filter);
+document.getElementById('categoryFilter').addEventListener('change', filter);
+renderTable(COMMANDS);
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Config Explainer — CiscoLearn</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">// 03 — explainer</p>
+      <h1>Config <em>Explainer</em></h1>
+      <p>Paste any Cisco IOS configuration and get a plain-English explanation of every line.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container-sm">
+
+      <div class="form-group">
+        <label>Paste configuration</label>
+        <textarea id="configInput" rows="14" placeholder="hostname Router-A
+interface GigabitEthernet0/0/0
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown
+router ospf 1
+ network 192.168.1.0 0.0.0.255 area 0
+..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;">
+        <button class="btn btn-primary" id="explainBtn">Explain Config</button>
+        <button class="btn btn-ghost" id="clearBtn">Clear</button>
+        <button class="btn btn-ghost btn-sm" id="exampleBtn">Load example</button>
+      </div>
+
+      <div id="output" style="display:none;">
+        <p class="section-label" style="margin-bottom:1rem;">// explanation</p>
+        <div class="table-wrap">
+          <div id="explainBody" style="padding:0 1rem;"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<script src="nav.js"></script>
+<script>
+const EXAMPLE = `hostname Router-A
+no ip domain-lookup
+ip domain-name company.local
+enable secret Str0ngP@ss
+service password-encryption
+banner motd # Authorized access only. #
+!
+interface GigabitEthernet0/0/0
+ description LAN uplink
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown
+!
+interface Serial0/1/0
+ description WAN to Site-B
+ ip address 10.0.0.1 255.255.255.252
+ no shutdown
+!
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+!
+router ospf 1
+ router-id 1.1.1.1
+ network 192.168.1.0 0.0.0.255 area 0
+ passive-interface GigabitEthernet0/0/0
+!
+ip dhcp excluded-address 192.168.1.1 192.168.1.10
+ip dhcp pool LAN
+ network 192.168.1.0 255.255.255.0
+ default-router 192.168.1.1
+ dns-server 8.8.8.8
+!
+crypto key generate rsa modulus 2048
+ip ssh version 2
+!
+line vty 0 15
+ transport input ssh
+ login local
+!
+username admin secret Cisco123
+copy running-config startup-config`;
+
+const RULES = [
+  // Global
+  { re: /^hostname\s+(\S+)/i,             section:'Global Configuration',
+    fn: m => `Sets the device hostname to <strong>${m[1]}</strong>. Appears in the CLI prompt and is required for SSH key generation.` },
+  { re: /^no ip domain-lookup/i,          fn: () => `Disables DNS lookup for mistyped commands. Without this, the router tries to resolve unknown commands as hostnames, causing long delays.` },
+  { re: /^ip domain-name\s+(\S+)/i,       fn: m => `Sets the domain name to <strong>${m[1]}</strong>. Required together with a hostname before generating RSA keys for SSH.` },
+  { re: /^enable secret\s+(\S+)/i,        fn: m => `Sets an encrypted privileged EXEC (enable) password. Anyone who connects must enter this to gain full access. Stored as MD5 hash — not reversible.` },
+  { re: /^service password-encryption/i,  fn: () => `Encrypts all plaintext passwords currently in the config (such as <code>enable password</code> and line passwords). Note: this is weak encryption — <code>enable secret</code> is always preferred.` },
+  { re: /^banner motd\s+(.*)/i,           fn: m => `Sets a login banner (message-of-the-day). Displayed to anyone who connects to the device before authentication. Should warn unauthorized users.` },
+  { re: /^no ip http server/i,            fn: () => `Disables the HTTP management web server. Reduces attack surface.` },
+  { re: /^no ip http secure-server/i,     fn: () => `Disables the HTTPS management web server.` },
+  { re: /^ip routing/i,                   fn: () => `Enables Layer 3 routing on a multilayer switch. Without this, the switch only forwards at Layer 2.` },
+
+  // Interface
+  { re: /^interface\s+(\S+)/i,            section:'Interface Configuration',
+    fn: m => `Enters configuration mode for interface <strong>${m[1]}</strong>. All following indented commands apply to this interface.` },
+  { re: /^\s+description\s+(.*)/i,        fn: m => `Adds a human-readable label: <em>"${m[1]}"</em>. Does not affect operation — purely for documentation.` },
+  { re: /^\s+ip address\s+([\d.]+)\s+([\d.]+)/i, fn: m => `Assigns IP address <code>${m[1]}</code> with subnet mask <code>${m[2]}</code> to this interface.` },
+  { re: /^\s+no shutdown/i,               fn: () => `Enables the interface. Router interfaces are administratively <em>shutdown</em> by default — this command brings them up.` },
+  { re: /^\s+shutdown/i,                  fn: () => `Administratively disables the interface. Traffic stops flowing. Useful for maintenance.` },
+  { re: /^\s+duplex\s+(\S+)/i,            fn: m => `Sets the duplex mode to <strong>${m[1]}</strong>. Full-duplex allows simultaneous send/receive; half-duplex does not.` },
+  { re: /^\s+speed\s+(\S+)/i,             fn: m => `Sets the interface speed to <strong>${m[1]} Mbps</strong>.` },
+  { re: /^\s+switchport mode access/i,    fn: () => `Sets this port to access mode — it will carry traffic for exactly one VLAN. Used for end devices (PCs, printers).` },
+  { re: /^\s+switchport access vlan\s+(\d+)/i, fn: m => `Assigns this access port to VLAN <strong>${m[1]}</strong>.` },
+  { re: /^\s+switchport mode trunk/i,     fn: () => `Sets this port to trunk mode — it will carry traffic for multiple VLANs using 802.1Q tagging. Used for switch-to-switch or switch-to-router links.` },
+  { re: /^\s+switchport trunk allowed vlan\s+(.*)/i, fn: m => `Restricts the trunk to only allow VLANs: <strong>${m[1]}</strong>.` },
+  { re: /^\s+no switchport/i,             fn: () => `Converts this switch port into a Layer 3 routed port. After this, you can assign an IP address directly to it.` },
+  { re: /^\s+encapsulation dot1q\s+(\d+)/i, fn: m => `Configures 802.1Q VLAN tagging for VLAN <strong>${m[1]}</strong>. Used on router sub-interfaces for Router-on-a-Stick setups.` },
+  { re: /^\s+clock rate\s+(\d+)/i,        fn: m => `Sets the clock rate to <strong>${m[1]} bps</strong> on a DCE serial interface. Required on the DCE end of a back-to-back serial connection.` },
+
+  // Routing
+  { re: /^ip route\s+([\d.]+)\s+([\d.]+)\s+(\S+)/i, section:'Routing',
+    fn: m => m[1]==='0.0.0.0' && m[2]==='0.0.0.0'
+      ? `Adds a <strong>default route</strong> — all traffic with no more specific match is forwarded to <code>${m[3]}</code>. This is the "gateway of last resort".`
+      : `Adds a static route to network <code>${m[1]}/${m[2]}</code> via next-hop <code>${m[3]}</code>.` },
+  { re: /^router ospf\s+(\d+)/i,          fn: m => `Starts an OSPF routing process with process ID <strong>${m[1]}</strong>. The process ID is local to the router — it does not need to match neighbors.` },
+  { re: /^\s+router-id\s+([\d.]+)/i,      fn: m => `Manually sets the OSPF router ID to <code>${m[1]}</code>. The router ID is used to identify this router in OSPF. Recommended to set manually for stability.` },
+  { re: /^\s+network\s+([\d.]+)\s+([\d.]+)\s+area\s+(\d+)/i, fn: m => `Tells OSPF to advertise the network <code>${m[1]}</code> (wildcard <code>${m[2]}</code>) and to run OSPF on matching interfaces in area <strong>${m[3]}</strong>.` },
+  { re: /^\s+passive-interface\s+(\S+)/i, fn: m => `Stops OSPF from sending Hello packets out of <strong>${m[1]}</strong>. The network is still advertised, but no adjacency can form on this interface. Best practice on LAN-facing ports.` },
+  { re: /^router eigrp\s+(\d+)/i,         fn: m => `Enables EIGRP routing process with AS number <strong>${m[1]}</strong>. All EIGRP neighbors must use the same AS number.` },
+  { re: /^\s+no auto-summary/i,           fn: () => `Disables automatic route summarization. Without this, EIGRP/RIP summarizes routes to classful boundaries, which can cause routing problems with discontiguous networks.` },
+
+  // DHCP
+  { re: /^ip dhcp excluded-address\s+([\d.]+)\s+([\d.]+)/i, section:'DHCP',
+    fn: m => `Excludes IP addresses <code>${m[1]}</code> through <code>${m[2]}</code> from DHCP. These addresses are reserved for static assignment (gateways, servers, printers).` },
+  { re: /^ip dhcp excluded-address\s+([\d.]+)$/i,
+    fn: m => `Excludes the single IP address <code>${m[1]}</code> from DHCP allocation.` },
+  { re: /^ip dhcp pool\s+(\S+)/i,         fn: m => `Creates a DHCP pool named <strong>${m[1]}</strong>. Subsequent indented commands define the scope.` },
+  { re: /^\s+network\s+([\d.]+)\s+([\d.]+)/i, fn: m => `Defines the DHCP address pool — clients receive addresses from the <code>${m[1]}/${m[2]}</code> network (minus excluded addresses).` },
+  { re: /^\s+default-router\s+([\d.]+)/i, fn: m => `Tells DHCP clients to use <code>${m[1]}</code> as their default gateway.` },
+  { re: /^\s+dns-server\s+([\d.]+)/i,     fn: m => `Tells DHCP clients to use <code>${m[1]}</code> as their DNS server.` },
+  { re: /^\s+lease\s+(.*)/i,              fn: m => `Sets the DHCP lease duration to <strong>${m[1]}</strong> (days hours minutes).` },
+
+  // Security / SSH
+  { re: /^crypto key generate rsa modulus\s+(\d+)/i, section:'Security & SSH',
+    fn: m => `Generates a <strong>${m[1]}-bit RSA key pair</strong>. Required for SSH. Larger keys (2048+) are more secure. Needs hostname and domain-name set first.` },
+  { re: /^ip ssh version\s+(\d)/i,        fn: m => `Forces SSH version <strong>${m[1]}</strong>. SSHv2 is strongly preferred — SSHv1 has known security vulnerabilities.` },
+  { re: /^ip ssh authentication-retries\s+(\d+)/i, fn: m => `Limits failed SSH authentication attempts to <strong>${m[1]}</strong> before disconnecting.` },
+  { re: /^ip ssh time-out\s+(\d+)/i,      fn: m => `SSH negotiation must complete within <strong>${m[1]} seconds</strong> or the connection drops.` },
+  { re: /^line vty\s+(\d+)\s+(\d+)/i,    fn: m => `Enters configuration for virtual terminal lines ${m[1]}–${m[2]}. These control remote access (SSH/Telnet) sessions.` },
+  { re: /^\s+transport input\s+(.*)/i,    fn: m => `Allows only <strong>${m[1]}</strong> protocols on these VTY lines. <code>transport input ssh</code> disables Telnet, which sends credentials in plaintext.` },
+  { re: /^\s+login local/i,               fn: () => `Requires authentication using the local username database (defined with <code>username</code> commands).` },
+  { re: /^\s+exec-timeout\s+(\d+)\s+(\d+)/i, fn: m => `Automatically logs out idle sessions after <strong>${m[1]} min ${m[2]} sec</strong>.` },
+  { re: /^username\s+(\S+)\s+secret\s+(.*)/i, fn: m => `Creates local user <strong>${m[1]}</strong> with an encrypted password. Used for SSH login and console access.` },
+  { re: /^access-list\s+(\d+)\s+(permit|deny)\s+(.*)/i, fn: m => `ACL ${m[1]}: <strong>${m[2]}s</strong> traffic from <code>${m[3]}</code>.` },
+  { re: /^\s+ip access-group\s+(\S+)\s+(in|out)/i, fn: m => `Applies ACL <code>${m[1]}</code> to this interface in the <strong>${m[2]}bound</strong> direction.` },
+
+  // Save / misc
+  { re: /^copy running-config startup-config/i, section:'Saving',
+    fn: () => `Saves the running configuration to NVRAM. This is the config the device loads on boot. Without this, all changes are lost on reload.` },
+  { re: /^write memory/i,                 fn: () => `Shorthand for <code>copy running-config startup-config</code> — saves the config.` },
+  { re: /^end/i,                          fn: () => `Exits configuration mode and returns to privileged EXEC mode.` },
+  { re: /^exit/i,                         fn: () => `Exits the current configuration context (e.g., from interface config back to global config).` },
+  { re: /^!/,                             fn: () => null }, // skip comment lines
+];
+
+function explainConfig(text) {
+  const lines = text.split('\n');
+  const output = [];
+  let currentSection = null;
+
+  lines.forEach(line => {
+    const trimmed = line.trimEnd();
+    if (!trimmed) return;
+
+    for (const rule of RULES) {
+      const m = trimmed.match(rule.re);
+      if (m) {
+        const desc = rule.fn(m);
+        if (desc === null) return; // skip (comment lines)
+        const sec = rule.section || null;
+        if (sec && sec !== currentSection) {
+          currentSection = sec;
+          output.push({ type: 'section', text: sec });
+        }
+        output.push({ type: 'line', code: trimmed.trim(), desc });
+        return;
+      }
+    }
+    // Unknown line
+    output.push({ type: 'line', code: trimmed.trim(), desc: '<span style="color:var(--muted2)">No explanation available for this line.</span>' });
+  });
+
+  return output;
+}
+
+document.getElementById('explainBtn').addEventListener('click', () => {
+  const text = document.getElementById('configInput').value.trim();
+  if (!text) return;
+  const result = explainConfig(text);
+  const body = document.getElementById('explainBody');
+  body.innerHTML = result.map(r => {
+    if (r.type === 'section') return `<p class="explain-section">${r.text}</p>`;
+    return `<div class="explain-line"><div class="explain-code">${r.code}</div><div class="explain-desc">${r.desc}</div></div>`;
+  }).join('');
+  document.getElementById('output').style.display = 'block';
+  document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  document.getElementById('configInput').value = '';
+  document.getElementById('output').style.display = 'none';
+});
+
+document.getElementById('exampleBtn').addEventListener('click', () => {
+  document.getElementById('configInput').value = EXAMPLE;
+  document.getElementById('output').style.display = 'none';
+});
+</script>
+</body>
+</html>
