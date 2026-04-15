@@ -157,6 +157,16 @@ tr:hover td { background:var(--s2); }
 .score-big { font-family:'JetBrains Mono',monospace; font-size:4rem; font-weight:700; line-height:1; color:var(--accent); text-shadow:0 0 30px rgba(0,255,136,.3); }
 .score-label { font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:.4rem; }
 
+/* STATS */
+.stats-bar { display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1.75rem; }
+.stat-chip { font-family:'JetBrains Mono',monospace; font-size:.72rem; padding:.35rem .8rem; border:1px solid var(--border); border-radius:var(--r); color:var(--muted); display:flex; align-items:center; gap:.4rem; }
+.stat-chip b { color:var(--text); }
+.stat-chip.hot { border-color:rgba(0,255,136,.3); color:var(--accent); }
+.stat-chip.hot b { color:var(--accent); text-shadow:0 0 8px rgba(0,255,136,.4); }
+.streak-display { font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--muted); display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:.75rem; }
+.streak-display span b { color:var(--text); }
+.streak-display .on-fire b { color:var(--accent); text-shadow:0 0 8px rgba(0,255,136,.4); }
+
 /* FOOTER */
 footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem; }
 
@@ -383,9 +393,14 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
       </div>
       <div id="subFeedback" style="margin-top:1rem;"></div>
     </div>
-    <div style="display:flex;gap:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);">
-      <span><span data-i18n="sub.correct">Correct:</span> <span id="subCorrect" style="color:var(--green);">0</span></span>
-      <span><span data-i18n="sub.attempts">Attempts:</span> <span id="subTotal" style="color:var(--text);">0</span></span>
+    <div class="streak-display">
+      <span><span data-i18n="sub.correct">Correct:</span> <b id="subCorrect">0</b></span>
+      <span><span data-i18n="sub.attempts">Attempts:</span> <b id="subTotal">0</b></span>
+      <span id="subStreakChip">Streak: <b id="subStreakVal">0</b></span>
+      <span>Best streak: <b id="subBestVal">0</b></span>
+    </div>
+    <div style="margin-top:.6rem;">
+      <button class="btn btn-ghost btn-sm" onclick="resetStats('sub')" style="opacity:.45;font-size:.68rem;">reset stats</button>
     </div>
   </div></section>
 
@@ -542,6 +557,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 
   <section class="section"><div class="container-sm">
     <div id="quizStart">
+      <div id="quizStatsBar" class="stats-bar"></div>
       <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:2rem;">
         <button class="btn btn-primary" onclick="quizStart('all')">All Topics</button>
         <button class="btn btn-ghost"   onclick="quizStart('subnetting')">Subnetting</button>
@@ -551,6 +567,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
         <button class="btn btn-ghost"   onclick="quizStart('security')">Security</button>
         <button class="btn btn-ghost"   onclick="quizStart('nat')">NAT / ACL</button>
       </div>
+      <button class="btn btn-ghost btn-sm" onclick="resetStats('quiz')" style="opacity:.45;font-size:.68rem;">reset stats</button>
     </div>
 
     <div id="quizScreen" style="display:none;">
@@ -581,6 +598,80 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 </div>
 
 <script>
+// ── STATS / STREAK ───────────────────────────────────────────────────────────
+const LS = {
+  get: (k, def) => { try { const v=localStorage.getItem(k); return v===null?def:JSON.parse(v); } catch(e){return def;} },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+};
+
+// Quiz stats
+function quizStatsLoad(){
+  const played = LS.get('cl-q-played', 0);
+  const best   = LS.get('cl-q-best', 0);
+  const streak = LS.get('cl-q-streak', 0);
+  const el = document.getElementById('quizStatsBar');
+  if(!el) return;
+  if(played === 0){ el.innerHTML = '<span class="stat-chip" style="opacity:.5">// no history yet — play a round to start tracking</span>'; return; }
+  el.innerHTML = `
+    <span class="stat-chip ${streak>=3?'hot':''}">streak <b>${streak}</b></span>
+    <span class="stat-chip">best <b>${best}%</b></span>
+    <span class="stat-chip">played <b>${played}</b></span>`;
+}
+
+function quizStatsSave(pct){
+  const played = LS.get('cl-q-played', 0) + 1;
+  const best   = Math.max(LS.get('cl-q-best', 0), pct);
+  const streak = pct >= 70 ? LS.get('cl-q-streak', 0) + 1 : 0;
+  LS.set('cl-q-played', played);
+  LS.set('cl-q-best',   best);
+  LS.set('cl-q-streak', streak);
+  quizStatsLoad();
+}
+
+// Subnetting stats
+let subStreak = 0;
+function subStatsLoad(){
+  subStreak = LS.get('cl-s-streak', 0);
+  const best = LS.get('cl-s-best', 0);
+  if(document.getElementById('subStreakVal')) document.getElementById('subStreakVal').textContent = subStreak;
+  if(document.getElementById('subBestVal'))   document.getElementById('subBestVal').textContent  = best;
+  subStreakStyle();
+}
+
+function subStreakStyle(){
+  const chip = document.getElementById('subStreakChip');
+  if(!chip) return;
+  chip.className = subStreak >= 5 ? 'on-fire' : '';
+}
+
+function subStatsUpdate(correct){
+  if(correct){
+    subStreak++;
+    const best = Math.max(LS.get('cl-s-best', 0), subStreak);
+    LS.set('cl-s-streak', subStreak);
+    LS.set('cl-s-best',   best);
+    if(document.getElementById('subBestVal')) document.getElementById('subBestVal').textContent = best;
+  } else {
+    subStreak = 0;
+    LS.set('cl-s-streak', 0);
+  }
+  if(document.getElementById('subStreakVal')) document.getElementById('subStreakVal').textContent = subStreak;
+  subStreakStyle();
+}
+
+function resetStats(module){
+  if(module === 'quiz'){
+    ['cl-q-played','cl-q-best','cl-q-streak'].forEach(k => localStorage.removeItem(k));
+    quizStatsLoad();
+  } else {
+    subStreak = 0;
+    ['cl-s-streak','cl-s-best'].forEach(k => localStorage.removeItem(k));
+    document.getElementById('subCorrect').textContent = '0';
+    document.getElementById('subTotal').textContent   = '0';
+    subStatsLoad();
+  }
+}
+
 // ── THEME ─────────────────────────────────────────────────────────────────────
 function initTheme(){
   const saved=localStorage.getItem('cl-theme')||'dark';
@@ -797,6 +888,7 @@ function subCheck(){
   });
   subTotal++;
   if(ok)subCorrect++;
+  subStatsUpdate(ok);
   document.getElementById('subFeedback').innerHTML=
     `<div class="feedback ${ok?'correct':'wrong'}">${ok?T('sub.ok'):T('sub.wrong')}</div>`
     + subBuildVisual();
@@ -1266,6 +1358,7 @@ function quizNext(){
     document.getElementById('quizScreen').style.display='none';
     document.getElementById('quizScore').style.display='block';
     const pct=Math.round((quizScore/quizQs.length)*100);
+    quizStatsSave(pct);
     document.getElementById('quizFinalScore').textContent=`${quizScore}/${quizQs.length}`;
     document.getElementById('quizScoreLabel').textContent=`${pct}% correct`;
     document.getElementById('quizScoreMsg').textContent=pct>=80?'Excellent! You clearly know your Cisco.':pct>=60?'Good effort. Review the missed questions below.':'Keep studying — use the guides and command library to fill the gaps.';
@@ -1291,6 +1384,8 @@ function quizShowStart(){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 initTheme();
 initLang();
+quizStatsLoad();
+subStatsLoad();
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('/ciscolearn/sw.js'));
 }
