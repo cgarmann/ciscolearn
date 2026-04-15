@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "no.cgarmann.ciscolearn",
+    "sha256_cert_fingerprints": [
+      "B1:8A:A3:B2:64:ED:5C:9A:C9:C6:BC:37:F4:1D:15:0F:21:11:BB:81:78:E4:9A:97:C9:08:64:26:7A:3D:5E:EC"
+    ]
+  }
+}]
