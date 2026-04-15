@@ -210,7 +210,8 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     <button onclick="showPage('subnetting')" id="nav-subnetting" data-i18n="nav.subnetting">Subnetting</button>
     <button onclick="showPage('explainer')"  id="nav-explainer"  data-i18n="nav.explainer">Config Explainer</button>
     <button onclick="showPage('guides')"     id="nav-guides"     data-i18n="nav.guides">PT Guides</button>
-    <button onclick="showPage('quiz')"       id="nav-quiz"       data-i18n="nav.quiz">Quiz</button>
+    <button onclick="showPage('quiz')"           id="nav-quiz"           data-i18n="nav.quiz">Quiz</button>
+    <button onclick="showPage('troubleshooting')" id="nav-troubleshooting" data-i18n="nav.troubleshooting">Troubleshooting</button>
   </div>
   <div class="nav-ctrl">
     <button id="langBtn"  onclick="toggleLang()">NO</button>
@@ -244,16 +245,38 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   </section>
 
   <section class="section">
+    <div class="container-sm">
+      <p class="section-label">// reference</p>
+      <h2>OSI &amp; TCP/IP <em>Models</em></h2>
+      <p class="section-sub">The foundation behind everything Cisco. Every troubleshooting method and protocol maps to one of these layers.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>OSI Layer</th><th>Name</th><th>TCP/IP Layer</th><th>Key Protocols / Devices</th></tr></thead>
+        <tbody>
+          <tr><td><code>7</code></td><td>Application</td><td rowspan="3" style="vertical-align:middle;color:var(--accent);">Application</td><td>HTTP, HTTPS, FTP, DNS, DHCP, SSH, Telnet, SNMP</td></tr>
+          <tr><td><code>6</code></td><td>Presentation</td><td>SSL/TLS, JPEG, encryption/encoding</td></tr>
+          <tr><td><code>5</code></td><td>Session</td><td>NetBIOS, RPC — establishes/manages sessions</td></tr>
+          <tr><td><code>4</code></td><td>Transport</td><td style="color:var(--orange);">Transport</td><td>TCP (reliable), UDP (fast) — ports, segments</td></tr>
+          <tr><td><code>3</code></td><td>Network</td><td style="color:var(--green);">Internet</td><td>IP, ICMP, OSPF, EIGRP — <strong>Routers</strong>, Layer 3 switches</td></tr>
+          <tr><td><code>2</code></td><td>Data Link</td><td rowspan="2" style="vertical-align:middle;color:var(--muted);">Network Access</td><td>Ethernet, 802.1Q, MAC addresses — <strong>Switches</strong>, Bridges</td></tr>
+          <tr><td><code>1</code></td><td>Physical</td><td>Cables, fibre, hubs, bits — voltage, timing</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">Tip: troubleshoot <strong>bottom-up</strong> — always confirm Layer 1 (cable/power) before blaming Layer 3 (routing).</p>
+    </div>
+  </section>
+
+  <section class="section">
     <div class="container">
       <p class="section-label">// modules</p>
       <h2>What do you want to <em>learn?</em></h2>
-      <p class="section-sub">Five modules covering the core skills for Cisco networking.</p>
+      <p class="section-sub">Six modules covering the core skills for Cisco networking.</p>
       <div class="card-grid">
-        <span class="card-nav" onclick="showPage('commands')"><div class="card"><div class="card-icon">01 — commands</div><h3>Command Library</h3><p>Searchable reference of Cisco IOS commands with descriptions and examples.</p></div></span>
-        <span class="card-nav" onclick="showPage('subnetting')"><div class="card"><div class="card-icon">02 — subnetting</div><h3>Subnetting Trainer</h3><p>Practice calculating network addresses, broadcasts and host ranges with instant feedback.</p></div></span>
+        <span class="card-nav" onclick="showPage('commands')"><div class="card"><div class="card-icon">01 — commands</div><h3>Command Library</h3><p>Searchable reference of Cisco IOS commands — including IPv6 and NAT.</p></div></span>
+        <span class="card-nav" onclick="showPage('subnetting')"><div class="card"><div class="card-icon">02 — subnetting</div><h3>Subnetting Trainer</h3><p>Practice calculating network addresses, broadcasts and host ranges. Includes VLSM reference.</p></div></span>
         <span class="card-nav" onclick="showPage('explainer')"><div class="card"><div class="card-icon">03 — explainer</div><h3>Config Explainer</h3><p>Paste any Cisco IOS configuration and get a plain-English breakdown of every line.</p></div></span>
-        <span class="card-nav" onclick="showPage('guides')"><div class="card"><div class="card-icon">04 — guides</div><h3>Packet Tracer Guides</h3><p>Step-by-step configuration guides for common Packet Tracer scenarios.</p></div></span>
-        <span class="card-nav" onclick="showPage('quiz')"><div class="card"><div class="card-icon">05 — quiz</div><h3>Quiz</h3><p>Test your knowledge with multiple-choice questions on subnetting, VLANs, routing and more.</p></div></span>
+        <span class="card-nav" onclick="showPage('guides')"><div class="card"><div class="card-icon">04 — guides</div><h3>Packet Tracer Guides</h3><p>Step-by-step guides: routing, VLANs, DHCP, NAT/PAT, ACLs, IPv6, SSH and more.</p></div></span>
+        <span class="card-nav" onclick="showPage('quiz')"><div class="card"><div class="card-icon">05 — quiz</div><h3>Quiz</h3><p>Multiple-choice questions on subnetting, VLANs, routing, NAT, security and more.</p></div></span>
+        <span class="card-nav" onclick="showPage('troubleshooting')"><div class="card"><div class="card-icon">06 — troubleshooting</div><h3>Troubleshooting</h3><p>Systematic OSI-based approach to diagnosing network faults with key show commands.</p></div></span>
       </div>
     </div>
   </section>
@@ -296,6 +319,8 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
         <option value="vlan">VLANs</option>
         <option value="routing">Routing</option>
         <option value="dhcp">DHCP</option>
+        <option value="nat">NAT / PAT</option>
+        <option value="ipv6">IPv6</option>
         <option value="security">Security / SSH</option>
         <option value="diagnostics">Diagnostics</option>
       </select>
@@ -349,6 +374,31 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
       <span><span data-i18n="sub.correct">Correct:</span> <span id="subCorrect" style="color:var(--green);">0</span></span>
       <span><span data-i18n="sub.attempts">Attempts:</span> <span id="subTotal" style="color:var(--text);">0</span></span>
     </div>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <p class="section-label">// vlsm</p>
+    <h2>VLSM — Variable Length <em>Subnet Masking</em></h2>
+    <p class="section-sub">Instead of splitting a block into equal subnets, VLSM lets you use different prefix lengths for different needs — saving address space.</p>
+    <div class="intro-box">
+      <strong>Example:</strong> You have <code>192.168.1.0/24</code> and need to allocate:<br><br>
+      <strong>Step 1 — sort by size, largest first:</strong> LAN-A (60 hosts), LAN-B (28 hosts), LAN-C (12 hosts), WAN link (2 hosts)<br><br>
+      <strong>Step 2 — assign smallest fitting prefix to each:</strong><br>
+      &nbsp; LAN-A: needs 62 usable → <code>/26</code> (64 total, 62 usable) → <code>192.168.1.0/26</code><br>
+      &nbsp; LAN-B: needs 30 usable → <code>/27</code> (32 total, 30 usable) → <code>192.168.1.64/27</code><br>
+      &nbsp; LAN-C: needs 14 usable → <code>/28</code> (16 total, 14 usable) → <code>192.168.1.96/28</code><br>
+      &nbsp; WAN:   needs 2 usable  → <code>/30</code> (4 total, 2 usable)  → <code>192.168.1.112/30</code><br><br>
+      <strong>Key rule:</strong> each new subnet starts right after the previous block ends. Never overlap.
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Subnet</th><th>Network</th><th>Range</th><th>Broadcast</th><th>Usable</th></tr></thead>
+      <tbody>
+        <tr><td><strong>LAN-A</strong> /26</td><td><code>192.168.1.0</code></td><td>.1 – .62</td><td><code>192.168.1.63</code></td><td>62</td></tr>
+        <tr><td><strong>LAN-B</strong> /27</td><td><code>192.168.1.64</code></td><td>.65 – .94</td><td><code>192.168.1.95</code></td><td>30</td></tr>
+        <tr><td><strong>LAN-C</strong> /28</td><td><code>192.168.1.96</code></td><td>.97 – .110</td><td><code>192.168.1.111</code></td><td>14</td></tr>
+        <tr><td><strong>WAN</strong>  /30</td><td><code>192.168.1.112</code></td><td>.113 – .114</td><td><code>192.168.1.115</code></td><td>2</td></tr>
+      </tbody>
+    </table></div>
   </div></section>
 
   <section class="section"><div class="container-sm">
@@ -414,6 +464,60 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 </div>
 
 <!-- ══════════════════════════════════════════
+     TROUBLESHOOTING
+═══════════════════════════════════════════ -->
+<div class="page" id="page-troubleshooting">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// 06 — troubleshooting</p>
+    <h1>Troubleshooting <em>Methodology</em></h1>
+    <p>Systematic OSI-based approach to diagnosing and fixing network faults in Cisco environments.</p>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <div class="intro-box">
+      <strong>Bottom-up approach:</strong> Always start at Layer 1 (Physical) and work your way up. A routing problem at Layer 3 is pointless to debug if the cable at Layer 1 is unplugged. Confirm each layer before moving to the next.
+    </div>
+
+    <div class="table-wrap" style="margin-bottom:2rem;">
+      <table>
+        <thead><tr><th>Layer</th><th>What to check</th><th>Key commands</th><th>Common fault</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-red">L1 Physical</span></td>
+            <td>Cable connected, port not disabled, correct media</td>
+            <td><code>show interfaces</code></td>
+            <td>Status: <em>down/down</em> — cable fault or shutdown</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-orange">L2 Data Link</span></td>
+            <td>Correct VLAN, trunk config, no duplex mismatch</td>
+            <td><code>show vlan brief</code><br><code>show interfaces trunk</code><br><code>show mac address-table</code></td>
+            <td>Status: <em>up/down</em> — encapsulation or VLAN mismatch</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">L3 Network</span></td>
+            <td>IP address, subnet mask, default gateway, routing table</td>
+            <td><code>show ip interface brief</code><br><code>show ip route</code><br><code>ping</code> / <code>traceroute</code></td>
+            <td>Wrong mask, missing route, wrong gateway</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">L4 Transport</span></td>
+            <td>Correct port open, ACL not blocking, NAT translations</td>
+            <td><code>show ip nat translations</code><br><code>show access-lists</code><br><code>telnet &lt;ip&gt; &lt;port&gt;</code></td>
+            <td>ACL denying traffic, NAT not translating</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="section-label">// step-by-step playbooks</p>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;margin-bottom:.4rem;">Common <em>Scenarios</em></h2>
+    <p class="section-sub">Click a scenario to expand the diagnostic steps.</p>
+    <div id="tsContainer"></div>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
      QUIZ
 ═══════════════════════════════════════════ -->
 <div class="page" id="page-quiz">
@@ -432,6 +536,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
         <button class="btn btn-ghost"   onclick="quizStart('routing')">Routing</button>
         <button class="btn btn-ghost"   onclick="quizStart('commands')">Commands</button>
         <button class="btn btn-ghost"   onclick="quizStart('security')">Security</button>
+        <button class="btn btn-ghost"   onclick="quizStart('nat')">NAT / ACL</button>
       </div>
     </div>
 
@@ -483,6 +588,7 @@ const TR={
   en:{
     'nav.home':'Home','nav.commands':'Commands','nav.subnetting':'Subnetting',
     'nav.explainer':'Config Explainer','nav.guides':'PT Guides','nav.quiz':'Quiz',
+    'nav.troubleshooting':'Troubleshooting',
     'sub.given':'Given IP address',
     'sub.network':'Network Address','sub.broadcast':'Broadcast Address',
     'sub.first':'First Usable Host','sub.last':'Last Usable Host',
@@ -499,6 +605,7 @@ const TR={
   no:{
     'nav.home':'Hjem','nav.commands':'Kommandoer','nav.subnetting':'Subnetting',
     'nav.explainer':'Config-forklarer','nav.guides':'PT-guider','nav.quiz':'Quiz',
+    'nav.troubleshooting':'Feilsøking',
     'sub.given':'Gitt IP-adresse',
     'sub.network':'Nettverksadresse','sub.broadcast':'Kringkastingsadresse',
     'sub.first':'Første brukbare host','sub.last':'Siste brukbare host',
@@ -605,6 +712,25 @@ const COMMANDS = [
   {cmd:'username &lt;name&gt; secret &lt;pass&gt;', desc:'Create a local user account with an encrypted password.',                    example:'(config)# username admin secret Str0ng',                 cat:'security'},
   {cmd:'access-list &lt;num&gt; permit|deny &lt;ip&gt; &lt;wc&gt;', desc:'Create a numbered standard ACL entry.',                    example:'(config)# access-list 10 permit 192.168.1.0 0.0.0.255',  cat:'security'},
   {cmd:'ip access-group &lt;num&gt; {in|out}',  desc:'Apply an ACL to an interface.',                                                   example:'(config-if)# ip access-group 10 in',                     cat:'security'},
+  // NAT / PAT
+  {cmd:'ip nat inside',                          desc:'Mark an interface as the inside (private) NAT boundary.',                         example:'(config-if)# ip nat inside',                             cat:'nat'},
+  {cmd:'ip nat outside',                         desc:'Mark an interface as the outside (public) NAT boundary.',                        example:'(config-if)# ip nat outside',                            cat:'nat'},
+  {cmd:'ip nat inside source static &lt;local&gt; &lt;global&gt;', desc:'Create a permanent 1:1 mapping between a private and public IP.', example:'(config)# ip nat inside source static 10.0.0.10 203.0.113.10', cat:'nat'},
+  {cmd:'ip nat inside source list &lt;acl&gt; interface &lt;int&gt; overload', desc:'PAT — map many private IPs to one public IP (port-based). "overload" enables PAT.', example:'(config)# ip nat inside source list 1 interface Gi0/0/1 overload', cat:'nat'},
+  {cmd:'ip nat inside source list &lt;acl&gt; pool &lt;name&gt;', desc:'Dynamic NAT — translate private IPs to a pool of public addresses.',   example:'(config)# ip nat inside source list 1 pool PUBLIC',      cat:'nat'},
+  {cmd:'ip nat pool &lt;name&gt; &lt;start&gt; &lt;end&gt; netmask &lt;mask&gt;', desc:'Define a pool of public IP addresses for dynamic NAT.',   example:'(config)# ip nat pool PUBLIC 203.0.113.1 203.0.113.10 netmask 255.255.255.0', cat:'nat'},
+  {cmd:'show ip nat translations',               desc:'Display current active NAT/PAT mappings.',                                       example:'# show ip nat translations',                             cat:'nat'},
+  {cmd:'show ip nat statistics',                 desc:'Show NAT hit counts, miss counts, and active translations.',                     example:'# show ip nat statistics',                               cat:'nat'},
+  {cmd:'clear ip nat translation *',             desc:'Clear all dynamic NAT entries from the translation table.',                      example:'# clear ip nat translation *',                           cat:'nat'},
+  // IPv6
+  {cmd:'ipv6 unicast-routing',                   desc:'Enable IPv6 routing on the device. Required before assigning IPv6 addresses.',   example:'(config)# ipv6 unicast-routing',                         cat:'ipv6'},
+  {cmd:'ipv6 address &lt;addr&gt;/&lt;prefix&gt;',desc:'Assign a static IPv6 address to an interface.',                                example:'(config-if)# ipv6 address 2001:db8:1::1/64',             cat:'ipv6'},
+  {cmd:'ipv6 address &lt;addr&gt; link-local',   desc:'Manually set the link-local address (starts with FE80::).',                     example:'(config-if)# ipv6 address fe80::1 link-local',           cat:'ipv6'},
+  {cmd:'ipv6 address autoconfig',                desc:'Auto-assign an IPv6 address via SLAAC (Stateless Address Autoconfiguration).',   example:'(config-if)# ipv6 address autoconfig',                   cat:'ipv6'},
+  {cmd:'ipv6 route &lt;prefix&gt; &lt;next-hop&gt;', desc:'Add a static IPv6 route.',                                                  example:'(config)# ipv6 route ::/0 2001:db8::1',                  cat:'ipv6'},
+  {cmd:'show ipv6 interface brief',              desc:'Summary of all interfaces with their IPv6 addresses and status.',                example:'# show ipv6 interface brief',                            cat:'ipv6'},
+  {cmd:'show ipv6 route',                        desc:'Display the IPv6 routing table.',                                                example:'# show ipv6 route',                                      cat:'ipv6'},
+  {cmd:'ping ipv6 &lt;address&gt;',              desc:'Test IPv6 reachability to an address.',                                         example:'# ping ipv6 2001:db8:1::1',                              cat:'ipv6'},
 ];
 
 function renderCmds(data) {
@@ -827,6 +953,26 @@ const EXP_RULES=[
   {re:/^write memory/i,               fn:()=>`Shorthand for <code>copy running-config startup-config</code>.`},
   {re:/^end/i,                        fn:()=>`Exits configuration mode and returns to privileged EXEC mode.`},
   {re:/^exit/i,                       fn:()=>`Exits the current configuration context.`},
+  // NAT
+  {re:/^ip nat inside source static\s+([\d.]+)\s+([\d.]+)/i, sec:'NAT / PAT',
+    fn:m=>`Static NAT: maps private IP <code>${m[1]}</code> permanently to public IP <code>${m[2]}</code>. One-to-one mapping — traffic from either direction is translated.`},
+  {re:/^ip nat inside source list\s+(\S+)\s+interface\s+(\S+)\s+overload/i,
+    fn:m=>`PAT (Port Address Translation): translates all hosts matching ACL <strong>${m[1]}</strong> to the IP of interface <code>${m[2]}</code>, using port numbers to distinguish sessions. "overload" is what enables PAT.`},
+  {re:/^ip nat inside source list\s+(\S+)\s+pool\s+(\S+)/i,
+    fn:m=>`Dynamic NAT: translates hosts matching ACL <strong>${m[1]}</strong> to addresses from pool <strong>${m[2]}</strong>.`},
+  {re:/^ip nat pool\s+(\S+)\s+([\d.]+)\s+([\d.]+)/i,
+    fn:m=>`Defines NAT pool <strong>${m[1]}</strong> with public addresses from <code>${m[2]}</code> to <code>${m[3]}</code>.`},
+  {re:/^\s*ip nat inside/i,           fn:()=>`Marks this interface as the <strong>inside</strong> NAT boundary — private/LAN side. Required on the LAN-facing interface.`},
+  {re:/^\s*ip nat outside/i,          fn:()=>`Marks this interface as the <strong>outside</strong> NAT boundary — public/WAN side. Required on the internet-facing interface.`},
+  // IPv6
+  {re:/^ipv6 unicast-routing/i,       sec:'IPv6',
+    fn:()=>`Enables IPv6 routing globally. <strong>Required</strong> before the router will forward IPv6 packets between interfaces.`},
+  {re:/^\s+ipv6 address\s+([\S]+)\s+link-local/i,
+    fn:m=>`Assigns link-local address <code>${m[1]}</code> to this interface. Link-local addresses are used for routing protocol communication and are not routed beyond the local segment.`},
+  {re:/^\s+ipv6 address\s+([\S]+)/i,
+    fn:m=>`Assigns global unicast IPv6 address <code>${m[1]}</code> to this interface. The prefix length defines the network portion.`},
+  {re:/^ipv6 route\s+(\S+)\s+(\S+)/i,
+    fn:m=>m[1]==='::/0'?`Adds an IPv6 <strong>default route</strong> — all unmatched IPv6 traffic is forwarded to <code>${m[2]}</code>.`:`Adds a static IPv6 route to <code>${m[1]}</code> via <code>${m[2]}</code>.`},
   {re:/^!/,                           fn:()=>null},
 ];
 
@@ -908,6 +1054,27 @@ const GUIDES=[
     {n:'04',h:'Restrict VTY lines to SSH only',code:'Router-A(config)# line vty 0 15\nRouter-A(config-line)# transport input ssh\nRouter-A(config-line)# login local\nRouter-A(config-line)# exec-timeout 5 0\nRouter-A(config-line)# exit'},
     {n:'05',h:'Verify',code:'Router-A# show ip ssh\nRouter-A# show users'},
   ]},
+  {badge:'badge-blue',level:'Intermediate',title:'NAT/PAT — Internet Access for a LAN',desc:'Allow all devices on a private LAN to share one public IP using PAT (Port Address Translation).',steps:[
+    {n:'01',h:'Create a standard ACL identifying inside hosts',p:'This ACL defines which private IPs are allowed to be translated.',code:'Router(config)# access-list 1 permit 192.168.1.0 0.0.0.255'},
+    {n:'02',h:'Mark interfaces as inside and outside',p:'The LAN interface is "inside", the WAN interface facing the internet is "outside".',code:'Router(config)# interface GigabitEthernet0/0/0\nRouter(config-if)# ip nat inside\nRouter(config-if)# exit\nRouter(config)# interface GigabitEthernet0/0/1\nRouter(config-if)# ip nat outside\nRouter(config-if)# exit'},
+    {n:'03',h:'Enable PAT (overload) on the outside interface',p:'"overload" is what makes this PAT — many private IPs share one public IP using port numbers.',code:'Router(config)# ip nat inside source list 1 interface GigabitEthernet0/0/1 overload'},
+    {n:'04',h:'Add a default route to the ISP',code:'Router(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.1'},
+    {n:'05',h:'Verify',p:'You should see active translations when traffic flows from inside to outside.',code:'Router# show ip nat translations\nRouter# show ip nat statistics'},
+  ]},
+  {badge:'badge-blue',level:'Intermediate',title:'Extended ACLs — Filter by Source, Destination and Port',desc:'Block specific traffic types while permitting everything else. Extended ACLs give you control over protocol, source, destination and port.',steps:[
+    {n:'01',h:'Understand standard vs extended ACLs',p:'Standard ACLs (1–99) filter on source IP only. Extended ACLs (100–199 or named) filter on source, destination, protocol and port — place them close to the source.'},
+    {n:'02',h:'Create a named extended ACL to block Telnet',code:'Router(config)# ip access-list extended BLOCK-TELNET\nRouter(config-ext-nacl)# deny tcp any any eq 23\nRouter(config-ext-nacl)# permit ip any any\nRouter(config-ext-nacl)# exit'},
+    {n:'03',h:'Apply it to the interface (inbound)',p:'Inbound on the interface where untrusted traffic enters.',code:'Router(config)# interface GigabitEthernet0/0/0\nRouter(config-if)# ip access-group BLOCK-TELNET in\nRouter(config-if)# exit'},
+    {n:'04',h:'Block HTTP from one subnet to a server',code:'Router(config)# ip access-list extended BLOCK-HTTP\nRouter(config-ext-nacl)# deny tcp 192.168.2.0 0.0.0.255 host 10.0.0.100 eq 80\nRouter(config-ext-nacl)# permit ip any any\nRouter(config-ext-nacl)# exit'},
+    {n:'05',h:'Verify',p:'Match count shows how many packets have hit each rule.',code:'Router# show access-lists\nRouter# show ip interface GigabitEthernet0/0/0'},
+  ]},
+  {badge:'badge-orange',level:'Advanced',title:'IPv6 Static Addressing and Routing',desc:'Configure IPv6 addresses on router interfaces and add static routes between sites.',steps:[
+    {n:'01',h:'Enable IPv6 routing globally',p:'IPv6 routing is disabled by default — this must be enabled before any IPv6 forwarding works.',code:'Router(config)# ipv6 unicast-routing'},
+    {n:'02',h:'Assign IPv6 addresses to interfaces',p:'IPv6 uses /64 prefix for LAN segments by convention. FE80:: is the link-local address used for routing protocols.',code:'Router(config)# interface GigabitEthernet0/0/0\nRouter(config-if)# ipv6 address 2001:db8:1::1/64\nRouter(config-if)# no shutdown\nRouter(config-if)# exit\nRouter(config)# interface GigabitEthernet0/0/1\nRouter(config-if)# ipv6 address 2001:db8:2::1/64\nRouter(config-if)# no shutdown'},
+    {n:'03',h:'Add a static IPv6 default route',code:'Router(config)# ipv6 route ::/0 2001:db8:ff::1'},
+    {n:'04',h:'Configure a PC with a static IPv6 address',p:'In Packet Tracer: PC → Desktop → IP Configuration. Set IPv6 address, prefix /64, and default gateway.',},
+    {n:'05',h:'Verify',code:'Router# show ipv6 interface brief\nRouter# show ipv6 route\nRouter# ping ipv6 2001:db8:2::10'},
+  ]},
 ];
 
 function renderGuides(){
@@ -943,6 +1110,66 @@ function toggleGuide(id){
 
 renderGuides();
 
+// ── TROUBLESHOOTING ───────────────────────────────────────────────────────────
+const TS_SCENARIOS=[
+  {title:'PC cannot ping its default gateway',steps:[
+    {n:'01',h:'Check Layer 1 — is the cable connected?',p:'In Packet Tracer, a red link means the cable is disconnected or the interface is shutdown.',code:'Switch# show interfaces Fa0/1\n-- Look for: "is up, line protocol is up"'},
+    {n:'02',h:'Check the PC IP address and mask',p:'Verify the PC has an IP in the correct subnet. A wrong subnet mask is the most common mistake.'},
+    {n:'03',h:'Check the gateway interface on the router',code:'Router# show ip interface brief\n-- Interface must be "up / up"\nRouter# show running-config interface Gi0/0/0\n-- Verify correct IP and mask'},
+    {n:'04',h:'Check if the interface is shutdown',code:'Router(config)# interface GigabitEthernet0/0/0\nRouter(config-if)# no shutdown'},
+    {n:'05',h:'Ping from the router toward the PC',p:'If the router cannot ping the PC, the problem is on the LAN side (cable, switch port, VLAN).',code:'Router# ping 192.168.1.10'},
+  ]},
+  {title:'Two routers cannot reach each other (WAN/serial link)',steps:[
+    {n:'01',h:'Verify both ends have IPs in the same /30 subnet',code:'RouterA# show ip interface brief\nRouterB# show ip interface brief\n-- Both Serial interfaces must be "up / up"'},
+    {n:'02',h:'Check DCE/DTE — set clock rate on DCE side',p:'In Packet Tracer, one end of a serial link is DCE (needs clock rate). Check with show controllers.',code:'Router# show controllers Serial0/1/0\n-- If "DCE cable", set:\nRouter(config-if)# clock rate 64000'},
+    {n:'03',h:'Check encapsulation matches on both ends',p:'Default is HDLC. Both ends must use the same encapsulation.',code:'Router# show interfaces Serial0/1/0\n-- Look for "Encapsulation HDLC"'},
+    {n:'04',h:'Ping across the link',code:'RouterA# ping 10.0.0.2'},
+  ]},
+  {title:'Inter-VLAN routing not working',steps:[
+    {n:'01',h:'Confirm VLANs exist on the switch',code:'Switch# show vlan brief\n-- Both VLANs must appear as "active"'},
+    {n:'02',h:'Check the trunk port to the router',code:'Switch# show interfaces trunk\n-- Uplink port must appear with both VLANs allowed'},
+    {n:'03',h:'Verify router sub-interfaces and encapsulation',code:'Router# show ip interface brief\n-- Gi0/0/0.10 and Gi0/0/0.20 must be "up / up"\nRouter# show running-config\n-- Each sub-if needs: encapsulation dot1q <id> + ip address'},
+    {n:'04',h:'Check PC default gateways',p:'VLAN 10 PCs must use the .10 sub-interface IP as gateway. Wrong gateway = no inter-VLAN routing.'},
+    {n:'05',h:'Ping between VLANs',code:'PC> ping 192.168.20.1'},
+  ]},
+  {title:'DHCP clients not getting an IP address',steps:[
+    {n:'01',h:'Check DHCP pool configuration',code:'Router# show running-config | section dhcp\n-- Verify: network, default-router, excluded-address range'},
+    {n:'02',h:'Verify the excluded range does not cover the whole pool',p:'Common mistake: excluding .1–.254 leaves nothing for clients.'},
+    {n:'03',h:'Check active DHCP leases',code:'Router# show ip dhcp binding\nRouter# show ip dhcp pool'},
+    {n:'04',h:'If client is on a different subnet — add ip helper-address',p:'DHCP uses broadcasts which routers block by default.',code:'Router(config-if)# ip helper-address 10.0.0.1'},
+    {n:'05',h:'Release and renew on the PC',p:'In Packet Tracer: PC → Desktop → IP Configuration → click DHCP.'},
+  ]},
+  {title:'NAT not translating — internet unreachable',steps:[
+    {n:'01',h:'Verify inside/outside is set on correct interfaces',code:'Router# show running-config | include nat\n-- Must see "ip nat inside" on LAN int, "ip nat outside" on WAN int'},
+    {n:'02',h:'Check the ACL referenced in the NAT statement',code:'Router# show access-lists\n-- ACL must permit the private subnet (e.g. 192.168.1.0 0.0.0.255)'},
+    {n:'03',h:'Confirm a default route to the ISP exists',code:'Router# show ip route\n-- Must see "S* 0.0.0.0/0" (gateway of last resort)'},
+    {n:'04',h:'Trigger traffic and check active translations',code:'Router# show ip nat translations\nRouter# show ip nat statistics'},
+    {n:'05',h:'Clear translations and retry',code:'Router# clear ip nat translation *'},
+  ]},
+];
+
+function renderTS(){
+  document.getElementById('tsContainer').innerHTML=TS_SCENARIOS.map((s,i)=>`
+    <div class="accordion-item" id="ts${i}">
+      <button class="accordion-trigger" aria-expanded="false" onclick="toggleGuide('ts${i}')">
+        <span>${s.title}</span>
+        <span class="accordion-icon">+</span>
+      </button>
+      <div class="accordion-body">
+        ${s.steps.map(st=>`
+          <div class="step">
+            <div class="step-num">${st.n}</div>
+            <div class="step-body">
+              <h4>${st.h}</h4>
+              ${st.p?`<p>${st.p}</p>`:''}
+              ${st.code?`<pre>${st.code}</pre>`:''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+renderTS();
+
 // ── QUIZ ─────────────────────────────────────────────────────────────────────
 const QUIZ_QS=[
   {cat:'subnetting',q:'What is the network address of 192.168.1.130/26?',opts:['192.168.1.0','192.168.1.128','192.168.1.64','192.168.1.192'],ans:1,explain:'A /26 creates blocks of 64. 130 falls in the block starting at 128.'},
@@ -970,6 +1197,11 @@ const QUIZ_QS=[
   {cat:'security',q:'What does "transport input ssh" on VTY lines do?',opts:['Enables SSH and Telnet','Disables SSH','Allows only SSH — blocks Telnet','Requires a certificate'],ans:2,explain:'Telnet sends credentials in plaintext. SSH only on VTY is basic hardening.'},
   {cat:'security',q:'Difference between "enable password" and "enable secret"?',opts:['They are identical','enable secret uses MD5; enable password is plaintext by default','enable password is more secure','enable secret only works on switches'],ans:1,explain:'Always use "enable secret" — MD5-hashed. "enable password" is plaintext unless service password-encryption is set.'},
   {cat:'security',q:'Which ACL type filters only on source IP?',opts:['Extended ACL','Named ACL','Standard ACL','Reflexive ACL'],ans:2,explain:'Standard ACLs (1–99) match source IP only. Extended ACLs also match destination, protocol and port.'},
+  {cat:'nat',q:'What does the "overload" keyword enable in a NAT statement?',opts:['Dynamic NAT with a pool','Static one-to-one NAT','PAT — many IPs share one public IP using port numbers','NAT on the outside interface'],ans:2,explain:'"overload" enables Port Address Translation (PAT). Multiple inside hosts share one public IP, differentiated by source port numbers.'},
+  {cat:'nat',q:'Which interface should have "ip nat inside"?',opts:['The WAN interface facing the ISP','The LAN interface connected to private hosts','The loopback interface','Any interface — it doesn\'t matter'],ans:1,explain:'"ip nat inside" marks the private/LAN-facing interface. "ip nat outside" marks the public/WAN-facing interface. Both must be set.'},
+  {cat:'nat',q:'What command shows active NAT/PAT mappings?',opts:['show ip nat statistics','show ip nat translations','show running-config','show ip route'],ans:1,explain:'"show ip nat translations" displays the current table of inside local ↔ inside global ↔ outside address mappings.'},
+  {cat:'nat',q:'What type of NAT creates a permanent 1:1 mapping?',opts:['Dynamic NAT','PAT','Static NAT','Overloaded NAT'],ans:2,explain:'Static NAT permanently maps one private IP to one public IP. Used for servers that must always be reachable at a fixed public address.'},
+  {cat:'nat',q:'Where should an extended ACL be placed for best practice?',opts:['Close to the destination','Close to the source','On the WAN interface only','On the router with the default route'],ans:1,explain:'Extended ACLs should be placed close to the source so unwanted traffic is dropped early and does not traverse the network unnecessarily.'},
 ];
 
 let quizQs=[],quizIdx=0,quizScore=0,quizAnswered=false,quizLastCat='all',quizReviewData=[];

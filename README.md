@@ -1,42 +1,37 @@
 # CiscoLearn
 
-A browser-based learning platform for Cisco IOS and Packet Tracer. No installation required — open any HTML file directly in a browser.
+A browser-based learning platform for Cisco IOS and Packet Tracer.
+
+**Live:** [cgarmann.github.io/ciscolearn](https://cgarmann.github.io/ciscolearn/)
+
+No installation, no server, no dependencies — one HTML file that runs anywhere.
 
 ## Modules
 
-| # | Page | Description |
-|---|------|-------------|
-| 01 | `commands.html` | Searchable Cisco IOS command library with descriptions and examples |
-| 02 | `subnetting.html` | Interactive subnetting trainer with randomized questions and instant feedback |
-| 03 | `explainer.html` | Paste any Cisco config and get a plain-English explanation line by line |
-| 04 | `guides.html` | Step-by-step Packet Tracer configuration guides (beginner → advanced) |
-| 05 | `quiz.html` | Multiple-choice quiz with topic filters, scoring, and answer review |
+| # | Module | Description |
+|---|--------|-------------|
+| 01 | **Command Library** | Searchable Cisco IOS commands — global config, interfaces, VLANs, routing, DHCP, NAT/PAT, IPv6, security, diagnostics |
+| 02 | **Subnetting Trainer** | Randomized subnetting exercises with instant feedback, binary breakdown, range visualizer, and VLSM reference |
+| 03 | **Config Explainer** | Paste any Cisco IOS config and get a plain-English explanation of every line |
+| 04 | **Packet Tracer Guides** | Step-by-step guides: router setup, VLANs, DHCP, static routes, OSPF, NAT/PAT, extended ACLs, IPv6, SSH hardening |
+| 05 | **Quiz** | Multiple-choice questions on subnetting, VLANs, routing, NAT/ACL, security — topic filters, scoring, answer review |
+| 06 | **Troubleshooting** | OSI-based methodology with diagnostic playbooks for common Packet Tracer faults |
+
+## Features
+
+- Light / dark theme toggle (persisted)
+- Norwegian / English language toggle
+- Single self-contained file — works on GitHub Pages or any static host
 
 ## Getting Started
 
-1. Clone or download the repository
-2. Open `index.html` in any modern browser (Chrome, Edge, Firefox)
-3. No server, no dependencies, no build step required
-
-## File Structure
-
-```
-CiscoLearn/
-├── index.html           # Landing page
-├── commands.html        # Command library
-├── subnetting.html      # Subnetting trainer
-├── explainer.html       # Config explainer
-├── guides.html          # PT guides
-├── quiz.html            # Quiz
-├── style.css            # Shared dark theme
-├── nav.js               # Shared navigation bar
-└── README.md
-```
+1. Open [cgarmann.github.io/ciscolearn](https://cgarmann.github.io/ciscolearn/) in any browser, or
+2. Clone the repo and open `index.html` directly — no build step needed
 
 ## Design
 
-Dark editorial theme — Cormorant Garamond for headings, DM Sans for body text, JetBrains Mono for code and labels.
+Dark editorial theme — Cormorant Garamond for headings, DM Sans for body, JetBrains Mono for code.
 
 ## Related
 
-- [cisco-config-generator](https://github.com/cgarmann/cisco-config-generator) — Generate full Cisco Packet Tracer configurations visually
+- [cisco-config-generator](https://github.com/cgarmann/cisco-config-generator) — Generate full Cisco Packet Tracer configurations visually ([live](https://cgarmann.github.io/cisco-config-generator/))
