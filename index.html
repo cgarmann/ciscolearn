@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -151,12 +151,51 @@ tr:hover td { background:var(--s2); }
 /* FOOTER */
 footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem; }
 
+/* LIGHT THEME */
+[data-theme=light] {
+  --bg:#f5f3ef; --s1:#fff; --s2:#ede9e3; --s3:#e2ddd6;
+  --border:#d4cfc8; --border2:#b8b3ab;
+  --text:#1a1a1a; --muted:#666; --muted2:#999;
+}
+[data-theme=light] nav { background:rgba(245,243,239,.92); }
+[data-theme=light] pre { background:var(--s2); }
+[data-theme=light] select option { background:var(--s1); }
+* { transition:background-color .2s,border-color .2s,color .15s; }
+
+/* THEME + LANG BUTTONS */
+.nav-ctrl { display:flex; align-items:center; gap:.4rem; margin-left:.5rem; flex-shrink:0; }
+.nav-ctrl button { background:none; border:1px solid var(--border); color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.06em; padding:4px 9px; border-radius:4px; cursor:pointer; transition:color .15s,border-color .15s; white-space:nowrap; }
+.nav-ctrl button:hover { color:var(--text); border-color:var(--border2); }
+
+/* SUBNET VISUALIZER */
+.sub-visual { margin-top:1.25rem; display:flex; flex-direction:column; gap:1rem; }
+.sub-binary { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:1rem 1.2rem; }
+.sub-bin-row { display:flex; align-items:center; gap:.9rem; margin-bottom:.45rem; font-size:.8rem; }
+.sub-bin-label { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; min-width:36px; }
+.sub-bin-val { font-family:'JetBrains Mono',monospace; font-size:.78rem; background:none; border:none; padding:0; color:var(--text); word-break:break-all; line-height:1.7; }
+.bit-net { color:var(--accent); }
+.bit-host { color:var(--orange); }
+.bit-dot { color:var(--muted2); }
+.sub-bin-legend { font-size:.72rem; color:var(--muted); margin-top:.3rem; }
+
+.sub-range-bar { display:flex; border-radius:var(--r); overflow:hidden; font-size:.75rem; font-family:'JetBrains Mono',monospace; min-height:52px; border:1px solid var(--border); }
+.sub-range-reserved { flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:.3rem .6rem; text-align:center; line-height:1.3; }
+.sub-range-net { background:rgba(248,113,113,.12); border-right:1px solid rgba(248,113,113,.3); color:var(--red); min-width:80px; }
+.sub-range-bc  { background:rgba(248,113,113,.12); border-left:1px solid rgba(248,113,113,.3);  color:var(--red); min-width:80px; }
+.sub-range-usable { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(74,222,128,.06); color:var(--green); padding:.3rem .6rem; text-align:center; line-height:1.3; }
+.sub-range-reserved small, .sub-range-usable small { font-size:.65rem; opacity:.75; }
+.sub-range-why { display:flex; flex-direction:column; gap:.4rem; font-size:.82rem; color:var(--muted); line-height:1.6; }
+.sub-range-why strong { color:var(--text); font-family:'JetBrains Mono',monospace; font-size:.78rem; }
+
 @media(max-width:700px){
   .container,.container-sm { padding:0 1rem; }
   nav { padding:0 1rem; }
   .nav-logo { margin-right:.75rem; font-size:1.1rem; }
   .explain-line { grid-template-columns:1fr; }
   .hero { padding:3rem 0 2rem; }
+  .sub-bin-val { font-size:.66rem; }
+  .sub-range-bar { flex-wrap:wrap; }
+  .sub-range-net,.sub-range-bc { min-width:60px; }
 }
 </style>
 </head>
@@ -166,12 +205,16 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 <nav>
   <span class="nav-logo" onclick="showPage('home')">Cisco<span>Learn</span></span>
   <div class="nav-links">
-    <button onclick="showPage('home')"     class="active" id="nav-home">Home</button>
-    <button onclick="showPage('commands')" id="nav-commands">Commands</button>
-    <button onclick="showPage('subnetting')" id="nav-subnetting">Subnetting</button>
-    <button onclick="showPage('explainer')" id="nav-explainer">Config Explainer</button>
-    <button onclick="showPage('guides')"   id="nav-guides">PT Guides</button>
-    <button onclick="showPage('quiz')"     id="nav-quiz">Quiz</button>
+    <button onclick="showPage('home')"       class="active" id="nav-home"       data-i18n="nav.home">Home</button>
+    <button onclick="showPage('commands')"   id="nav-commands"   data-i18n="nav.commands">Commands</button>
+    <button onclick="showPage('subnetting')" id="nav-subnetting" data-i18n="nav.subnetting">Subnetting</button>
+    <button onclick="showPage('explainer')"  id="nav-explainer"  data-i18n="nav.explainer">Config Explainer</button>
+    <button onclick="showPage('guides')"     id="nav-guides"     data-i18n="nav.guides">PT Guides</button>
+    <button onclick="showPage('quiz')"       id="nav-quiz"       data-i18n="nav.quiz">Quiz</button>
+  </div>
+  <div class="nav-ctrl">
+    <button id="langBtn"  onclick="toggleLang()">NO</button>
+    <button id="themeBtn" onclick="toggleTheme()">☀ Light</button>
   </div>
 </nav>
 
@@ -212,6 +255,15 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
         <span class="card-nav" onclick="showPage('guides')"><div class="card"><div class="card-icon">04 — guides</div><h3>Packet Tracer Guides</h3><p>Step-by-step configuration guides for common Packet Tracer scenarios.</p></div></span>
         <span class="card-nav" onclick="showPage('quiz')"><div class="card"><div class="card-icon">05 — quiz</div><h3>Quiz</h3><p>Test your knowledge with multiple-choice questions on subnetting, VLANs, routing and more.</p></div></span>
       </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container-sm">
+      <p class="section-label">// related tool</p>
+      <h2>Config <em>Generator</em></h2>
+      <p class="section-sub">Build complete Cisco configurations visually — routers, switches, VLANs, DHCP, OSPF. Paste the output straight into Packet Tracer.</p>
+      <a href="https://cgarmann.github.io/cisco-config-generator/" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none;">Open Config Generator ↗</a>
     </div>
   </section>
 
@@ -268,34 +320,34 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 
   <section class="section"><div class="container-sm">
     <div class="intro-box">
-      <strong>How subnetting works:</strong> An IP address has two parts — the <em>network</em> portion (set by the prefix length) and the <em>host</em> portion. The network address has all host bits = 0. The broadcast has all host bits = 1. Usable hosts = 2ⁿ − 2, where n = number of host bits.
+      <strong>How subnetting works:</strong> An IP address has two parts — the <em>network</em> portion (set by the prefix length) and the <em>host</em> portion. The network address (all host bits = 0) identifies the subnet itself and <strong>cannot be assigned to a device</strong>. The broadcast address (all host bits = 1) is used to reach all devices in the subnet simultaneously and <strong>cannot be assigned either</strong>. That is why usable hosts = 2ⁿ − <strong>2</strong>, where n = number of host bits.
     </div>
 
     <div class="card" style="margin-bottom:1.25rem;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
         <div>
-          <p class="section-label" style="margin-bottom:.2rem;">Given IP address</p>
+          <p class="section-label" style="margin-bottom:.2rem;" data-i18n="sub.given">Given IP address</p>
           <p style="font-family:'JetBrains Mono',monospace;font-size:1.55rem;color:var(--accent);" id="subIpDisplay">—</p>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="subNewQ()">New question →</button>
+        <button class="btn btn-ghost btn-sm" onclick="subNewQ()" data-i18n="sub.new">New question →</button>
       </div>
       <div class="answer-grid">
-        <div class="answer-cell"><label>Network Address</label><input type="text" id="sub-network" placeholder="x.x.x.x" autocomplete="off" /></div>
-        <div class="answer-cell"><label>Broadcast Address</label><input type="text" id="sub-broadcast" placeholder="x.x.x.x" autocomplete="off" /></div>
-        <div class="answer-cell"><label>First Usable Host</label><input type="text" id="sub-first" placeholder="x.x.x.x" autocomplete="off" /></div>
-        <div class="answer-cell"><label>Last Usable Host</label><input type="text" id="sub-last" placeholder="x.x.x.x" autocomplete="off" /></div>
-        <div class="answer-cell"><label>Usable Hosts</label><input type="number" id="sub-hosts" placeholder="number" autocomplete="off" /></div>
-        <div class="answer-cell"><label>Subnet Mask</label><input type="text" id="sub-mask" placeholder="255.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label data-i18n="sub.network">Network Address</label><input type="text" id="sub-network" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label data-i18n="sub.broadcast">Broadcast Address</label><input type="text" id="sub-broadcast" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label data-i18n="sub.first">First Usable Host</label><input type="text" id="sub-first" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label data-i18n="sub.last">Last Usable Host</label><input type="text" id="sub-last" placeholder="x.x.x.x" autocomplete="off" /></div>
+        <div class="answer-cell"><label data-i18n="sub.hosts">Usable Hosts</label><input type="number" id="sub-hosts" placeholder="number" autocomplete="off" /></div>
+        <div class="answer-cell"><label data-i18n="sub.mask">Subnet Mask</label><input type="text" id="sub-mask" placeholder="255.x.x.x" autocomplete="off" /></div>
       </div>
       <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.4rem;">
-        <button class="btn btn-primary" onclick="subCheck()">Check Answers</button>
-        <button class="btn btn-ghost" onclick="subShow()">Show Answers</button>
+        <button class="btn btn-primary" onclick="subCheck()" data-i18n="sub.check">Check Answers</button>
+        <button class="btn btn-ghost"   onclick="subShow()"  data-i18n="sub.show">Show Answers</button>
       </div>
       <div id="subFeedback" style="margin-top:1rem;"></div>
     </div>
     <div style="display:flex;gap:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);">
-      <span>Correct: <span id="subCorrect" style="color:var(--green);">0</span></span>
-      <span>Attempts: <span id="subTotal" style="color:var(--text);">0</span></span>
+      <span><span data-i18n="sub.correct">Correct:</span> <span id="subCorrect" style="color:var(--green);">0</span></span>
+      <span><span data-i18n="sub.attempts">Attempts:</span> <span id="subTotal" style="color:var(--text);">0</span></span>
     </div>
   </div></section>
 
@@ -411,6 +463,73 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 </div>
 
 <script>
+// ── THEME ─────────────────────────────────────────────────────────────────────
+function initTheme(){
+  const saved=localStorage.getItem('cl-theme')||'dark';
+  document.documentElement.setAttribute('data-theme',saved);
+  document.getElementById('themeBtn').textContent=saved==='dark'?'☀ Light':'◑ Dark';
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('cl-theme',next);
+  document.getElementById('themeBtn').textContent=next==='dark'?'☀ Light':'◑ Dark';
+}
+
+// ── LANGUAGE ──────────────────────────────────────────────────────────────────
+let LANG=localStorage.getItem('cl-lang')||'en';
+const TR={
+  en:{
+    'nav.home':'Home','nav.commands':'Commands','nav.subnetting':'Subnetting',
+    'nav.explainer':'Config Explainer','nav.guides':'PT Guides','nav.quiz':'Quiz',
+    'sub.given':'Given IP address',
+    'sub.network':'Network Address','sub.broadcast':'Broadcast Address',
+    'sub.first':'First Usable Host','sub.last':'Last Usable Host',
+    'sub.hosts':'Usable Hosts','sub.mask':'Subnet Mask',
+    'sub.check':'Check Answers','sub.show':'Show Answers','sub.new':'New question →',
+    'sub.correct':'Correct:','sub.attempts':'Attempts:',
+    'sub.ok':'All correct! Well done.',
+    'sub.wrong':'Some answers are wrong — red fields need fixing.',
+    'sub.revealed':'Answers revealed. Click "New question" to continue.',
+    'sub.why_network':'Network address — all host bits = 0. Identifies the subnet. Cannot be assigned to a device.',
+    'sub.why_broadcast':'Broadcast address — all host bits = 1. Sends to all devices in the subnet. Cannot be assigned.',
+    'sub.usable_range':'usable hosts',
+  },
+  no:{
+    'nav.home':'Hjem','nav.commands':'Kommandoer','nav.subnetting':'Subnetting',
+    'nav.explainer':'Config-forklarer','nav.guides':'PT-guider','nav.quiz':'Quiz',
+    'sub.given':'Gitt IP-adresse',
+    'sub.network':'Nettverksadresse','sub.broadcast':'Kringkastingsadresse',
+    'sub.first':'Første brukbare host','sub.last':'Siste brukbare host',
+    'sub.hosts':'Brukbare hosts','sub.mask':'Nettverksmaske',
+    'sub.check':'Sjekk svar','sub.show':'Vis svar','sub.new':'Nytt spørsmål →',
+    'sub.correct':'Riktig:','sub.attempts':'Forsøk:',
+    'sub.ok':'Alt riktig! Bra jobbet.',
+    'sub.wrong':'Noen svar er feil — røde felt må rettes.',
+    'sub.revealed':'Svar vist. Klikk "Nytt spørsmål" for å fortsette.',
+    'sub.why_network':'Nettverksadresse — alle host-biter = 0. Identifiserer subnettet. Kan ikke tildeles en enhet.',
+    'sub.why_broadcast':'Kringkastingsadresse — alle host-biter = 1. Sender til alle enheter i subnettet. Kan ikke tildeles.',
+    'sub.usable_range':'brukbare hosts',
+  }
+};
+function T(k){return(TR[LANG]||TR.en)[k]||k;}
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent=T(el.dataset.i18n);
+  });
+  document.getElementById('langBtn').textContent=LANG==='en'?'NO':'EN';
+}
+function toggleLang(){
+  LANG=LANG==='en'?'no':'en';
+  localStorage.setItem('cl-lang',LANG);
+  applyLang();
+}
+function initLang(){
+  LANG=localStorage.getItem('cl-lang')||'en';
+  applyLang();
+}
+
 // ── PAGE NAVIGATION ──────────────────────────────────────────────────────────
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -539,15 +658,80 @@ function subCheck(){
   });
   subTotal++;
   if(ok)subCorrect++;
-  document.getElementById('subFeedback').innerHTML=`<div class="feedback ${ok?'correct':'wrong'}">${ok?'All correct! Well done.':'Some answers are wrong — red fields need fixing.'}</div>`;
+  document.getElementById('subFeedback').innerHTML=
+    `<div class="feedback ${ok?'correct':'wrong'}">${ok?T('sub.ok'):T('sub.wrong')}</div>`
+    + subBuildVisual();
   document.getElementById('subCorrect').textContent=subCorrect;
   document.getElementById('subTotal').textContent=subTotal;
 }
 
 function subShow(){
   if(!subCurrent)return;
-  ['network','broadcast','first','last','hosts','mask'].forEach(k=>{const el=document.getElementById('sub-'+k);el.value=subCurrent[k];el.className='correct';el.disabled=true;});
-  document.getElementById('subFeedback').innerHTML='<div class="feedback info">Answers revealed. Click "New question" to continue.</div>';
+  ['network','broadcast','first','last','hosts','mask'].forEach(k=>{
+    const el=document.getElementById('sub-'+k);
+    el.value=subCurrent[k]; el.className='correct'; el.disabled=true;
+  });
+  document.getElementById('subFeedback').innerHTML=
+    `<div class="feedback info">${T('sub.revealed')}</div>`
+    + subBuildVisual();
+}
+
+function subBuildVisual(){
+  const c=subCurrent;
+  const prefix=parseInt(document.getElementById('subIpDisplay').textContent.split('/')[1]);
+  function toBin(ip){
+    return ip.split('.').map(o=>parseInt(o).toString(2).padStart(8,'0'));
+  }
+  function highlightOctets(octets,pfx){
+    let bits=0;
+    return octets.map(oct=>{
+      return oct.split('').map(b=>{
+        bits++;
+        if(bits<=pfx) return `<span class="bit-net">${b}</span>`;
+        return `<span class="bit-host">${b}</span>`;
+      }).join('');
+    }).join('<span class="bit-dot">.</span>');
+  }
+  const ipBin=toBin(c.ip);
+  const maskBin=toBin(c.mask);
+  const netBin=toBin(c.network);
+  const usable=Math.pow(2,32-prefix)-2;
+  return `
+  <div class="sub-visual">
+    <div class="sub-binary">
+      <div class="sub-bin-row">
+        <span class="sub-bin-label">IP</span>
+        <code class="sub-bin-val">${highlightOctets(ipBin,prefix)}</code>
+      </div>
+      <div class="sub-bin-row">
+        <span class="sub-bin-label">Mask</span>
+        <code class="sub-bin-val">${highlightOctets(maskBin,prefix)}</code>
+      </div>
+      <div class="sub-bin-row">
+        <span class="sub-bin-label">Net</span>
+        <code class="sub-bin-val">${highlightOctets(netBin,prefix)}</code>
+      </div>
+      <div class="sub-bin-legend">
+        <span class="bit-net">■</span> network bits (${prefix}) &nbsp;
+        <span class="bit-host">■</span> host bits (${32-prefix})
+      </div>
+    </div>
+    <div class="sub-range-bar">
+      <div class="sub-range-reserved sub-range-net">
+        ${c.network}<br><small>network</small>
+      </div>
+      <div class="sub-range-usable">
+        ${c.first} … ${c.last}<br><small>${usable} ${T('sub.usable_range')}</small>
+      </div>
+      <div class="sub-range-reserved sub-range-bc">
+        ${c.broadcast}<br><small>broadcast</small>
+      </div>
+    </div>
+    <div class="sub-range-why">
+      <p><strong>${c.network}</strong> — ${T('sub.why_network')}</p>
+      <p><strong>${c.broadcast}</strong> — ${T('sub.why_broadcast')}</p>
+    </div>
+  </div>`;
 }
 
 subNewQ();
@@ -858,6 +1042,10 @@ function quizShowStart(){
   document.getElementById('quizScreen').style.display='none';
   document.getElementById('quizStart').style.display='block';
 }
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+initTheme();
+initLang();
 </script>
 </body>
 </html>
