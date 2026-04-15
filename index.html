@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CiscoLearn — Cisco Networking Reference</title>
+  <title>cisco:learn — Cisco Networking Reference</title>
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" />
 <style>
@@ -1288,6 +1291,9 @@ function quizShowStart(){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 initTheme();
 initLang();
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('/ciscolearn/sw.js'));
+}
 </script>
 </body>
 </html>

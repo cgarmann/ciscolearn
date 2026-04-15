@@ -1,0 +1,13 @@
+{
+  "name": "cisco:learn",
+  "short_name": "cisco:learn",
+  "description": "Hands-on Cisco IOS and Packet Tracer reference — subnetting, commands, guides, quiz and troubleshooting.",
+  "start_url": "/ciscolearn/",
+  "scope": "/ciscolearn/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#00ff88",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
