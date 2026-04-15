@@ -167,6 +167,38 @@ tr:hover td { background:var(--s2); }
 .streak-display span b { color:var(--text); }
 .streak-display .on-fire b { color:var(--accent); text-shadow:0 0 8px rgba(0,255,136,.4); }
 
+/* IPv6 TRAINER */
+.ipv6-addr { font-family:'JetBrains Mono',monospace; font-size:1.15rem; color:var(--text); word-break:break-all; line-height:1.7; }
+.ipv6-addr .net-group { color:var(--accent); }
+.ipv6-addr .host-group { color:var(--muted); }
+.ipv6-grid { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin:1.25rem 0; }
+@media(max-width:600px){ .ipv6-grid { grid-template-columns:1fr; } }
+
+/* GLOBAL SEARCH */
+.search-overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); align-items:flex-start; justify-content:center; padding-top:10vh; }
+.search-overlay.open { display:flex; }
+.search-box { background:var(--s1); border:1px solid var(--accent); border-radius:var(--r2); width:100%; max-width:660px; overflow:hidden; box-shadow:0 0 40px rgba(0,255,136,.12); }
+.search-input-wrap { display:flex; align-items:center; gap:.75rem; padding:.9rem 1.1rem; border-bottom:1px solid var(--border); }
+.search-input-wrap span { font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:1rem; }
+.search-input-wrap input { flex:1; background:none; border:none; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:.95rem; outline:none; }
+.search-input-wrap input::placeholder { color:var(--muted2); }
+.search-kbd { font-family:'JetBrains Mono',monospace; font-size:.62rem; color:var(--muted2); border:1px solid var(--border); border-radius:3px; padding:1px 5px; }
+.search-results { max-height:55vh; overflow-y:auto; }
+.search-group-label { font-family:'JetBrains Mono',monospace; font-size:.63rem; color:var(--muted2); letter-spacing:.1em; padding:.5rem 1.1rem .2rem; text-transform:uppercase; }
+.search-result { padding:.65rem 1.1rem; cursor:pointer; border-bottom:1px solid var(--border); transition:background .1s; }
+.search-result:last-child { border-bottom:none; }
+.search-result:hover, .search-result.focused { background:var(--s2); }
+.search-result-title { font-size:.87rem; color:var(--text); margin-bottom:.15rem; }
+.search-result-title em { color:var(--accent); font-style:normal; }
+.search-result-sub { font-size:.76rem; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.search-empty { padding:2rem; text-align:center; font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--muted2); }
+.search-result-item { display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:.65rem; align-items:center; width:100%; background:none; border:none; border-bottom:1px solid var(--border); padding:.7rem 1.1rem; cursor:pointer; text-align:left; transition:background .1s; }
+.search-result-item:last-child { border-bottom:none; }
+.search-result-item:hover { background:var(--s2); }
+.search-result-type { grid-row:1/3; font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--accent); opacity:.7; white-space:nowrap; padding-top:1px; }
+.search-result-label { font-size:.87rem; color:var(--text); font-weight:500; }
+.search-result-detail { font-size:.75rem; color:var(--muted); font-family:'JetBrains Mono',monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
 /* FOOTER */
 footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem; }
 
@@ -224,6 +256,20 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 </head>
 <body>
 
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay" onclick="closeSearch(event)">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <span>></span>
+      <input id="searchInput" type="text" placeholder="search commands, guides, quiz..." autocomplete="off" oninput="runSearch()" onkeydown="searchKey(event)" />
+      <span class="search-kbd">ESC</span>
+    </div>
+    <div class="search-results" id="searchResults">
+      <div class="search-empty">// type to search across all modules</div>
+    </div>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav>
   <span class="nav-logo" onclick="showPage('home')">cisco<span>:learn</span></span>
@@ -237,6 +283,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     <button onclick="showPage('troubleshooting')" id="nav-troubleshooting" data-i18n="nav.troubleshooting">Troubleshooting</button>
   </div>
   <div class="nav-ctrl">
+    <button onclick="openSearch()" title="Search (/)">⌕</button>
     <button id="langBtn"  onclick="toggleLang()">NO</button>
     <button id="themeBtn" onclick="toggleTheme()">☀ Light</button>
   </div>
@@ -401,6 +448,51 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     </div>
     <div style="margin-top:.6rem;">
       <button class="btn btn-ghost btn-sm" onclick="resetStats('sub')" style="opacity:.45;font-size:.68rem;">reset stats</button>
+    </div>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <p class="section-label">// ipv6 trainer</p>
+    <h2>IPv6 <em>Subnetting Trainer</em></h2>
+    <p class="section-sub">IPv6 uses 128-bit addresses in hex. A /64 is the standard LAN prefix — the first 4 groups are the network, the last 4 are the host ID.</p>
+
+    <div class="intro-box">
+      <strong>How IPv6 addressing works:</strong> An IPv6 address has 8 groups of 4 hex digits. With a <code>/64</code> prefix, the first 4 groups identify the network — the last 4 groups are the host ID. The network address zeros out the host groups, written as <code>2001:db8:a:1<strong>::</strong></code> (double-colon = consecutive zero groups). There is <strong>no broadcast</strong> in IPv6 — multicast is used instead.
+    </div>
+
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+        <div>
+          <p class="section-label" style="margin-bottom:.3rem;">Given IPv6 address</p>
+          <p class="ipv6-addr" id="ipv6Display">—</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="ipv6NewQ()">New question →</button>
+      </div>
+      <div class="ipv6-grid">
+        <div class="answer-cell"><label>Network Address</label><input type="text" id="ipv6-network" placeholder="xxxx:xxxx:xxxx:xxxx::" autocomplete="off" /></div>
+        <div class="answer-cell"><label>Prefix Length</label><input type="number" id="ipv6-prefix" placeholder="e.g. 64" autocomplete="off" /></div>
+        <div class="answer-cell"><label>First Usable Host</label><input type="text" id="ipv6-first" placeholder="xxxx:xxxx:xxxx:xxxx::1" autocomplete="off" /></div>
+        <div class="answer-cell"><label>Host ID (last 4 groups)</label><input type="text" id="ipv6-hostid" placeholder="xxxx:xxxx:xxxx:xxxx" autocomplete="off" /></div>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.4rem;">
+        <button class="btn btn-primary" onclick="ipv6Check()">Check Answers</button>
+        <button class="btn btn-ghost"   onclick="ipv6Show()">Show Answers</button>
+      </div>
+      <div id="ipv6Feedback" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prefix</th><th>Use case</th><th>Host bits</th><th>IPv4 equivalent</th></tr></thead>
+        <tbody>
+          <tr><td><code>/32</code></td><td>ISP allocation to a customer site</td><td>96 bits</td><td>~<code>/8</code></td></tr>
+          <tr><td><code>/48</code></td><td>Enterprise site prefix</td><td>80 bits</td><td>~<code>/16</code></td></tr>
+          <tr><td><code>/56</code></td><td>Home network (ISP to customer)</td><td>72 bits</td><td>—</td></tr>
+          <tr><td><code>/64</code></td><td>Standard LAN segment</td><td>64 bits</td><td>~<code>/24</code></td></tr>
+          <tr><td><code>/126</code></td><td>Point-to-point WAN link (2 hosts)</td><td>2 bits</td><td><code>/30</code></td></tr>
+          <tr><td><code>/128</code></td><td>Single host / loopback</td><td>0 bits</td><td><code>/32</code></td></tr>
+        </tbody>
+      </table>
     </div>
   </div></section>
 
@@ -967,6 +1059,81 @@ function subBuildVisual(){
 
 subNewQ();
 
+// ── IPv6 TRAINER ──────────────────────────────────────────────────────────────
+let ipv6Current = null;
+function ipv6Rand(){ return Math.floor(Math.random()*0x10000).toString(16).padStart(4,'0'); }
+
+function ipv6NewQ(){
+  const g = [
+    (Math.floor(Math.random()*0xfffe)+1).toString(16).padStart(4,'0'),
+    ipv6Rand(), ipv6Rand(), ipv6Rand(),
+    ipv6Rand(), ipv6Rand(), ipv6Rand(), ipv6Rand()
+  ];
+  const prefix = 64;
+  const netGroups = g.slice(0,4);
+  const hostGroups = g.slice(4);
+  const network = netGroups.join(':') + '::';
+  const first   = netGroups.join(':') + '::1';
+  ipv6Current = { prefix, network, first, hostId: hostGroups.join(':') };
+
+  // Color-coded display
+  document.getElementById('ipv6Display').innerHTML =
+    netGroups.map(x=>`<span class="net-group">${x}</span>`).join('<span style="color:var(--muted2)">:</span>') +
+    '<span style="color:var(--muted2)">:</span>' +
+    hostGroups.map(x=>`<span class="host-group">${x}</span>`).join('<span style="color:var(--muted2)">:</span>') +
+    ` <span style="color:var(--muted);font-size:.85em">/${prefix}</span>`;
+
+  ['network','prefix','first','hostid'].forEach(k=>{
+    const el=document.getElementById('ipv6-'+k);
+    el.value=''; el.className=''; el.disabled=false;
+  });
+  document.getElementById('ipv6Feedback').innerHTML='';
+}
+
+function ipv6Norm(s){ return s.trim().toLowerCase().replace(/\s/g,''); }
+
+function ipv6Check(){
+  if(!ipv6Current) return;
+  const c = ipv6Current;
+  const fields = {
+    network: ipv6Norm(c.network),
+    prefix:  String(c.prefix),
+    first:   ipv6Norm(c.first),
+    hostid:  ipv6Norm(c.hostId)
+  };
+  let ok = true;
+  Object.entries(fields).forEach(([k,correct])=>{
+    const el = document.getElementById('ipv6-'+k);
+    const val = ipv6Norm(el.value);
+    const right = val===correct || (k==='network' && val===correct.replace(/::$/,':0:0:0:0'));
+    el.className = right ? 'correct' : 'wrong';
+    if(!right) ok=false;
+  });
+  document.getElementById('ipv6Feedback').innerHTML =
+    `<div class="feedback ${ok?'correct':'wrong'}">${ok?'All correct! Well done.':'Some fields are wrong — check red inputs.'}</div>` +
+    (!ok ? `<div style="margin-top:.75rem;font-size:.82rem;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.9;">
+      Network: <span style="color:var(--accent)">${c.network}</span><br>
+      First host: <span style="color:var(--accent)">${c.first}</span><br>
+      Host ID: <span style="color:var(--accent)">${c.hostId}</span>
+    </div>` : '');
+}
+
+function ipv6Show(){
+  if(!ipv6Current) return;
+  const c = ipv6Current;
+  document.getElementById('ipv6-network').value = c.network;
+  document.getElementById('ipv6-prefix').value  = c.prefix;
+  document.getElementById('ipv6-first').value   = c.first;
+  document.getElementById('ipv6-hostid').value  = c.hostId;
+  ['network','prefix','first','hostid'].forEach(k=>{
+    const el=document.getElementById('ipv6-'+k);
+    el.className='correct'; el.disabled=true;
+  });
+  document.getElementById('ipv6Feedback').innerHTML='<div class="feedback info">Answers revealed. Click "New question" to continue.</div>';
+}
+
+ipv6NewQ();
+
 // ── EXPLAINER ────────────────────────────────────────────────────────────────
 const EXP_EXAMPLE=`hostname Router-A
 no ip domain-lookup
@@ -1180,6 +1347,52 @@ const GUIDES=[
     {n:'04',h:'Configure a PC with a static IPv6 address',p:'In Packet Tracer: PC → Desktop → IP Configuration. Set IPv6 address, prefix /64, and default gateway.',},
     {n:'05',h:'Verify',code:'Router# show ipv6 interface brief\nRouter# show ipv6 route\nRouter# ping ipv6 2001:db8:2::10'},
   ]},
+  {badge:'badge-blue',level:'Intermediate',title:'Wireless LAN Controller (WLC) — Basic Setup',desc:'Configure a Cisco WLC with a management interface, WLAN and associate a lightweight AP in Packet Tracer.',steps:[
+    {n:'01',h:'Connect the WLC to a switch',p:'Use a trunk port on the switch side. The WLC management interface will carry VLAN traffic to the rest of the network.',code:'Switch(config)# interface GigabitEthernet0/1\nSwitch(config-if)# switchport mode trunk\nSwitch(config-if)# exit'},
+    {n:'02',h:'Set up the WLC management interface',p:'In Packet Tracer, click the WLC → GUI → Management Interface. Assign an IP, mask, gateway and a VLAN (e.g. VLAN 1 for management).',},
+    {n:'03',h:'Create a dynamic (WLAN) interface',p:'WLAN interfaces map a WLAN SSID to a VLAN. GUI → Controller → Interfaces → New. Name it (e.g. "wlan-staff"), set a VLAN ID (e.g. 10) and an IP in that subnet.',},
+    {n:'04',h:'Create the WLAN',p:'GUI → WLANs → New. Set the SSID, map it to the dynamic interface from step 3, enable it. Set security to WPA2-PSK under Security → Layer 2.',code:'-- Key settings --\nSSID: Corp-WiFi\nInterface: wlan-staff\nSecurity: WPA2 Personal\nPassphrase: SecurePass1'},
+    {n:'05',h:'Associate a lightweight AP',p:'Drag a "Lightweight AP" from the PT device list. Connect it to the switch. It should auto-join the WLC via CAPWAP (check WLC → Wireless → Access Points).',},
+    {n:'06',h:'Connect a wireless client',p:'Add a PC or laptop. Go to Config → Wireless. Set SSID and WPA2 key. The client should get an IP via DHCP from the WLAN subnet.',},
+    {n:'07',h:'Verify',code:'WLC GUI → Monitor → Summary\n-- Check: AP joined, clients associated\n\nSwitch# show interfaces trunk\nRouter# show ip dhcp binding'},
+  ]},
+  {badge:'badge-orange',level:'Advanced',title:'Python + Netmiko — Automate Cisco Config',desc:'Use Python and the Netmiko library to connect to a Cisco device over SSH and push configuration programmatically.',steps:[
+    {n:'01',h:'Install Netmiko',p:'Run this in your terminal. Python 3.8+ required.',code:'pip install netmiko'},
+    {n:'02',h:'Basic connection and show command',p:'Netmiko handles the SSH session and IOS prompts for you.',code:`from netmiko import ConnectHandler
+
+device = {
+    "device_type": "cisco_ios",
+    "host": "192.168.1.1",
+    "username": "admin",
+    "password": "Cisco123",
+}
+
+with ConnectHandler(**device) as net_connect:
+    output = net_connect.send_command("show ip interface brief")
+    print(output)`},
+    {n:'03',h:'Push configuration commands',p:'"send_config_set" enters config mode, applies the commands, then exits — all automatically.',code:`config_commands = [
+    "interface Loopback0",
+    "ip address 1.1.1.1 255.255.255.255",
+    "description Managed-by-Python",
+    "no shutdown",
+]
+
+with ConnectHandler(**device) as net_connect:
+    output = net_connect.send_config_set(config_commands)
+    net_connect.save_config()   # copy run start
+    print(output)`},
+    {n:'04',h:'Loop over multiple devices',p:'Store device info in a list to push the same config to a whole fleet at once.',code:`devices = [
+    {"device_type":"cisco_ios","host":"10.0.0.1","username":"admin","password":"pass"},
+    {"device_type":"cisco_ios","host":"10.0.0.2","username":"admin","password":"pass"},
+]
+
+for d in devices:
+    with ConnectHandler(**d) as conn:
+        conn.send_config_set(["ntp server 10.0.0.254"])
+        conn.save_config()
+        print(f"{d['host']} — done")`},
+    {n:'05',h:'Useful Netmiko methods',p:'Quick reference for the most-used methods.',code:'send_command("show ...")     # exec mode, returns output\nsend_config_set([...])      # config mode, list of commands\nsave_config()               # copy run start\nfind_prompt()               # returns current prompt string\ndisconnect()                # close SSH (auto on with-block exit)'},
+  ]},
 ];
 
 function renderGuides(){
@@ -1381,6 +1594,83 @@ function quizShowStart(){
   document.getElementById('quizStart').style.display='block';
 }
 
+// ── SEARCH ───────────────────────────────────────────────────────────────────
+const SEARCH_INDEX=[];
+function buildSearchIndex(){
+  // Commands
+  document.querySelectorAll('.cmd-card').forEach(el=>{
+    const cmd=el.querySelector('code')?.textContent||'';
+    const desc=el.querySelector('p')?.textContent||'';
+    if(cmd)SEARCH_INDEX.push({type:'command',label:cmd,detail:desc,action:()=>{}});
+  });
+  // Guides
+  GUIDES.forEach((g,i)=>{
+    SEARCH_INDEX.push({type:'guide',label:g.title,detail:g.desc,action:()=>{showPage('guides');setTimeout(()=>{const el=document.getElementById('g'+i);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});const btn=el.querySelector('.accordion-trigger');if(btn&&btn.getAttribute('aria-expanded')==='false')btn.click();}},120);}});
+  });
+  // Troubleshooting
+  TS_SCENARIOS.forEach((s,i)=>{
+    SEARCH_INDEX.push({type:'troubleshoot',label:s.title,detail:'Troubleshooting playbook',action:()=>{showPage('troubleshooting');setTimeout(()=>{const el=document.getElementById('ts'+i);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});const btn=el.querySelector('.accordion-trigger');if(btn&&btn.getAttribute('aria-expanded')==='false')btn.click();}},120);}});
+  });
+  // Quiz categories
+  ['all','subnetting','vlan','routing','commands','security','nat'].forEach(cat=>{
+    SEARCH_INDEX.push({type:'quiz',label:'Quiz — '+cat,detail:'Start a quiz',action:()=>{showPage('quiz');setTimeout(()=>quizStart(cat),120);}});
+  });
+  // Pages
+  [['home','Home / Dashboard'],['commands','Commands Reference'],['subnetting','Subnetting Calculator'],['guides','Packet Tracer Guides'],['quiz','Quiz'],['troubleshooting','Troubleshooting']].forEach(([id,label])=>{
+    SEARCH_INDEX.push({type:'page',label:label,detail:'Go to page',action:()=>showPage(id)});
+  });
+}
+
+function openSearch(){
+  document.getElementById('searchOverlay').classList.add('open');
+  const inp=document.getElementById('searchInput');
+  inp.value='';
+  document.getElementById('searchResults').innerHTML='<p style="color:var(--muted);font-size:.82rem;padding:.5rem 0;">Type to search commands, guides, quiz, pages…</p>';
+  inp.focus();
+}
+
+function closeSearch(e){
+  if(!e||e.target===document.getElementById('searchOverlay')||e.key==='Escape'){
+    document.getElementById('searchOverlay').classList.remove('open');
+  }
+}
+
+function runSearch(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const out=document.getElementById('searchResults');
+  if(!q){out.innerHTML='<p style="color:var(--muted);font-size:.82rem;padding:.5rem 0;">Type to search commands, guides, quiz, pages…</p>';return;}
+  const hits=SEARCH_INDEX.filter(item=>item.label.toLowerCase().includes(q)||item.detail.toLowerCase().includes(q)).slice(0,12);
+  if(!hits.length){out.innerHTML='<p style="color:var(--muted);font-size:.82rem;padding:.5rem 0;">No results for "'+q+'"</p>';return;}
+  const typeIcon={command:'$',guide:'▶',troubleshoot:'!',quiz:'?',page:'#'};
+  out.innerHTML=hits.map((h,i)=>`
+    <button class="search-result-item" data-idx="${i}" onclick="searchGo(${i})">
+      <span class="search-result-type">${typeIcon[h.type]||'>'} ${h.type}</span>
+      <span class="search-result-label">${h.label}</span>
+      <span class="search-result-detail">${h.detail.slice(0,70)}</span>
+    </button>`).join('');
+  out._hits=hits;
+}
+
+function searchGo(i){
+  const hits=document.getElementById('searchResults')._hits;
+  if(hits&&hits[i]){hits[i].action();closeSearch();}
+}
+
+function searchKey(e){
+  if(e.key==='Escape'){closeSearch();return;}
+  if(e.key==='Enter'){
+    const first=document.querySelector('.search-result-item');
+    if(first)first.click();
+  }
+}
+
+// keyboard shortcut "/"
+document.addEventListener('keydown',e=>{
+  const tag=document.activeElement?.tagName;
+  if(e.key==='/'&&tag!=='INPUT'&&tag!=='TEXTAREA'){e.preventDefault();openSearch();}
+  if(e.key==='Escape')closeSearch(e);
+});
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 initTheme();
 initLang();
@@ -1389,6 +1679,7 @@ subStatsLoad();
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('/ciscolearn/sw.js'));
 }
+window.addEventListener('load', buildSearchIndex);
 </script>
 </body>
 </html>
