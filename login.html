@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' data: https:;
+    connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com;
+    frame-src https://*.firebaseapp.com https://accounts.google.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+  <title>cisco:learn — Sign in</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700&display=swap" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0d1117; --s1:#161b22; --s2:#21262d; --border:#30363d;
+  --text:#e6edf3; --muted:#7d8590; --accent:#00ff88; --red:#f85149;
+  --r:6px;
+}
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+
+.card { background:var(--s1); border:1px solid var(--border); border-radius:12px; width:100%; max-width:420px; padding:2.5rem 2rem; }
+
+.logo { font-family:'JetBrains Mono',monospace; font-size:1.25rem; font-weight:700; color:var(--text); text-align:center; margin-bottom:.4rem; }
+.logo span { color:var(--accent); }
+.tagline { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted); text-align:center; margin-bottom:2rem; letter-spacing:.06em; }
+
+.tabs { display:flex; gap:.5rem; margin-bottom:1.8rem; background:var(--bg); border-radius:var(--r); padding:3px; }
+.tab { flex:1; background:none; border:none; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:600; padding:.55rem; border-radius:4px; cursor:pointer; transition:all .15s; }
+.tab.active { background:var(--s2); color:var(--accent); }
+
+.form-group { margin-bottom:1rem; }
+label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:.4rem; font-family:'JetBrains Mono',monospace; }
+input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:'DM Sans',sans-serif; font-size:.93rem; padding:.65rem .85rem; outline:none; transition:border-color .15s; }
+input:focus { border-color:var(--accent); }
+input::placeholder { color:var(--muted); }
+
+.btn { width:100%; padding:.75rem; border:none; border-radius:var(--r); font-family:'JetBrains Mono',monospace; font-size:.85rem; font-weight:700; cursor:pointer; transition:all .15s; margin-top:.5rem; }
+.btn-primary { background:var(--accent); color:#0d1117; }
+.btn-primary:hover { opacity:.88; }
+.btn-primary:disabled { opacity:.45; cursor:default; }
+.btn-google { background:var(--s2); color:var(--text); border:1px solid var(--border); margin-top:.75rem; display:flex; align-items:center; justify-content:center; gap:.6rem; }
+.btn-google:hover { border-color:var(--muted); }
+
+.divider { display:flex; align-items:center; gap:.75rem; margin:1.25rem 0; }
+.divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.divider span { font-size:.72rem; color:var(--muted); font-family:'JetBrains Mono',monospace; white-space:nowrap; }
+
+.error-msg { background:rgba(248,81,73,.12); border:1px solid rgba(248,81,73,.3); border-radius:var(--r); color:var(--red); font-size:.82rem; padding:.6rem .85rem; margin-bottom:1rem; display:none; }
+.error-msg.show { display:block; }
+
+.forgot { text-align:right; margin-top:.3rem; }
+.forgot a { font-size:.78rem; color:var(--muted); text-decoration:none; font-family:'JetBrains Mono',monospace; }
+.forgot a:hover { color:var(--accent); }
+
+.reset-msg { background:rgba(0,255,136,.08); border:1px solid rgba(0,255,136,.2); border-radius:var(--r); color:var(--accent); font-size:.82rem; padding:.6rem .85rem; margin-bottom:1rem; display:none; }
+.reset-msg.show { display:block; }
+
+.google-icon { width:18px; height:18px; }
+
+.back-link { text-align:center; margin-top:1.25rem; }
+.back-link a { font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--muted); text-decoration:none; }
+.back-link a:hover { color:var(--accent); }
+
+.auth-checking { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; min-height:120px; }
+.spinner { width:28px; height:28px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="card" id="authCard" style="visibility:hidden">
+  <div id="authChecking" class="auth-checking">
+    <div class="spinner"></div>
+  </div>
+  <div id="authContent" style="display:none">
+  <div class="logo">cisco<span>:learn</span></div>
+  <div class="tagline">> sign in to sync your progress</div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('login')">Sign In</button>
+    <button class="tab" onclick="showTab('register')">Register</button>
+  </div>
+
+  <div id="errorMsg" class="error-msg"></div>
+  <div id="resetMsg" class="reset-msg"></div>
+
+  <div id="loginForm">
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" maxlength="254" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" maxlength="256" />
+      <div class="forgot"><a href="#" onclick="showForgot(event)">Forgot password?</a></div>
+    </div>
+    <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="divider"><span>or</span></div>
+    <button class="btn btn-google" onclick="doGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+
+  <div id="registerForm" style="display:none">
+    <div class="form-group">
+      <label>Display name</label>
+      <input type="text" id="regName" placeholder="Your name" autocomplete="name" maxlength="40" />
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email" maxlength="254" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="regPassword" placeholder="Min. 8 characters (letters + digit)" autocomplete="new-password" minlength="8" maxlength="128" />
+    </div>
+    <button class="btn btn-primary" id="registerBtn" onclick="doRegister()">Create Account</button>
+    <div class="divider"><span>or</span></div>
+    <button class="btn btn-google" onclick="doGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+
+  <div class="back-link"><a href="index.html">← Back to app (no sign-in)</a></div>
+  </div>
+</div>
+
+<script type="module">
+import { signInEmail, registerEmail, signInGoogle, onAuth } from './js/auth.js';
+
+window.showTab = function(tab) {
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
+  clearMessages();
+};
+
+window.showForgot = async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { showError('Enter your email address first.'); return; }
+  const { resetPassword } = await import('./js/auth.js');
+  const { error } = await resetPassword(email);
+  if (error) showError(error);
+  else showReset('Password reset email sent — check your inbox.');
+};
+
+window.doLogin = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showError('Please fill in all fields.'); return; }
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Invalid email format.'); return; }
+  if (password.length > 256) { showError('Password too long.'); return; }
+  setLoading('loginBtn', true);
+  const { error } = await signInEmail(email, password);
+  if (error) { showError(error); setLoading('loginBtn', false); }
+};
+
+window.doRegister = async function() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  if (!name || !email || !password) { showError('Please fill in all fields.'); return; }
+  if (name.length > 40) { showError('Display name is too long (max 40 characters).'); return; }
+  if (!/^[\p{L}\p{N} '.\-_]+$/u.test(name)) { showError('Display name can only contain letters, digits, spaces and - . _ \''); return; }
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Invalid email format.'); return; }
+  if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
+  if (password.length > 128) { showError('Password too long (max 128 characters).'); return; }
+  if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) { showError('Password must contain letters and at least one digit.'); return; }
+  setLoading('registerBtn', true);
+  const { error } = await registerEmail(email, password, name);
+  if (error) { showError(error); setLoading('registerBtn', false); }
+};
+
+window.doGoogle = async function() {
+  const { error } = await signInGoogle();
+  if (error && !error.includes('popup-closed')) showError(error);
+};
+
+onAuth(user => {
+  if (user) {
+    window.location.href = 'index.html';
+  } else {
+    document.getElementById('authChecking').style.display = 'none';
+    document.getElementById('authContent').style.display = 'block';
+    document.getElementById('authCard').style.visibility = 'visible';
+  }
+});
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function showReset(msg) {
+  const el = document.getElementById('resetMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearMessages() {
+  document.getElementById('errorMsg').classList.remove('show');
+  document.getElementById('resetMsg').classList.remove('show');
+}
+function setLoading(id, loading) {
+  const btn = document.getElementById(id);
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Please wait…' : (id === 'loginBtn' ? 'Sign In' : 'Create Account');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const active = document.getElementById('loginForm').style.display !== 'none' ? 'login' : 'register';
+    if (active === 'login') window.doLogin();
+    else window.doRegister();
+  }
+});
+</script>
+</body>
+</html>

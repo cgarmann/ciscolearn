@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' data: https:;
+    connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com;
+    frame-src https://*.firebaseapp.com https://accounts.google.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
   <title>cisco:learn — Cisco Networking Reference</title>
   <meta name="theme-color" content="#00ff88" />
   <link rel="manifest" href="manifest.json" />
@@ -242,6 +254,204 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 .sub-range-why { display:flex; flex-direction:column; gap:.4rem; font-size:.82rem; color:var(--muted); line-height:1.6; }
 .sub-range-why strong { color:var(--text); font-family:'JetBrains Mono',monospace; font-size:.78rem; }
 
+/* CROSS-PAGE CHIPS */
+.chip-link { display:inline-flex; align-items:center; gap:.35rem; background:var(--s1); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:.72rem; padding:.4rem .7rem; border-radius:999px; cursor:pointer; transition:border-color .15s ease, transform .1s ease, background .15s ease; }
+.chip-link:hover { border-color:var(--accent); background:var(--s2); transform:translateY(-1px); }
+.chip-link:active { transform:translateY(0); }
+.chip-layer { border-left:3px solid var(--chip-accent,var(--accent)); padding-left:.55rem; }
+.run-cmd-btn { display:inline-flex; align-items:center; gap:.3rem; margin-top:.45rem; font-family:'JetBrains Mono',monospace; font-size:.68rem; background:rgba(0,255,136,.08); border:1px solid rgba(0,255,136,.25); color:var(--accent); border-radius:4px; padding:.22rem .6rem; cursor:pointer; transition:all .15s; }
+.run-cmd-btn:hover { background:rgba(0,255,136,.18); border-color:var(--accent); }
+
+/* TERMINAL LAB */
+.term-wrap { max-width:900px; margin:0 auto; padding:0 1rem; }
+.term-control-row { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
+.term-control-row select { flex:1; min-width:200px; font-family:'JetBrains Mono',monospace; font-size:.82rem; background:var(--s1); color:var(--text); border:1px solid var(--border); border-radius:var(--r); padding:.55rem .7rem; }
+.term-nav-chips { display:flex; flex-wrap:wrap; gap:.4rem; }
+.term-category-badge { display:inline-flex; align-items:center; gap:.5rem; background:var(--cat-color,var(--accent)); color:#0a0e13; font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600; padding:.35rem .75rem; border-radius:999px; margin-bottom:.75rem; letter-spacing:.02em; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+.term-category-badge .tcb-cat { text-transform:uppercase; letter-spacing:.06em; }
+.term-category-badge .tcb-sep { opacity:.55; }
+.term-category-badge .tcb-scen { font-weight:500; opacity:.85; }
+.term-briefing { font-family:'JetBrains Mono',monospace; font-size:.78rem; line-height:1.5; padding:.7rem .85rem; background:rgba(0,255,136,.05); border:1px solid rgba(0,255,136,.25); border-left:3px solid var(--accent); border-radius:var(--r); color:var(--text); margin-bottom:1rem; }
+.term-briefing b { color:var(--accent); font-weight:700; }
+.term-layer-chips { display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; margin-top:.7rem; padding-top:.7rem; border-top:1px dashed var(--border); }
+.tlc-label { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); margin-right:.3rem; }
+.term-screen { background:#0a0e13; border:1px solid var(--border); border-radius:var(--r); font-family:'JetBrains Mono',monospace; font-size:.82rem; line-height:1.5; color:#d4f1df; padding:.9rem 1rem; height:60vh; min-height:400px; max-height:600px; overflow-y:auto; white-space:pre-wrap; word-break:break-word; }
+[data-theme=light] .term-screen { background:#0d1a12; color:#cfe8d7; border-color:#c2d9c8; }
+.term-line { margin:0; }
+.term-line.ok { color:#47e18a; }
+.term-line.err { color:#ff6b6b; }
+.term-line.dim { color:#7a9688; }
+.term-line .t-kw { color:#7dd3fc; }
+.term-line .t-subkw { color:#a5b4fc; }
+.term-line .t-ip { color:#fbbf24; }
+.term-line .t-mask { color:#fde68a; }
+.term-line .t-num { color:#fbbf24; }
+.term-line .t-code { color:#e879f9; font-weight:600; }
+.term-line .t-up { color:#47e18a; font-weight:600; }
+.term-line .t-down { color:#ff6b6b; font-weight:600; }
+.term-line .t-comment { color:#7a9688; font-style:italic; }
+.term-prompt-row { display:flex; align-items:center; gap:.4rem; margin-top:.5rem; background:#0a0e13; border:1px solid var(--border); border-top:none; border-radius:0 0 var(--r) var(--r); padding:.6rem .8rem; }
+[data-theme=light] .term-prompt-row { background:#0d1a12; }
+.term-prompt-label { color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:.82rem; flex-shrink:0; }
+.term-input { flex:1; background:none; border:none; outline:none; color:#d4f1df; font-family:'JetBrains Mono',monospace; font-size:.82rem; padding:0; }
+.term-hint { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); margin-top:.6rem; text-align:center; }
+.term-input.cmd-valid { color:var(--accent); }
+.term-input.cmd-unknown { color:#f0b429; }
+.topo-row { display:flex; align-items:center; justify-content:center; gap:0; margin:0 auto 1rem; padding:.85rem .6rem; background:var(--s1); border:1px solid var(--border); border-radius:var(--r); flex-wrap:wrap; }
+.topo-node { display:flex; flex-direction:column; align-items:center; gap:.25rem; padding:.55rem .75rem; border-radius:var(--r); background:var(--bg); border:1px solid var(--border); min-width:84px; transition:all .15s; cursor:default; }
+.topo-node.clickable { cursor:pointer; }
+.topo-node.clickable:hover { border-color:var(--accent); }
+.topo-icon { font-size:1.5rem; line-height:1; }
+.topo-label { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--text); font-weight:600; }
+.topo-sub { font-family:'JetBrains Mono',monospace; font-size:.62rem; color:var(--muted); }
+.topo-link { flex:1 1 32px; min-width:32px; max-width:90px; height:2px; background:var(--accent); position:relative; margin:0 .25rem; }
+.topo-link.down { background:transparent; border-top:2px dashed var(--red); }
+.topo-link.warn { background:transparent; border-top:2px dashed #f0b429; }
+.topo-link .topo-badge { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--s1); border:1px solid var(--red); color:var(--red); font-family:'JetBrains Mono',monospace; font-size:.6rem; padding:1px 6px; border-radius:10px; font-weight:700; }
+.topo-link.warn .topo-badge { border-color:#f0b429; color:#f0b429; }
+
+/* OSI MODEL */
+.osi-stack { display:flex; flex-direction:column; gap:.5rem; margin-top:1.5rem; }
+.osi-layer { background:var(--s1); border:1px solid var(--border); border-left:4px solid var(--l-color,var(--accent)); border-radius:var(--r); overflow:hidden; transition:transform .15s ease; }
+.osi-layer:hover { transform:translateX(2px); }
+.osi-layer-head { display:flex; align-items:center; gap:1rem; padding:.9rem 1.1rem; cursor:pointer; user-select:none; }
+.osi-layer-num { font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:700; color:var(--l-color,var(--accent)); min-width:2rem; text-align:center; }
+.osi-layer-title { flex:1; }
+.osi-layer-title h3 { font-size:1rem; margin:0; color:var(--text); font-family:'JetBrains Mono',monospace; }
+.osi-layer-title .osi-meta { font-size:.72rem; color:var(--muted); margin-top:.15rem; font-family:'JetBrains Mono',monospace; }
+.osi-layer-title .osi-meta b { color:var(--l-color,var(--accent)); }
+.osi-chevron { color:var(--muted); transition:transform .2s ease; }
+.osi-layer.open .osi-chevron { transform:rotate(180deg); }
+.osi-layer-body { display:none; padding:0 1.1rem 1.1rem 3.9rem; border-top:1px solid var(--border); }
+.osi-layer.open .osi-layer-body { display:block; }
+.osi-layer-body h4 { font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--muted); margin:1rem 0 .4rem; letter-spacing:.04em; text-transform:uppercase; }
+.osi-layer-body ul { margin:0; padding-left:1.1rem; font-size:.85rem; line-height:1.7; }
+.osi-layer-body pre { background:var(--s2); border:1px solid var(--border); border-radius:6px; padding:.7rem .9rem; font-size:.75rem; overflow-x:auto; margin:.4rem 0; padding-top:.7rem; }
+.osi-layer-body pre::before, .osi-layer-body pre::after { display:none; }
+.osi-layer-body pre .hl-muted { color:var(--muted); font-style:italic; }
+.osi-layer-cta { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1.2rem; padding-top:1rem; border-top:1px dashed var(--border); }
+@media(max-width:520px){ .osi-layer-body { padding:0 1rem 1rem; } .osi-layer-head { padding:.75rem .9rem; gap:.7rem; } .osi-layer-num { font-size:1.2rem; min-width:1.6rem; } }
+
+/* NETWORK MAP */
+.netmap-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; margin-top:1.25rem; }
+.netmap-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:1rem; }
+.netmap-card h3 { font-family:'JetBrains Mono',monospace; font-size:.95rem; color:var(--accent); margin-bottom:.4rem; display:flex; align-items:center; gap:.5rem; }
+.netmap-card .nm-icon { font-size:1.3rem; }
+.netmap-iface { display:flex; justify-content:space-between; gap:.6rem; padding:.35rem 0; border-top:1px dashed var(--border); font-family:'JetBrains Mono',monospace; font-size:.72rem; }
+.netmap-iface .nm-name { color:var(--muted); }
+.netmap-iface .nm-ip { color:var(--text); }
+.netmap-iface .nm-state { font-weight:700; }
+.netmap-iface .nm-state.up { color:var(--accent); }
+.netmap-iface .nm-state.down { color:var(--red); }
+.netmap-links { margin-top:1rem; padding:1rem; background:var(--s1); border:1px solid var(--border); border-radius:var(--r); }
+.netmap-links h4 { font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--muted); margin-bottom:.6rem; }
+.netmap-link-item { display:flex; align-items:center; gap:.6rem; padding:.35rem 0; font-family:'JetBrains Mono',monospace; font-size:.75rem; }
+.netmap-link-item .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.netmap-link-item .dot.up { background:var(--accent); }
+.netmap-link-item .dot.down { background:var(--red); }
+.netmap-link-item .dot.warn { background:#f0b429; }
+
+/* PROFILE PAGE */
+.profile-header { padding:1.2rem 0 1.25rem; border-bottom:1px solid var(--border); text-align:center; }
+.profile-avatar-big { position:relative; width:120px; height:120px; border-radius:50%; background:var(--s2); border:3px solid var(--s1); box-shadow:0 0 0 3px var(--accent), 0 6px 18px rgba(0,0,0,.35); overflow:hidden; margin:.25rem auto .85rem; cursor:pointer; transition:transform .15s ease; }
+.profile-avatar-big:hover { transform:scale(1.03); }
+.profile-avatar-big img { width:100%; height:100%; object-fit:cover; display:block; }
+.profile-avatar-edit { position:absolute; right:4px; bottom:4px; width:34px; height:34px; border-radius:50%; background:var(--accent); color:#0a0e13; display:flex; align-items:center; justify-content:center; border:3px solid var(--bg); pointer-events:none; }
+.profile-head-name { font-family:'JetBrains Mono',monospace; font-size:1.35rem; font-weight:700; margin:0 0 .2rem; }
+.profile-head-email { font-size:.85rem; color:var(--muted); margin:0; word-break:break-all; }
+.avatar-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.6rem; margin-top:.75rem; }
+.avatar-option { position:relative; cursor:pointer; border-radius:50%; overflow:hidden; aspect-ratio:1; border:3px solid transparent; transition:border-color .15s, transform .15s; }
+.avatar-option img { width:100%; height:100%; object-fit:cover; display:block; }
+.avatar-option:hover { transform:scale(1.05); border-color:var(--border2); }
+.avatar-option.selected { border-color:var(--accent); }
+.avatar-option .avatar-check { position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,255,136,.25); }
+.avatar-option.selected .avatar-check { display:flex; }
+.avatar-modal-overlay { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1.5rem; }
+.avatar-modal-overlay.open { display:flex; }
+.avatar-modal { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:1.25rem; width:100%; max-width:340px; }
+.avatar-modal h4 { font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--accent); margin-bottom:1rem; }
+.profile-section { padding:1.5rem 0; border-bottom:1px solid var(--border); }
+.profile-section:last-child { border-bottom:none; }
+.profile-section h3 { font-family:'JetBrains Mono',monospace; font-size:.85rem; color:var(--accent); letter-spacing:.06em; margin-bottom:1rem; opacity:.8; }
+.profile-field { margin-bottom:1rem; }
+.profile-field label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:.35rem; font-family:'JetBrains Mono',monospace; }
+.profile-row { display:flex; gap:.5rem; }
+.profile-row input { flex:1; }
+.btn-save { padding:.5rem 1.1rem; border-radius:var(--r2); background:rgba(0,255,136,.12); border:1px solid rgba(0,255,136,.3); color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:.78rem; cursor:pointer; white-space:nowrap; transition:background .15s; }
+.btn-save:hover { background:rgba(0,255,136,.22); }
+.profile-msg { font-size:.8rem; margin-top:.5rem; font-family:'JetBrains Mono',monospace; min-height:1.2rem; }
+.profile-msg.ok { color:var(--green); }
+.profile-msg.err { color:var(--red); }
+.btn-hold-wrap { position:relative; display:inline-block; }
+.btn-hold { padding:.55rem 1.25rem; border-radius:var(--r2); background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.3); color:var(--red); font-family:'JetBrains Mono',monospace; font-size:.78rem; cursor:pointer; user-select:none; position:relative; overflow:hidden; white-space:nowrap; }
+.btn-hold-bar { position:absolute; left:0; top:0; bottom:0; width:0%; background:rgba(248,81,73,.35); transition:none; pointer-events:none; }
+.profile-home-btn { display:flex; align-items:center; justify-content:center; gap:.6rem; width:100%; padding:.85rem; margin-top:1.5rem; margin-bottom:1rem; background:var(--s2); border:1px solid var(--border); border-radius:var(--r2); color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.82rem; cursor:pointer; transition:color .15s, border-color .15s; }
+.profile-home-btn:hover { color:var(--accent); border-color:var(--accent); }
+.sign-in-note { background:rgba(0,255,136,.06); border:1px solid rgba(0,255,136,.2); border-radius:var(--r); padding:1.5rem; text-align:center; font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--muted); line-height:1.8; }
+.sign-in-note a { color:var(--accent); text-decoration:none; }
+.sign-in-note a:hover { text-decoration:underline; }
+
+/* ACHIEVEMENTS */
+.achievement-toast { position:fixed; bottom:calc(1.5rem + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(16px); background:linear-gradient(135deg,#0a1f10,#0d2818); border:1px solid var(--accent); border-radius:12px; padding:.7rem 1.2rem; display:flex; align-items:center; gap:.75rem; z-index:9999; opacity:0; transition:opacity .3s ease, transform .3s ease; box-shadow:0 4px 28px rgba(0,255,136,.22), 0 2px 8px rgba(0,0,0,.5); pointer-events:none; white-space:nowrap; }
+.achievement-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.ach-icon { font-size:1.5rem; line-height:1; }
+.ach-title { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--accent); font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+.ach-name { font-family:'JetBrains Mono',monospace; font-size:.88rem; color:var(--text); font-weight:600; }
+.ach-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.85rem; margin-top:1rem; }
+.ach-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:1rem 1rem .85rem; display:flex; flex-direction:column; gap:.3rem; position:relative; transition:border-color .2s, box-shadow .2s; }
+.ach-card.unlocked { border-color:rgba(0,255,136,.4); box-shadow:0 0 12px rgba(0,255,136,.08); }
+.ach-card-icon { font-size:1.9rem; line-height:1; margin-bottom:.25rem; }
+.ach-card.locked .ach-card-icon { filter:grayscale(1); opacity:.35; }
+.ach-card-name { font-family:'JetBrains Mono',monospace; font-size:.82rem; font-weight:700; color:var(--text); }
+.ach-card.locked .ach-card-name { color:var(--muted); }
+.ach-card-desc { font-family:'JetBrains Mono',monospace; font-size:.67rem; color:var(--muted); line-height:1.45; }
+.ach-card-status { font-family:'JetBrains Mono',monospace; font-size:.63rem; color:var(--accent); margin-top:.3rem; }
+
+/* LEGAL PAGE */
+.legal-section { padding:2rem 0; border-bottom:1px solid var(--border); }
+.legal-section:last-child { border-bottom:none; }
+.legal-section h2 { font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700; color:var(--accent); margin-bottom:1.25rem; }
+.legal-section h3 { font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--text); margin:1.1rem 0 .4rem; }
+.legal-section p, .legal-section li { font-size:.88rem; color:var(--muted); line-height:1.8; margin-bottom:.6rem; }
+.legal-section ul { padding-left:1.25rem; }
+.legal-section a { color:var(--accent); }
+.legal-badge { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.65rem; padding:2px 8px; border-radius:3px; margin-bottom:1rem; background:rgba(0,255,136,.08); border:1px solid rgba(0,255,136,.2); color:var(--accent); }
+
+/* NAV AUTH BUTTON */
+.nav-sign-in-btn { background:rgba(0,255,136,.1); border:1px solid rgba(0,255,136,.25); color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.04em; padding:5px 10px; border-radius:4px; cursor:pointer; white-space:nowrap; transition:all .15s; }
+.nav-sign-in-btn:hover { background:rgba(0,255,136,.2); }
+.nav-user-pill { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); border:1px solid var(--border); padding:4px 8px; border-radius:4px; cursor:pointer; white-space:nowrap; transition:color .15s; display:none; }
+.nav-user-pill:hover { color:var(--text); border-color:var(--border2); }
+
+/* HOME STATS */
+.home-stats-row { display:flex; gap:.45rem; flex-wrap:wrap; margin-bottom:1.75rem; }
+.stat-pill { display:inline-flex; align-items:center; gap:.35rem; background:transparent; border:1px solid var(--border); border-radius:20px; padding:.25rem .7rem; font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); }
+.stat-pill b { color:var(--text); font-weight:600; }
+
+/* LAB HERO CARD */
+.lab-super-hero { background:var(--s2); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:12px; padding:1.6rem 1.5rem 1.4rem; cursor:pointer; transition:box-shadow .15s ease, transform .12s ease; }
+.lab-super-hero:hover { box-shadow:0 6px 28px rgba(0,255,136,.1); transform:translateY(-1px); }
+.lab-super-badge { display:inline-flex; align-items:center; background:rgba(0,255,136,.1); border:1px solid rgba(0,255,136,.25); color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:.62rem; padding:.18rem .6rem; border-radius:20px; font-weight:700; margin-bottom:.9rem; }
+.lab-super-title { font-family:'JetBrains Mono',monospace; font-size:1.2rem; font-weight:700; color:var(--text); margin-bottom:.35rem; }
+.lab-super-desc { font-size:.8rem; color:var(--muted); line-height:1.6; margin-bottom:1.1rem; }
+.lab-super-cta { font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--accent); font-weight:600; }
+.labs-secondary { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:1rem; }
+.lab-card { background:var(--s1); border:1px solid var(--border); border-radius:12px; padding:1.1rem 1rem .9rem; cursor:pointer; display:flex; flex-direction:column; transition:border-color .15s, transform .12s; }
+.lab-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+.lab-card-icon { font-size:1.3rem; line-height:1; margin-bottom:.45rem; }
+.lab-card h3 { font-family:'JetBrains Mono',monospace; font-size:.82rem; font-weight:700; color:var(--text); margin-bottom:.25rem; }
+.lab-card p { font-size:.72rem; color:var(--muted); line-height:1.5; flex:1; }
+@media(max-width:480px) { .labs-secondary { grid-template-columns:1fr; } }
+
+/* FOOTER */
+.app-footer { border-top:1px solid var(--border); padding:1.25rem 0; text-align:center; margin-top:2rem; }
+.app-footer p { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); line-height:1.8; }
+.app-footer a { color:var(--muted); text-decoration:underline; cursor:pointer; }
+.app-footer a:hover { color:var(--accent); }
+
+/* TS LAB CTA */
+.ts-lab-cta { padding:.9rem 1rem; border-top:1px dashed var(--border); text-align:center; }
+
 @media(max-width:700px){
   .container,.container-sm { padding:0 1rem; }
   nav { padding:0 1rem; }
@@ -251,6 +461,8 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   .sub-bin-val { font-size:.66rem; }
   .sub-range-bar { flex-wrap:wrap; }
   .sub-range-net,.sub-range-bc { min-width:60px; }
+  .term-screen { height:50vh; min-height:300px; }
+  .labs-secondary { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -281,11 +493,16 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     <button onclick="showPage('guides')"     id="nav-guides"     data-i18n="nav.guides">PT Guides</button>
     <button onclick="showPage('quiz')"           id="nav-quiz"           data-i18n="nav.quiz">Quiz</button>
     <button onclick="showPage('troubleshooting')" id="nav-troubleshooting" data-i18n="nav.troubleshooting">Troubleshooting</button>
+    <button onclick="showPage('terminal')"       id="nav-terminal">Terminal Lab</button>
+    <button onclick="showPage('osi')"            id="nav-osi">OSI Model</button>
+    <button onclick="showPage('netmap')"         id="nav-netmap">Network Map</button>
   </div>
   <div class="nav-ctrl">
     <button onclick="openSearch()" title="Search (/)">⌕</button>
     <button id="langBtn"  onclick="toggleLang()">NO</button>
     <button id="themeBtn" onclick="toggleTheme()">☀ Light</button>
+    <button class="nav-sign-in-btn" id="navSignInBtn" onclick="window.location.href='login.html'" style="display:none">Sign In</button>
+    <button class="nav-user-pill"   id="navUserPill"  onclick="showPage('profile')"></button>
   </div>
 </nav>
 
@@ -834,13 +1051,27 @@ function initLang(){
 }
 
 // ── PAGE NAVIGATION ──────────────────────────────────────────────────────────
-function showPage(id) {
+function showPage(id, fromPop) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.getElementById('nav-'+id).classList.add('active');
+  const pg = document.getElementById('page-'+id);
+  if (pg) pg.classList.add('active');
+  const nb = document.getElementById('nav-'+id);
+  if (nb) nb.classList.add('active');
+  if (!fromPop) history.pushState({page:id}, '', '#'+id);
   window.scrollTo(0,0);
+  if (id === 'osi'    && typeof renderOsi    === 'function') renderOsi();
+  if (id === 'netmap' && typeof renderNetMap === 'function') renderNetMap();
+  if (id === 'terminal' && typeof termChangeScenario === 'function') {
+    const sel = document.getElementById('termScenario');
+    if (sel && !document.getElementById('termScreen')?.children.length) termChangeScenario(sel.value);
+  }
 }
+window.addEventListener('popstate', e => {
+  if (e.state && e.state.page) showPage(e.state.page, true);
+  else showPage('home', true);
+});
+document.addEventListener('DOMContentLoaded', () => { history.replaceState({page:'home'}, '', '#home'); });
 
 // ── COMMANDS ─────────────────────────────────────────────────────────────────
 const COMMANDS = [
@@ -1680,6 +1911,1137 @@ if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('/ciscolearn/sw.js'));
 }
 window.addEventListener('load', buildSearchIndex);
+
+// ── ACHIEVEMENTS ──────────────────────────────────────────────────────────────
+const ACHIEVEMENTS = [
+  {id:'first_quiz',    icon:'🎯', name:'First Quiz',        desc:'Complete your first quiz'},
+  {id:'quiz_perfect',  icon:'💯', name:'Perfect Score',     desc:'Score 100% on any quiz'},
+  {id:'sub_streak3',   icon:'🔢', name:'Subnet Streak x3',  desc:'Get 3 subnetting questions right in a row'},
+  {id:'terminal_first',icon:'⌨️', name:'Terminal Explorer', desc:'Run your first command in Terminal Lab'},
+  {id:'all_pages',     icon:'🗺️', name:'Explorer',          desc:'Visit Terminal Lab, OSI Model and Network Map'},
+  {id:'quiz_10',       icon:'📚', name:'Quiz Veteran',      desc:'Complete 10 quiz rounds'},
+  {id:'guide_read',    icon:'📖', name:'Guide Reader',      desc:'Read your first Packet Tracer guide'},
+  {id:'osi_open',      icon:'🧠', name:'OSI Scholar',       desc:'Open all 7 OSI layers'},
+];
+const ACH_LS = 'cl-ach';
+
+function achLoad() {
+  try { return JSON.parse(localStorage.getItem(ACH_LS) || '{}'); } catch(e) { return {}; }
+}
+function achUnlock(id) {
+  const state = achLoad();
+  if (state[id]) return;
+  state[id] = Date.now();
+  localStorage.setItem(ACH_LS, JSON.stringify(state));
+  const def = ACHIEVEMENTS.find(a => a.id === id);
+  if (def) showAchToast(def);
+  renderAchGallery();
+}
+function showAchToast(def) {
+  const toast = document.getElementById('achToast');
+  if (!toast) return;
+  document.getElementById('achToastIcon').textContent = def.icon;
+  document.getElementById('achToastName').textContent = def.name;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+function renderAchGallery() {
+  const el = document.getElementById('achGallery');
+  if (!el) return;
+  const state = achLoad();
+  el.innerHTML = ACHIEVEMENTS.map(a => `
+    <div class="ach-card ${state[a.id] ? 'unlocked' : 'locked'}">
+      <div class="ach-card-icon">${a.icon}</div>
+      <div class="ach-card-name">${a.name}</div>
+      <div class="ach-card-desc">${a.desc}</div>
+      ${state[a.id] ? `<div class="ach-card-status">✓ Unlocked</div>` : ''}
+    </div>`).join('');
+}
+document.addEventListener('DOMContentLoaded', renderAchGallery);
+
+// ── OSI MODEL ──────────────────────────────────────────────────────────────────
+const OSI_LAYERS = [
+  { n:7, name:'Application', color:'#e879f9', unit:'Data',
+    desc:'The layer users interact with. Browsers, SSH clients, DNS resolvers — anything that speaks a network protocol on behalf of a human or an app.',
+    protocols:['HTTP / HTTPS','DNS','SSH / Telnet','SMTP / IMAP','SNMP','FTP / TFTP'],
+    faults:['DNS resolution fails but IP works','Wrong port / service not listening','Expired TLS certificate'],
+    cli:['ping google.com     <span class="hl-muted">! tests DNS + full path</span>','nslookup google.com','telnet 10.0.0.1 80','show ip name-server'] },
+  { n:6, name:'Presentation', color:'#a78bfa', unit:'Data',
+    desc:'Translates, encrypts and compresses data between the application and the rest of the stack.',
+    protocols:['TLS / SSL','ASCII / UTF-8','JPEG / PNG / MPEG','MIME'],
+    faults:['TLS handshake failure — cipher mismatch','Expired / untrusted certificate'],
+    cli:['show crypto pki certificates','show crypto ssl','show ssh'] },
+  { n:5, name:'Session', color:'#60a5fa', unit:'Data',
+    desc:'Opens, manages and tears down conversations between two endpoints.',
+    protocols:['NetBIOS','RPC','PPTP','SIP (signalling)'],
+    faults:['Session timeout mid-transfer','Authentication state lost after failover'],
+    cli:['show users','show tcp brief','show ip nat translations'] },
+  { n:4, name:'Transport', color:'#34d399', unit:'Segment (TCP) / Datagram (UDP)',
+    desc:'End-to-end delivery. TCP gives you reliability, ordering and flow control. UDP gives you speed. Ports live here.',
+    protocols:['TCP','UDP','SCTP'],
+    faults:['Port blocked by ACL','TCP retransmissions — lossy path','Wrong source/destination port'],
+    cli:['show tcp brief','show access-lists','show ip access-list'] },
+  { n:3, name:'Network', color:'#fbbf24', unit:'Packet',
+    desc:'Logical addressing and path selection. IP addresses, subnets, routing tables.',
+    protocols:['IPv4 / IPv6','ICMP','OSPF / EIGRP / BGP','IPsec'],
+    faults:['No route to destination','Wrong default gateway','ACL drop','Duplicate IP'],
+    cli:['show ip interface brief','show ip route','ping 10.0.0.1','traceroute 10.0.0.1','show ip protocols'] },
+  { n:2, name:'Data Link', color:'#fb923c', unit:'Frame',
+    desc:'MAC addresses, VLANs, switching. Moves frames between devices on the same segment.',
+    protocols:['Ethernet','PPP','802.1Q (VLAN)','STP / RSTP','CDP / LLDP','ARP'],
+    faults:['VLAN mismatch across a trunk','Duplex mismatch — runts + late collisions','ARP failure'],
+    cli:['show interfaces status','show vlan brief','show interfaces trunk','show mac address-table','show spanning-tree'] },
+  { n:1, name:'Physical', color:'#f87171', unit:'Bit',
+    desc:'Copper, fibre, radio. Voltages, wavelengths, connectors. If this layer is broken, nothing else matters.',
+    protocols:['Ethernet PHY (1000BASE-T, 10GBASE-SR…)','Fibre (SFP/SFP+/QSFP)','Wi-Fi radio'],
+    faults:['Cable unplugged or damaged','Port administratively shut down','Bad SFP'],
+    cli:['show interfaces','show controllers','show interface status err-disabled'] }
+];
+
+let osiOpenedLayers = new Set();
+function renderOsi() {
+  const host = document.getElementById('osiStack');
+  if (!host || host.children.length) return;
+  host.innerHTML = OSI_LAYERS.map((l,idx) => `
+    <div class="osi-layer" style="--l-color:${l.color}" data-idx="${idx}">
+      <div class="osi-layer-head" onclick="toggleOsi(${idx})">
+        <div class="osi-layer-num">L${l.n}</div>
+        <div class="osi-layer-title">
+          <h3>${l.name}</h3>
+          <div class="osi-meta">PDU: <b>${l.unit}</b></div>
+        </div>
+        <svg class="osi-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="osi-layer-body">
+        <p style="font-size:.88rem;line-height:1.7;color:var(--muted);margin:.9rem 0 0">${l.desc}</p>
+        <h4>// Protocols &amp; standards</h4>
+        <ul>${l.protocols.map(p => `<li>${p}</li>`).join('')}</ul>
+        <h4>// Common faults</h4>
+        <ul>${l.faults.map(p => `<li>${p}</li>`).join('')}</ul>
+        <h4>// Cisco IOS commands</h4>
+        <pre><code>${l.cli.join('\n')}</code></pre>
+        <div class="osi-layer-cta">
+          <button class="chip-link" onclick="showPage('terminal')">⌨ Try in Terminal Lab</button>
+          <button class="chip-link" onclick="showPage('netmap')">🗺 See Network Map</button>
+          <button class="chip-link" onclick="showPage('troubleshooting')">🧰 Playbooks</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleOsi(i) {
+  const el = document.querySelector(`.osi-layer[data-idx="${i}"]`);
+  if (el) {
+    el.classList.toggle('open');
+    osiOpenedLayers.add(i);
+    if (osiOpenedLayers.size === 7) achUnlock('osi_open');
+  }
+}
+
+function osiOpenLayer(layerNum) {
+  showPage('osi');
+  setTimeout(() => {
+    const idx = OSI_LAYERS.findIndex(l => l.n === layerNum);
+    if (idx < 0) return;
+    document.querySelectorAll('.osi-layer').forEach(el => el.classList.remove('open'));
+    const el = document.querySelector(`.osi-layer[data-idx="${idx}"]`);
+    if (el) { el.classList.add('open'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  }, 60);
+}
+
+// ── TERMINAL LAB ───────────────────────────────────────────────────────────────
+const TERM_SCENARIOS = {
+  'all-up': {
+    briefing: '<b>Healthy network.</b> Everything is up. Explore the commands to see what a working router looks like.',
+    layers: [1,2,3],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.1.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'10.0.0.1',    ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/2', ip:'unassigned',  ok:'YES', method:'unset',  status:'administratively down', proto:'down'}
+    ],
+    routes: ['Gateway of last resort is 10.0.0.254 to network 0.0.0.0','','S*   0.0.0.0/0 [1/0] via 10.0.0.254','C    10.0.0.0/24 is directly connected, GigabitEthernet0/1','L    10.0.0.1/32 is directly connected, GigabitEthernet0/1','C    192.168.1.0/24 is directly connected, GigabitEthernet0/0','L    192.168.1.1/32 is directly connected, GigabitEthernet0/0'],
+    pingSuccess: true, tracePath: [{hop:1,ip:'10.0.0.254',ms:[1,1,2]},{hop:2,ip:'203.0.113.1',ms:[8,9,8]},{hop:3,ip:null,ms:null,target:true}]
+  },
+  'isp-down': {
+    briefing: '<b>Users report no internet.</b> The LAN works internally but nothing reaches the outside. Find the fault.',
+    layers: [1,3],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.1.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'10.0.0.1',    ok:'YES', method:'manual', status:'administratively down', proto:'down'},
+      {name:'GigabitEthernet0/2', ip:'unassigned',  ok:'YES', method:'unset',  status:'administratively down', proto:'down'}
+    ],
+    routes: ['Gateway of last resort is not set','','C    192.168.1.0/24 is directly connected, GigabitEthernet0/0','L    192.168.1.1/32 is directly connected, GigabitEthernet0/0'],
+    pingSuccess: false, tracePath: null
+  },
+  'wrong-route': {
+    briefing: '<b>Traffic disappears on the way out.</b> Interfaces are up, but packets die partway. Trace where the packet dies.',
+    layers: [3],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.1.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'10.0.0.1',    ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/2', ip:'unassigned',  ok:'YES', method:'unset',  status:'administratively down', proto:'down'}
+    ],
+    routes: ['Gateway of last resort is 10.0.0.99 to network 0.0.0.0','','S*   0.0.0.0/0 [1/0] via 10.0.0.99','C    10.0.0.0/24 is directly connected, GigabitEthernet0/1','L    10.0.0.1/32 is directly connected, GigabitEthernet0/1','C    192.168.1.0/24 is directly connected, GigabitEthernet0/0','L    192.168.1.1/32 is directly connected, GigabitEthernet0/0'],
+    pingSuccess: false, tracePath: [{hop:1,ip:'10.0.0.99',ms:[2,2,3]},{hop:2,ip:null,ms:'timeout'},{hop:3,ip:null,ms:'timeout'}]
+  },
+  'vlan-mismatch': {
+    briefing: '<b>Inter-VLAN routing broken.</b> PCs in VLAN 10 cannot reach VLAN 20. Trunk looks up — but VLANs don\'t match on the link.',
+    layers: [2],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.10.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'192.168.20.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/2', ip:'unassigned',   ok:'YES', method:'unset',  status:'administratively down', proto:'down'}
+    ],
+    routes: ['Gateway of last resort is not set','','C    192.168.10.0/24 is directly connected, GigabitEthernet0/0','L    192.168.10.1/32 is directly connected, GigabitEthernet0/0','C    192.168.20.0/24 is directly connected, GigabitEthernet0/1','L    192.168.20.1/32 is directly connected, GigabitEthernet0/1'],
+    vlans: [{id:1,name:'default',status:'active',ports:'Gi0/2'},{id:10,name:'STAFF',status:'active',ports:'Fa0/1, Fa0/2'},{id:30,name:'GUEST',status:'active',ports:'Fa0/4'}],
+    vlanHint: '! Expected VLAN 20 is missing — trunk drops tagged 20 frames.',
+    pingSuccess: false, tracePath: null
+  },
+  'duplex-mismatch': {
+    briefing: '<b>Link is "up" but slow and lossy.</b> High CRC errors, runts and late collisions on Gi0/0 — classic duplex mismatch.',
+    layers: [1,2],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.1.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'10.0.0.1',    ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/2', ip:'unassigned',  ok:'YES', method:'unset',  status:'administratively down', proto:'down'}
+    ],
+    routes: ['Gateway of last resort is 10.0.0.254 to network 0.0.0.0','','S*   0.0.0.0/0 [1/0] via 10.0.0.254','C    10.0.0.0/24 is directly connected, GigabitEthernet0/1','L    10.0.0.1/32 is directly connected, GigabitEthernet0/1','C    192.168.1.0/24 is directly connected, GigabitEthernet0/0','L    192.168.1.1/32 is directly connected, GigabitEthernet0/0'],
+    pingSuccess: true, pingLossy: true, tracePath: [{hop:1,ip:'10.0.0.254',ms:[140,220,180]},{hop:2,ip:'203.0.113.1',ms:[210,340,290]},{hop:3,ip:null,ms:null,target:true}]
+  },
+  'dhcp-down': {
+    briefing: '<b>New clients get APIPA (169.254.x.x).</b> DHCP pool is exhausted. Investigate the pool and bindings.',
+    layers: [3,7],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.1.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'10.0.0.1',    ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/2', ip:'unassigned',  ok:'YES', method:'unset',  status:'administratively down', proto:'down'}
+    ],
+    routes: ['Gateway of last resort is 10.0.0.254 to network 0.0.0.0','','S*   0.0.0.0/0 [1/0] via 10.0.0.254','C    10.0.0.0/24 is directly connected, GigabitEthernet0/1','C    192.168.1.0/24 is directly connected, GigabitEthernet0/0'],
+    dhcp: { pool:{name:'LAN-POOL',network:'192.168.1.0/24',gateway:'192.168.1.1',excluded:'192.168.1.1 - 192.168.1.9',total:245,leased:245,available:0},
+      bindings:[{ip:'192.168.1.10',mac:'0050.56c0.0001',expires:'Apr 19 2026 08:14',type:'Automatic'},{ip:'192.168.1.11',mac:'0050.56c0.0002',expires:'Apr 19 2026 08:15',type:'Automatic'},{ip:'192.168.1.254',mac:'0050.56c0.00fe',expires:'Apr 19 2026 08:22',type:'Automatic'}]},
+    pingSuccess: true, tracePath: null
+  },
+  'acl-block': {
+    briefing: '<b>Ping from 192.168.1.0/24 succeeds, but 192.168.2.0/24 cannot reach WAN.</b> Check ACL 101 inbound on Gi0/1.',
+    layers: [3,4],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.1.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'10.0.0.1',    ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/2', ip:'192.168.2.1', ok:'YES', method:'manual', status:'up', proto:'up'}
+    ],
+    routes: ['Gateway of last resort is 10.0.0.254 to network 0.0.0.0','','S*   0.0.0.0/0 [1/0] via 10.0.0.254','C    10.0.0.0/24 is directly connected, GigabitEthernet0/1','C    192.168.1.0/24 is directly connected, GigabitEthernet0/0','C    192.168.2.0/24 is directly connected, GigabitEthernet0/2'],
+    accessLists: [{num:101,type:'extended',rules:[{action:'permit',proto:'ip',src:'192.168.1.0 0.0.0.255',dst:'any',hits:1248},{action:'deny',proto:'ip',src:'192.168.2.0 0.0.0.255',dst:'any',hits:87},{action:'permit',proto:'ip',src:'any',dst:'any',hits:0}],appliedTo:'GigabitEthernet0/1 in'}],
+    pingSuccess: true, tracePath: [{hop:1,ip:'10.0.0.254',ms:[1,1,2]},{hop:2,ip:'203.0.113.1',ms:[8,9,8]},{hop:3,ip:null,ms:null,target:true}]
+  },
+  'dns-fail': {
+    briefing: '<b>Ping to IP works, ping to hostname fails.</b> DNS server is unreachable — Layer 7 fault with healthy Layer 1–3.',
+    layers: [7],
+    interfaces: [
+      {name:'GigabitEthernet0/0', ip:'192.168.1.1', ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/1', ip:'10.0.0.1',    ok:'YES', method:'manual', status:'up', proto:'up'},
+      {name:'GigabitEthernet0/2', ip:'unassigned',  ok:'YES', method:'unset',  status:'administratively down', proto:'down'}
+    ],
+    routes: ['Gateway of last resort is 10.0.0.254 to network 0.0.0.0','','S*   0.0.0.0/0 [1/0] via 10.0.0.254','C    10.0.0.0/24 is directly connected, GigabitEthernet0/1','C    192.168.1.0/24 is directly connected, GigabitEthernet0/0'],
+    dns: {servers:['8.8.8.8','1.1.1.1'],reachable:false},
+    pingSuccess: true, tracePath: [{hop:1,ip:'10.0.0.254',ms:[1,1,2]},{hop:2,ip:'203.0.113.1',ms:[8,9,8]},{hop:3,ip:null,ms:null,target:true}]
+  }
+};
+
+const TERM = { mode:'user', currentIface:null, scenario:'all-up', history:[], histIdx:-1, busy:false, _saveTimer:null };
+const TERM_LS_KEY = 'cl-term-state';
+
+function termSaveLocal() {
+  try { localStorage.setItem(TERM_LS_KEY, JSON.stringify({history:TERM.history.slice(-50), scenario:TERM.scenario})); } catch(e) {}
+}
+function termScheduleSave() {
+  termSaveLocal();
+  if (TERM._saveTimer) clearTimeout(TERM._saveTimer);
+  TERM._saveTimer = setTimeout(async () => {
+    if (window.currentUser?.uid) {
+      try { const {saveTerminal} = await import('./js/db.js'); await saveTerminal(window.currentUser.uid, {history:TERM.history.slice(-50),scenario:TERM.scenario}); } catch(e) {}
+    }
+  }, 500);
+}
+window.termHydrateFromCloud = async function() {
+  if (!window.currentUser) return;
+  try {
+    const {loadTerminal} = await import('./js/db.js');
+    const {data} = await loadTerminal(window.currentUser.uid);
+    if (data) {
+      if (Array.isArray(data.history)) { TERM.history = data.history.slice(-50); TERM.histIdx = TERM.history.length; }
+      if (data.scenario && TERM_SCENARIOS[data.scenario]) {
+        const sel = document.getElementById('termScenario');
+        if (sel) sel.value = data.scenario;
+        termChangeScenario(data.scenario, true);
+      }
+    }
+  } catch(e) {}
+};
+
+function termPromptText() {
+  if (TERM.mode === 'user')      return 'NetCLI>';
+  if (TERM.mode === 'priv')      return 'NetCLI#';
+  if (TERM.mode === 'config')    return 'NetCLI(config)#';
+  if (TERM.mode === 'config-if') return 'NetCLI(config-if)#';
+  return 'NetCLI>';
+}
+function termUpdatePrompt() { const el = document.getElementById('termPrompt'); if (el) el.textContent = termPromptText(); }
+
+function termPrint(text, cls) {
+  const screen = document.getElementById('termScreen');
+  if (!screen) return;
+  const line = document.createElement('div');
+  line.className = 'term-line' + (cls ? ' '+cls : '');
+  line.textContent = text;
+  screen.appendChild(line);
+  screen.scrollTop = screen.scrollHeight;
+}
+
+const TERM_KEYWORDS = new Set(['interface','hostname','ip','ipv6','no','shutdown','description','duplex','speed','switchport','vlan','access','trunk','mode','allowed','native','encapsulation','router','ospf','eigrp','network','area','passive-interface','access-list','access-group','permit','deny','any','host','nat','inside','outside','source','list','pool','overload','static','enable','secret','password','line','login','transport','input','service','banner','motd','end','exit','configuration','building']);
+const TERM_SUBKWS = new Set(['address','mask','brief','route','interface','running-config','startup-config','version','vlan','arp','mac','protocols','neighbors','trunk','access-lists','connected','local','static','ospf','eigrp']);
+
+function termHighlight(raw) {
+  let s = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  if (/^\s*!/.test(s)) return `<span class="t-comment">${s}</span>`;
+  s = s.replace(/(--[^<]*$)/g, '<span class="t-comment">$1</span>');
+  s = s.replace(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/\d{1,2})?\b/g, (_,ip,pfx) => {
+    const isMask = /^255\./.test(ip);
+    return `<span class="${isMask?'t-mask':'t-ip'}">${ip}${pfx?`<span class="t-num">${pfx}</span>`:''}</span>`;
+  });
+  s = s.replace(/\bup\b/g, '<span class="t-up">up</span>');
+  s = s.replace(/\bdown\b/g, '<span class="t-down">down</span>');
+  s = s.replace(/administratively <span class="t-down">down<\/span>/g, '<span class="t-down">administratively down</span>');
+  s = s.replace(/(^|[\s>])([A-Za-z-]+)\b/g, (m,pre,word) => {
+    const lw = word.toLowerCase();
+    if (TERM_KEYWORDS.has(lw)) return `${pre}<span class="t-kw">${word}</span>`;
+    if (TERM_SUBKWS.has(lw))   return `${pre}<span class="t-subkw">${word}</span>`;
+    return m;
+  });
+  s = s.replace(/^([CLSO*]{1,2})(\s+)/, '<span class="t-code">$1</span>$2');
+  return s;
+}
+function termPrintFmt(rawText, cls) {
+  const screen = document.getElementById('termScreen');
+  if (!screen) return;
+  const line = document.createElement('div');
+  line.className = 'term-line' + (cls ? ' '+cls : '');
+  line.innerHTML = termHighlight(rawText);
+  screen.appendChild(line);
+  screen.scrollTop = screen.scrollHeight;
+}
+
+const termSleep = ms => new Promise(r => setTimeout(r, ms));
+
+function termChangeScenario(key, silent) {
+  const sel = document.getElementById('termScenario');
+  if (sel && sel.value !== key) sel.value = key;
+  TERM.scenario = key;
+  TERM.mode = 'user';
+  TERM.currentIface = null;
+  termUpdatePrompt();
+  const sc = TERM_SCENARIOS[key];
+  const layers = sc.layers || [];
+  const primary = layers[0];
+  const primaryLay = primary ? OSI_LAYERS.find(l => l.n === primary) : null;
+  const extras = layers.slice(1).map(n => 'L'+n).join('/');
+  const rawLabel = sel?.selectedOptions?.[0]?.text || key;
+  const scenarioLabel = rawLabel.replace(/^Scenario\s*\d+\s*—\s*/, '');
+  const categoryBadge = primaryLay
+    ? `<div class="term-category-badge" style="--cat-color:${primaryLay.color}"><span class="tcb-cat">L${primary} ${primaryLay.name}${extras?' + '+extras:''}</span><span class="tcb-sep"> · </span><span class="tcb-scen">${scenarioLabel}</span></div>`
+    : '';
+  const layerChips = layers.length
+    ? `<div class="term-layer-chips"><span class="tlc-label">// relevant OSI layers:</span>${layers.map(n => {
+        const lay = OSI_LAYERS.find(l => l.n === n);
+        return `<button class="chip-link chip-layer" onclick="osiOpenLayer(${n})" style="--chip-accent:${lay?lay.color:'var(--accent)'}">L${n} ${lay?lay.name:('L'+n)} →</button>`;
+      }).join('')}</div>`
+    : '';
+  const brief = document.getElementById('termBriefing');
+  if (brief) brief.innerHTML = categoryBadge + sc.briefing + layerChips;
+  const screen = document.getElementById('termScreen');
+  if (screen) {
+    screen.innerHTML = '';
+    termPrint('% Scenario loaded: ' + (sel?.selectedOptions?.[0]?.text || key), 'dim');
+    termPrint('Type "?" for help. Use "enable" for privileged mode.', 'dim');
+    termPrint('');
+  }
+  termRenderTopology();
+  if (typeof renderNetMap === 'function') renderNetMap();
+  if (!silent) termScheduleSave();
+  achUnlock('all_pages');
+}
+
+function termRenderTopology() {
+  const sc = TERM_SCENARIOS[TERM.scenario];
+  if (!sc) return;
+  const gi0 = sc.interfaces.find(i => /0\/0$/.test(i.name));
+  const gi1 = sc.interfaces.find(i => /0\/1$/.test(i.name));
+  const pcRouter = document.getElementById('topoLinkPcRouter');
+  const routerIsp = document.getElementById('topoLinkRouterIsp');
+  if (pcRouter) { pcRouter.className = 'topo-link' + (gi0 && gi0.proto === 'up' ? '' : ' down'); pcRouter.innerHTML = (gi0 && gi0.proto !== 'up') ? '<span class="topo-badge">DOWN</span>' : ''; }
+  if (routerIsp) {
+    let cls = '', badge = '';
+    if (!gi1 || gi1.proto !== 'up') { cls = ' down'; badge = '<span class="topo-badge">DOWN</span>'; }
+    else if (!sc.pingSuccess) { cls = ' warn'; badge = '<span class="topo-badge">FAULT</span>'; }
+    routerIsp.className = 'topo-link' + cls;
+    routerIsp.innerHTML = badge;
+  }
+}
+
+function renderNetMap() {
+  const sc = TERM_SCENARIOS[TERM.scenario];
+  if (!sc) return;
+  const sel = document.getElementById('termScenario');
+  const scenarioName = sel ? sel.options[sel.selectedIndex]?.text : TERM.scenario;
+  const nmScenario = document.getElementById('netmapScenario');
+  if (nmScenario) nmScenario.textContent = scenarioName || TERM.scenario;
+  const grid = document.getElementById('netmapGrid');
+  if (!grid) return;
+  const devices = [
+    {icon:'💻', name:'PC-01', sub:'Client workstation', ifaces:[{name:'eth0', ip:'192.168.1.10', state:'up'}]},
+    {icon:'🔀', name:'NetCLI', sub:'Cisco router (simulated)', ifaces: sc.interfaces.map(i => ({name:i.name, ip:i.ip, state:i.proto==='up'?'up':'down'}))},
+    {icon:'☁️', name:'ISP Gateway', sub:'Upstream / internet', ifaces:[{name:'public', ip:'8.8.8.8', state:sc.pingSuccess?'up':'down'}]}
+  ];
+  grid.innerHTML = devices.map(d => `
+    <div class="netmap-card">
+      <h3><span class="nm-icon">${d.icon}</span> ${d.name}</h3>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:.5rem">${d.sub}</div>
+      ${d.ifaces.map(i => `<div class="netmap-iface"><span class="nm-name">${i.name}</span><span class="nm-ip">${i.ip}</span><span class="nm-state ${i.state}">${i.state.toUpperCase()}</span></div>`).join('')}
+    </div>`).join('');
+  const gi0 = sc.interfaces.find(i => /0\/0$/.test(i.name));
+  const gi1 = sc.interfaces.find(i => /0\/1$/.test(i.name));
+  const linkPcR = {state:(gi0&&gi0.proto==='up')?'up':'down', label:'PC-01 ⇄ NetCLI (LAN)'};
+  let linkRIsp = {state:'up', label:'NetCLI ⇄ ISP Gateway (WAN)'};
+  if (!gi1 || gi1.proto !== 'up') linkRIsp.state = 'down';
+  else if (!sc.pingSuccess) linkRIsp.state = 'warn';
+  const linksEl = document.getElementById('netmapLinks');
+  if (linksEl) linksEl.innerHTML = [linkPcR, linkRIsp].map(l => {
+    const label = l.state==='up'?'UP':(l.state==='warn'?'FAULT':'DOWN');
+    return `<div class="netmap-link-item"><span class="dot ${l.state}"></span>${l.label} — <b style="color:var(--${l.state==='up'?'accent':(l.state==='warn'?'text':'red')})">${label}</b></div>`;
+  }).join('');
+}
+
+const TERM_COMMANDS = ['enable','disable','exit','end','logout','configure terminal','interface','ping','traceroute','show ip interface brief','show ip route','show running-config','show version','show vlan brief','show ip dhcp binding','show ip dhcp pool','show access-lists','show ip name-server','clear','?','shutdown','no shutdown','ip address','description','duplex','speed'];
+
+function termResolveCommand(input) {
+  const trimmed = input.trim().replace(/\s+/g,' ');
+  if (!trimmed) return null;
+  const parts = trimmed.split(' ');
+  for (const cmd of TERM_COMMANDS) {
+    const cmdParts = cmd.split(' ');
+    if (parts.length < cmdParts.length) continue;
+    let match = true;
+    for (let i=0; i<cmdParts.length; i++) { if (!cmdParts[i].startsWith(parts[i].toLowerCase())) { match=false; break; } }
+    if (match) return {cmd, arg: parts.slice(cmdParts.length).join(' ')};
+  }
+  return {cmd:null, arg:trimmed};
+}
+
+function termTabComplete(input) {
+  const parts = input.trim().toLowerCase().split(/\s+/);
+  const candidates = TERM_COMMANDS.filter(c => {
+    const cp = c.split(' ');
+    if (cp.length < parts.length) return false;
+    for (let i=0; i<parts.length; i++) { if (!cp[i].startsWith(parts[i])) return false; }
+    return true;
+  });
+  if (!candidates.length) return null;
+  if (candidates.length === 1) return candidates[0];
+  return candidates[0].split(' ').slice(0, parts.length).join(' ');
+}
+
+function termUpdateInputHighlight() {
+  const inp = document.getElementById('termInput');
+  if (!inp) return;
+  const v = inp.value.trim().toLowerCase();
+  const resolved = termResolveCommand(v);
+  inp.className = 'term-input ' + (v ? (resolved?.cmd ? 'cmd-valid' : 'cmd-unknown') : '');
+}
+
+async function termExec(raw) {
+  const sc = TERM_SCENARIOS[TERM.scenario];
+  const resolved = termResolveCommand(raw);
+  if (!resolved || !resolved.cmd) { termPrint('% Invalid input detected', 'err'); return; }
+  const {cmd, arg} = resolved;
+
+  // Achievement: first terminal command
+  achUnlock('terminal_first');
+
+  if (cmd === 'enable') { if (TERM.mode !== 'user') { termPrint('% Already in privileged mode','dim'); return; } TERM.mode='priv'; termUpdatePrompt(); return; }
+  if (cmd === 'disable') { TERM.mode='user'; termUpdatePrompt(); return; }
+  if (cmd === 'configure terminal') {
+    if (TERM.mode !== 'priv') { termPrint('% Only available in privileged mode','err'); return; }
+    TERM.mode='config'; termUpdatePrompt(); termPrint('Enter configuration commands, one per line. End with CNTL/Z.','dim'); return;
+  }
+  if (cmd === 'interface') {
+    if (TERM.mode === 'user') { termPrint('% Enter privileged EXEC first (type: enable)','err'); return; }
+    if (TERM.mode === 'priv') { termPrint('% Enter global config first (type: configure terminal)','err'); return; }
+    if (!arg) { termPrint('% Incomplete command','err'); return; }
+    TERM.currentIface = arg; TERM.mode='config-if'; termUpdatePrompt(); return;
+  }
+  if (cmd === 'exit' || cmd === 'end' || cmd === 'logout') {
+    if (cmd === 'end' && (TERM.mode==='config-if'||TERM.mode==='config')) { TERM.mode='priv'; TERM.currentIface=null; termUpdatePrompt(); return; }
+    if (TERM.mode==='config-if') { TERM.mode='config'; TERM.currentIface=null; termUpdatePrompt(); return; }
+    if (TERM.mode==='config') { TERM.mode='priv'; termUpdatePrompt(); return; }
+    if (TERM.mode==='priv') { TERM.mode='user'; termUpdatePrompt(); return; }
+    termPrint('Goodbye.','dim'); TERM.mode='user'; termUpdatePrompt(); return;
+  }
+  if (cmd === 'clear') { const s = document.getElementById('termScreen'); if (s) s.innerHTML=''; return; }
+  if (cmd === '?') {
+    ['enable — Enter privileged mode','configure terminal — Enter config mode','exit / end — Leave current mode','ping <ip> — ICMP echo','traceroute <ip> — Trace route','show ip interface brief — Interface status','show ip route — Routing table','show running-config — Active config','show vlan brief — VLAN table','show ip dhcp binding — DHCP leases','show access-lists — ACL hit counts','clear — Clear screen'].forEach(l => termPrint('  '+l,'dim'));
+    return;
+  }
+  if (cmd === 'show ip interface brief') {
+    termPrint('Interface                  IP-Address      OK? Method Status                Protocol','dim');
+    sc.interfaces.forEach(i => { const line = i.name.padEnd(27)+i.ip.padEnd(16)+i.ok.padEnd(4)+i.method.padEnd(7)+i.status.padEnd(22)+i.proto; termPrintFmt(line); });
+    return;
+  }
+  if (cmd === 'show ip route') {
+    termPrint('Codes: L - local, C - connected, S - static, * - candidate default','dim'); termPrint('');
+    sc.routes.forEach(r => termPrintFmt(r)); return;
+  }
+  if (cmd === 'show running-config') {
+    termPrint('Building configuration...','dim'); await termSleep(200);
+    termPrintFmt('!'); termPrintFmt('hostname NetCLI'); termPrintFmt('!');
+    sc.interfaces.forEach(i => { termPrintFmt('interface '+i.name); termPrintFmt(' '+(i.ip==='unassigned'?'no ip address':'ip address '+i.ip+' 255.255.255.0')); if(i.status==='administratively down')termPrintFmt(' shutdown'); termPrintFmt('!'); });
+    termPrintFmt('end'); return;
+  }
+  if (cmd === 'show version') { termPrint('NetCLI IOS Software, Version 15.6(3)M (simulated)','dim'); return; }
+  if (cmd === 'show vlan brief') {
+    if (!sc.vlans) { termPrint('No VLANs configured.','dim'); return; }
+    termPrint('VLAN Name                             Status    Ports','dim');
+    termPrint('---- -------------------------------- --------- -------------------------------','dim');
+    sc.vlans.forEach(v => { const line = String(v.id).padEnd(5)+(v.name||'').padEnd(33)+(v.status||'').padEnd(10)+(v.ports||''); termPrintFmt(line); });
+    if (sc.vlanHint) termPrintFmt(sc.vlanHint); return;
+  }
+  if (cmd === 'show ip dhcp binding') {
+    if (!sc.dhcp?.bindings) { termPrint('No bindings.','dim'); return; }
+    termPrint('IP address          Client-ID/Hardware address   Lease expiration        Type','dim');
+    sc.dhcp.bindings.forEach(b => termPrintFmt(b.ip.padEnd(20)+b.mac.padEnd(29)+b.expires.padEnd(24)+b.type));
+    if (sc.dhcp.pool.available === 0) termPrintFmt('! Pool exhausted — 0 addresses available'); return;
+  }
+  if (cmd === 'show ip dhcp pool') {
+    if (!sc.dhcp?.pool) { termPrint('No pools configured.','dim'); return; }
+    const p = sc.dhcp.pool;
+    ['Pool '+p.name+':','  Network: '+p.network,'  Gateway: '+p.gateway,'  Excluded: '+p.excluded,'  Total addresses: '+p.total,'  Leased addresses: '+p.leased,'  Available: '+p.available].forEach(l => termPrintFmt(l)); return;
+  }
+  if (cmd === 'show access-lists') {
+    if (!sc.accessLists) { termPrint('No access lists defined.','dim'); return; }
+    sc.accessLists.forEach(al => {
+      termPrintFmt(`Extended IP access list ${al.num}`);
+      al.rules.forEach((r,i) => termPrintFmt(`    ${i+1}0 ${r.action} ${r.proto} ${r.src} ${r.dst} (${r.hits} matches)`));
+      termPrintFmt(`  Applied to: ${al.appliedTo}`);
+    }); return;
+  }
+  if (cmd === 'show ip name-server') {
+    if (!sc.dns) { termPrint('Default name server: 8.8.8.8','dim'); return; }
+    termPrint('Default name server: '+sc.dns.servers.join(', '),'dim');
+    if (!sc.dns.reachable) termPrintFmt('! Name servers unreachable — DNS resolution failing'); return;
+  }
+  if (cmd === 'ping') {
+    if (TERM.mode === 'user') { termPrint('% Only available in privileged EXEC mode (type: enable)','err'); return; }
+    const target = arg || '8.8.8.8';
+    termPrint('Type escape sequence to abort.','dim');
+    termPrint(`Sending 5, 100-byte ICMP Echos to ${target}, timeout is 2 seconds:`, 'dim');
+    if (!sc.pingSuccess) {
+      await termSleep(600); termPrint('.....','err');
+      termPrint('Success rate is 0 percent (0/5)','err'); return;
+    }
+    if (sc.pingLossy) {
+      await termSleep(400); termPrint('!.!.!','ok');
+      termPrint('Success rate is 60 percent (3/5), round-trip min/avg/max = 140/180/220 ms','dim'); return;
+    }
+    await termSleep(300); termPrint('!!!!!','ok');
+    termPrint('Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms','dim'); return;
+  }
+  if (cmd === 'traceroute') {
+    if (TERM.mode === 'user') { termPrint('% Only available in privileged EXEC mode','err'); return; }
+    if (!sc.tracePath) { termPrint('% Trace failed — no route to host','err'); return; }
+    termPrint('Type escape sequence to abort.','dim');
+    termPrint('Tracing the route to '+( arg||'8.8.8.8'),'dim'); termPrint('');
+    for (const h of sc.tracePath) {
+      await termSleep(250);
+      if (h.target) { termPrint(`  ${h.hop}   <target reached>`,'ok'); break; }
+      const ms = h.ms === 'timeout' ? '* * *' : (Array.isArray(h.ms) ? h.ms.map(m=>m+' ms').join('  ') : '* * *');
+      termPrintFmt(`  ${h.hop}   ${h.ip||'*'}  ${ms}`);
+    }
+    return;
+  }
+  // Config-mode stubs
+  if (TERM.mode === 'config' || TERM.mode === 'config-if') {
+    termPrint('%Building configuration...','dim');
+    await termSleep(100);
+    termPrint('Configuration accepted.','ok');
+    termScheduleSave(); return;
+  }
+  termPrint('% Command only available in appropriate mode. Type "?" for help.','dim');
+}
+
+// Terminal input handler
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('termInput');
+  if (!inp) return;
+  inp.addEventListener('keydown', async e => {
+    if (e.key === 'Enter') {
+      const val = inp.value.trim();
+      inp.value = '';
+      termUpdateInputHighlight();
+      if (!val) return;
+      TERM.history.push(val);
+      TERM.histIdx = TERM.history.length;
+      termPrint(termPromptText() + ' ' + val);
+      await termExec(val);
+      termScheduleSave();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (TERM.histIdx > 0) { TERM.histIdx--; inp.value = TERM.history[TERM.histIdx]; }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (TERM.histIdx < TERM.history.length - 1) { TERM.histIdx++; inp.value = TERM.history[TERM.histIdx]; }
+      else { TERM.histIdx = TERM.history.length; inp.value = ''; }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const completed = termTabComplete(inp.value);
+      if (completed) { inp.value = completed; termUpdateInputHighlight(); }
+    }
+  });
+  inp.addEventListener('input', termUpdateInputHighlight);
+
+  // Restore local state
+  try {
+    const raw = localStorage.getItem(TERM_LS_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s?.scenario && TERM_SCENARIOS[s.scenario]) {
+        const sel = document.getElementById('termScenario');
+        if (sel) sel.value = s.scenario;
+        TERM.scenario = s.scenario;
+      }
+    }
+  } catch(e) {}
+});
+
+// ── SEARCH INDEX — add new pages ──────────────────────────────────────────────
+const _origBuildIdx = buildSearchIndex;
+window.buildSearchIndex = function() {
+  _origBuildIdx();
+  [['terminal','Terminal Lab — Interactive Cisco IOS simulator'],
+   ['osi','OSI Model — 7 layers with protocols, faults and CLI commands'],
+   ['netmap','Network Map — Live topology view'],
+   ['profile','Profile — Account & achievements'],
+   ['legal','Legal — Privacy policy, terms of use']
+  ].forEach(([id,label]) => {
+    SEARCH_INDEX.push({type:'page',label:label,detail:'Go to page',action:()=>showPage(id)});
+  });
+};
+</script>
+
+<!-- ACHIEVEMENT TOAST -->
+<div class="achievement-toast" id="achToast">
+  <span class="ach-icon" id="achToastIcon">🏆</span>
+  <div>
+    <div class="ach-title">Achievement Unlocked</div>
+    <div class="ach-name" id="achToastName"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PROFILE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-profile">
+  <section class="profile-header">
+    <div class="container-sm">
+      <div class="profile-avatar-big" id="profileAvatarBig" role="button" tabindex="0" aria-label="Change avatar" onclick="openAvatarModal()">
+        <img id="profileAvatarImg" src="" alt="" style="display:none"/>
+        <span class="profile-avatar-edit" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </span>
+      </div>
+      <h1 class="profile-head-name" id="profileHeadName">Profile</h1>
+      <p class="profile-head-email" id="profileHeadEmail"></p>
+    </div>
+  </section>
+
+  <div class="avatar-modal-overlay" id="avatarModalOverlay" onclick="closeAvatarModal(event)">
+    <div class="avatar-modal">
+      <h4>> // choose avatar</h4>
+      <div class="avatar-grid" id="avatarGrid"></div>
+      <p class="profile-msg" id="profileAvatarMsg" style="margin-top:.6rem"></p>
+    </div>
+  </div>
+
+  <div class="container-sm" style="padding-top:1.5rem">
+
+    <div id="profileSignedOut" class="sign-in-note">
+      <p>Sign in to sync progress across devices,<br>unlock achievements, and manage your profile.</p>
+      <br>
+      <a href="login.html" style="background:var(--accent);color:#0d1117;padding:.6rem 1.4rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;display:inline-block;text-decoration:none">Sign In / Register</a>
+    </div>
+
+    <div id="profileSignedIn" style="display:none">
+      <div class="profile-section">
+        <h3>> // display name</h3>
+        <div class="profile-field">
+          <label>New name</label>
+          <div class="profile-row">
+            <input type="text" id="profileName" placeholder="Your name" autocomplete="name"/>
+            <button class="btn-save" onclick="profileSaveName()">Save</button>
+          </div>
+          <p class="profile-msg" id="profileNameMsg"></p>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h3>> // email address</h3>
+        <div class="profile-field">
+          <label>New email</label>
+          <input type="email" id="profileEmail" placeholder="new@email.com" autocomplete="email"/>
+        </div>
+        <div class="profile-field">
+          <label>Confirm with current password</label>
+          <div class="profile-row">
+            <input type="password" id="profileEmailPw" placeholder="••••••••" autocomplete="current-password"/>
+            <button class="btn-save" onclick="profileSaveEmail()">Save</button>
+          </div>
+          <p class="profile-msg" id="profileEmailMsg"></p>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h3>> // password</h3>
+        <div class="profile-field">
+          <label>Current password</label>
+          <input type="password" id="profileCurPw" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <div class="profile-field">
+          <label>New password</label>
+          <div class="profile-row">
+            <input type="password" id="profileNewPw" placeholder="Min. 8 characters" autocomplete="new-password"/>
+            <button class="btn-save" onclick="profileSavePw()">Save</button>
+          </div>
+          <p class="profile-msg" id="profilePwMsg"></p>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h3 style="color:var(--red);opacity:1">> // delete account</h3>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Permanently deletes your account and all data.</p>
+        <div class="profile-field">
+          <label>Confirm with password</label>
+          <input type="password" id="profileDeletePw" placeholder="••••••••" autocomplete="current-password" style="margin-bottom:.6rem"/>
+          <div class="btn-hold-wrap">
+            <button class="btn-hold" id="btnHoldDelete">
+              <span class="btn-hold-bar" id="holdBar"></span>
+              Hold to delete account
+            </button>
+          </div>
+          <p class="profile-msg" id="profileDeleteMsg"></p>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <button class="btn-save" onclick="doSignOut()" style="width:100%;padding:.75rem;background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.3);color:var(--red)">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <h3>> // achievements</h3>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Badges earned through your learning journey.</p>
+      <div class="ach-gallery" id="achGallery"></div>
+    </div>
+
+    <button class="profile-home-btn" onclick="showPage('home')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Back to home
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TERMINAL LAB
+═══════════════════════════════════════════ -->
+<div class="page" id="page-terminal">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// ★ terminal lab</p>
+    <h1>Terminal <em>Lab</em></h1>
+    <p>Interactive Cisco IOS shell. Pick a scenario, enter privileged mode with <code>enable</code>, and troubleshoot.</p>
+  </div></section>
+
+  <section class="section"><div class="term-wrap">
+    <div class="term-control-row">
+      <select id="termScenario" onchange="termChangeScenario(this.value)">
+        <optgroup label="— Healthy —">
+          <option value="all-up">Scenario 1 — Healthy network</option>
+        </optgroup>
+        <optgroup label="— Layer 1/2 (Physical / Data Link) —">
+          <option value="duplex-mismatch">Scenario 2 — Duplex mismatch (slow, lossy)</option>
+          <option value="vlan-mismatch">Scenario 3 — VLAN mismatch</option>
+        </optgroup>
+        <optgroup label="— Layer 3 (Network) —">
+          <option value="isp-down">Scenario 4 — ISP unreachable</option>
+          <option value="wrong-route">Scenario 5 — Routing failure</option>
+        </optgroup>
+        <optgroup label="— Layer 4 (Transport) —">
+          <option value="acl-block">Scenario 6 — ACL silently dropping traffic</option>
+        </optgroup>
+        <optgroup label="— Layer 7 (Application) —">
+          <option value="dhcp-down">Scenario 7 — DHCP pool exhausted</option>
+          <option value="dns-fail">Scenario 8 — DNS resolution fails</option>
+        </optgroup>
+      </select>
+      <div class="term-nav-chips">
+        <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
+        <button class="chip-link" onclick="showPage('osi')">🧠 OSI Model</button>
+        <button class="chip-link" onclick="showPage('troubleshooting')">🧰 Playbooks</button>
+      </div>
+    </div>
+    <div class="term-briefing" id="termBriefing"></div>
+
+    <div class="topo-row" id="termTopology">
+      <div class="topo-node" data-node="pc">
+        <div class="topo-icon">💻</div>
+        <div class="topo-label">PC</div>
+        <div class="topo-sub" id="topoPcIp">192.168.1.10</div>
+      </div>
+      <div class="topo-link" id="topoLinkPcRouter"></div>
+      <div class="topo-node clickable" id="topoRouter" onclick="document.getElementById('termInput').focus()">
+        <div class="topo-icon">🔀</div>
+        <div class="topo-label">Router</div>
+        <div class="topo-sub">NetCLI</div>
+      </div>
+      <div class="topo-link" id="topoLinkRouterIsp"></div>
+      <div class="topo-node" data-node="isp">
+        <div class="topo-icon">☁️</div>
+        <div class="topo-label">ISP</div>
+        <div class="topo-sub">8.8.8.8</div>
+      </div>
+    </div>
+
+    <div class="term-screen" id="termScreen"></div>
+    <div class="term-prompt-row">
+      <span class="term-prompt-label" id="termPrompt">NetCLI&gt;</span>
+      <input id="termInput" class="term-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"/>
+    </div>
+    <p class="term-hint">Try: <b>enable</b> → <b>show ip interface brief</b> → <b>ping 8.8.8.8</b> · Tab completes · ↑/↓ history · <b>clear</b> clears screen</p>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     NETWORK MAP
+═══════════════════════════════════════════ -->
+<div class="page" id="page-netmap">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// ▣ network map</p>
+    <h1>Network <em>Map</em></h1>
+    <p>Live view of the active terminal scenario — devices, interfaces and link health.</p>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.5rem">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted)">
+        Active scenario: <b id="netmapScenario" style="color:var(--accent)">—</b>
+      </div>
+      <button class="btn" style="padding:.5rem .9rem;font-size:.78rem" onclick="showPage('terminal')">Open terminal →</button>
+    </div>
+    <div class="netmap-grid" id="netmapGrid"></div>
+    <div class="netmap-links">
+      <h4>// links</h4>
+      <div id="netmapLinks"></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     OSI MODEL
+═══════════════════════════════════════════ -->
+<div class="page" id="page-osi">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// ▤ osi model</p>
+    <h1>The <em>OSI</em> Model</h1>
+    <p>Seven layers — from copper to code. Click a layer to expand examples, common faults and the Cisco CLI commands that diagnose each one.</p>
+  </div></section>
+
+  <section class="section"><div class="container-sm">
+    <div class="intro-box">
+      <strong>Why it matters:</strong> The OSI model is the mental map every network engineer uses to isolate faults. When something breaks, you don't guess — you walk the stack. Start at <b>Layer 1</b> (is the cable in?) and move upward only when the layer below is confirmed healthy.
+    </div>
+    <div class="osi-stack" id="osiStack"></div>
+    <div class="intro-box" style="margin-top:2rem">
+      <strong>Mnemonic (bottom → top):</strong> <em>Please Do Not Throw Sausage Pizza Away</em> — <b>P</b>hysical · <b>D</b>ata Link · <b>N</b>etwork · <b>T</b>ransport · <b>S</b>ession · <b>P</b>resentation · <b>A</b>pplication.
+    </div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn" onclick="showPage('troubleshooting')">← Troubleshooting Playbooks</button>
+    </div>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LEGAL
+═══════════════════════════════════════════ -->
+<div class="page" id="page-legal">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// legal</p>
+    <h1>Legal &amp; <em>Privacy</em></h1>
+    <p>Last updated: April 2026 · Publisher: SCHJOLDR</p>
+  </div></section>
+
+  <div class="container-sm" style="padding-top:1rem;padding-bottom:3rem">
+    <div class="legal-section">
+      <span class="legal-badge">GDPR · Privacy Policy</span>
+      <h2>> // Privacy Policy</h2>
+      <h3>Data Controller</h3>
+      <p>SCHJOLDR is the data controller for personal data collected through cisco:learn. Contact: <a href="mailto:support@schjoldr.io">support@schjoldr.io</a></p>
+      <h3>What we collect</h3>
+      <ul>
+        <li>Email address (when creating an account)</li>
+        <li>Display name (optional, set by the user)</li>
+        <li>Learning data: quiz results, streaks and progress</li>
+        <li>Preferences: theme and language settings</li>
+      </ul>
+      <h3>Purpose and legal basis</h3>
+      <p>Data is used solely to deliver and improve the service (GDPR art. 6(1)(b)). We do not sell or share personal data with third parties.</p>
+      <h3>Data processors</h3>
+      <p>The app uses <strong>Google Firebase</strong> (Authentication and Firestore). Your device uses <strong>localStorage</strong> to store settings and learning data locally.</p>
+      <h3>Retention</h3>
+      <p>Data is stored as long as the account is active. You can delete your account and all associated data directly in Profile → Delete account.</p>
+      <h3>Your rights (GDPR Ch. III)</h3>
+      <ul>
+        <li><strong>Access</strong> — you may request a copy of your data</li>
+        <li><strong>Rectification</strong> — you can update your name and email in the app</li>
+        <li><strong>Erasure</strong> — you can delete your account in the app</li>
+        <li><strong>Complaint</strong> — you have the right to lodge a complaint with your national supervisory authority</li>
+      </ul>
+      <p>For privacy enquiries: <a href="mailto:support@schjoldr.io">support@schjoldr.io</a></p>
+      <h3>Age requirement</h3>
+      <p>This service is not directed at children under 13.</p>
+    </div>
+    <div class="legal-section">
+      <span class="legal-badge">Terms of Use</span>
+      <h2>> // Terms of Use</h2>
+      <h3>The service</h3>
+      <p>cisco:learn is a free learning platform for Cisco IOS and networking technology. The service is provided free of charge and without any warranty.</p>
+      <h3>Disclaimer</h3>
+      <ul>
+        <li>The service is provided "as is" without warranties of availability, accuracy or fitness for any purpose.</li>
+        <li>Content in the app is intended as a learning resource and does not constitute official Cisco documentation.</li>
+        <li>SCHJOLDR is not liable for any damage resulting from use of or inability to access the service.</li>
+      </ul>
+      <h3>Governing law</h3>
+      <p>These terms are governed by Norwegian law.</p>
+    </div>
+    <div class="legal-section">
+      <span class="legal-badge">Copyright</span>
+      <h2>> // Copyright</h2>
+      <p>© 2026 SCHJOLDR. All rights reserved.</p>
+      <p>Cisco®, IOS®, Packet Tracer® and CCNA® are registered trademarks of Cisco Systems, Inc. This app is an independent educational resource and is not affiliated with, endorsed by, or sponsored by Cisco Systems, Inc.</p>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn" onclick="showPage('home')">← Back to home</button>
+    </div>
+  </div>
+</div>
+
+<footer class="app-footer">
+  <div class="container">
+    <p>cisco:learn — Free Cisco networking reference &amp; practice tool<br>
+    <a onclick="showPage('legal')">Privacy &amp; Legal</a> · <a onclick="showPage('profile')">Profile</a> · Not affiliated with Cisco Systems, Inc.</p>
+  </div>
+</footer>
+
+<script type="module">
+// ── FIREBASE AUTH ──────────────────────────────────────────────────────────────
+import { onAuth, logout } from './js/auth.js';
+
+let currentUser = null;
+window.currentUser = null;
+
+onAuth(user => {
+  currentUser = user;
+  window.currentUser = user;
+
+  const signInBtn = document.getElementById('navSignInBtn');
+  const userPill  = document.getElementById('navUserPill');
+
+  if (user) {
+    if (signInBtn) signInBtn.style.display = 'none';
+    if (userPill) {
+      userPill.style.display = 'inline-block';
+      userPill.textContent = user.displayName || user.email?.split('@')[0] || 'Profile';
+    }
+    // Update profile page
+    const pName = document.getElementById('profileHeadName');
+    const pEmail = document.getElementById('profileHeadEmail');
+    if (pName) pName.textContent = user.displayName || 'User';
+    if (pEmail) pEmail.textContent = user.email || '';
+    const pNameInput = document.getElementById('profileName');
+    if (pNameInput) pNameInput.value = user.displayName || '';
+    const pEmailInput = document.getElementById('profileEmail');
+    if (pEmailInput) pEmailInput.value = user.email || '';
+    const signedIn = document.getElementById('profileSignedIn');
+    const signedOut = document.getElementById('profileSignedOut');
+    if (signedIn) signedIn.style.display = 'block';
+    if (signedOut) signedOut.style.display = 'none';
+
+    // Restore avatar
+    const saved = localStorage.getItem('cl-avatar') || user.photoURL || '';
+    if (saved) {
+      const img = document.getElementById('profileAvatarImg');
+      if (img) { img.src = saved; img.style.display = 'block'; }
+    }
+
+    // Hydrate terminal state from cloud
+    if (typeof window.termHydrateFromCloud === 'function') window.termHydrateFromCloud();
+  } else {
+    if (signInBtn) signInBtn.style.display = 'inline-block';
+    if (userPill) userPill.style.display = 'none';
+    const signedIn = document.getElementById('profileSignedIn');
+    const signedOut = document.getElementById('profileSignedOut');
+    if (signedIn) signedIn.style.display = 'none';
+    if (signedOut) signedOut.style.display = 'block';
+  }
+});
+
+window.doSignOut = async function() {
+  await logout();
+  localStorage.removeItem('cl-avatar');
+  window.location.reload();
+};
+
+// ── PROFILE SAVE ACTIONS ───────────────────────────────────────────────────────
+function profileMsg(id, msg, isErr) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'profile-msg ' + (isErr ? 'err' : 'ok');
+  setTimeout(() => { el.textContent = ''; el.className = 'profile-msg'; }, 4000);
+}
+
+async function profileReauth(password) {
+  const { EmailAuthProvider, reauthenticateWithCredential } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  const credential = EmailAuthProvider.credential(currentUser.email, password);
+  await reauthenticateWithCredential(currentUser, credential);
+}
+
+window.profileSaveName = async function() {
+  if (!currentUser) return;
+  const name = document.getElementById('profileName').value.trim();
+  if (!name || name.length > 40) return profileMsg('profileNameMsg', 'Name must be 1–40 characters', true);
+  const { updateProfile } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  try {
+    await updateProfile(currentUser, { displayName: name });
+    document.getElementById('profileHeadName').textContent = name;
+    profileMsg('profileNameMsg', 'Name updated!');
+  } catch(e) { profileMsg('profileNameMsg', e.message, true); }
+};
+
+window.profileSaveEmail = async function() {
+  if (!currentUser) return;
+  const email = document.getElementById('profileEmail').value.trim();
+  const pw = document.getElementById('profileEmailPw').value;
+  if (!email || !pw) return profileMsg('profileEmailMsg', 'Fill in all fields', true);
+  try {
+    await profileReauth(pw);
+    const { updateEmail } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    await updateEmail(currentUser, email);
+    document.getElementById('profileHeadEmail').textContent = email;
+    profileMsg('profileEmailMsg', 'Email updated!');
+  } catch(e) { profileMsg('profileEmailMsg', e.message, true); }
+};
+
+window.profileSavePw = async function() {
+  if (!currentUser) return;
+  const cur = document.getElementById('profileCurPw').value;
+  const nw = document.getElementById('profileNewPw').value;
+  if (!cur || !nw) return profileMsg('profilePwMsg', 'Fill in both fields', true);
+  if (nw.length < 8) return profileMsg('profilePwMsg', 'Min. 8 characters', true);
+  try {
+    await profileReauth(cur);
+    const { updatePassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    await updatePassword(currentUser, nw);
+    document.getElementById('profileCurPw').value = '';
+    document.getElementById('profileNewPw').value = '';
+    profileMsg('profilePwMsg', 'Password changed!');
+  } catch(e) { profileMsg('profilePwMsg', e.message, true); }
+};
+
+window.profileDelete = async function() {
+  if (!currentUser) return;
+  const pw = document.getElementById('profileDeletePw').value;
+  if (!pw) return profileMsg('profileDeleteMsg', 'Password required', true);
+  if (!confirm('Are you sure? This cannot be undone.')) return;
+  try {
+    await profileReauth(pw);
+    const { deleteUser } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    await deleteUser(currentUser);
+    window.location.reload();
+  } catch(e) { profileMsg('profileDeleteMsg', e.message, true); }
+};
+
+// ── AVATAR PICKER ──────────────────────────────────────────────────────────────
+const AVATARS = Array.from({length:8}, (_,i) => `img/avatars/avatar${i+1}.png`);
+
+window.openAvatarModal = function() {
+  const grid = document.getElementById('avatarGrid');
+  if (grid && !grid.children.length) {
+    AVATARS.forEach((src, i) => {
+      const btn = document.createElement('div');
+      btn.className = 'avatar-option';
+      btn.dataset.src = src;
+      btn.innerHTML = `<img src="${src}" alt="Avatar ${i+1}" loading="lazy"/>
+        <div class="avatar-check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>`;
+      btn.onclick = () => {
+        document.querySelectorAll('.avatar-option').forEach(b => b.classList.toggle('selected', b.dataset.src === src));
+        localStorage.setItem('cl-avatar', src);
+        const img = document.getElementById('profileAvatarImg');
+        if (img) { img.src = src; img.style.display = 'block'; }
+        profileMsg('profileAvatarMsg', 'Avatar saved!');
+        setTimeout(() => closeAvatarModal(), 300);
+      };
+      grid.appendChild(btn);
+    });
+  }
+  const saved = localStorage.getItem('cl-avatar');
+  if (saved) document.querySelectorAll('.avatar-option').forEach(b => b.classList.toggle('selected', b.dataset.src === saved));
+  document.getElementById('avatarModalOverlay').classList.add('open');
+};
+
+window.closeAvatarModal = function(e) {
+  if (e && e.target !== document.getElementById('avatarModalOverlay')) return;
+  document.getElementById('avatarModalOverlay').classList.remove('open');
+};
+
+// ── HOLD-TO-DELETE ──────────────────────────────────────────────────────────────
+(function() {
+  const HOLD_MS = 1500;
+  let raf = null, start = null;
+  function onStart(e) {
+    e.preventDefault();
+    start = performance.now();
+    function tick(now) {
+      const pct = Math.min((now - start) / HOLD_MS * 100, 100);
+      const bar = document.getElementById('holdBar');
+      if (bar) bar.style.width = pct + '%';
+      if (pct < 100) { raf = requestAnimationFrame(tick); }
+      else { raf = null; window.profileDelete(); reset(); }
+    }
+    raf = requestAnimationFrame(tick);
+  }
+  function reset() {
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+    start = null;
+    const bar = document.getElementById('holdBar');
+    if (bar) bar.style.width = '0%';
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('btnHoldDelete');
+    if (!btn) return;
+    btn.addEventListener('mousedown', onStart);
+    btn.addEventListener('touchstart', onStart, {passive:false});
+    btn.addEventListener('mouseup', reset);
+    btn.addEventListener('mouseleave', reset);
+    btn.addEventListener('touchend', reset);
+    btn.addEventListener('touchcancel', reset);
+  });
+})();
 </script>
 </body>
 </html>
