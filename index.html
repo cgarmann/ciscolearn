@@ -489,6 +489,27 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 /* TS OSI BADGE */
 .ts-osi-badge { display:inline-flex; align-items:center; font-family:'JetBrains Mono',monospace; font-size:.63rem; font-weight:700; padding:.15rem .5rem; border-radius:3px; border:1px solid; cursor:pointer; vertical-align:middle; margin-right:.45rem; transition:opacity .15s; }
 .ts-osi-badge:hover { opacity:.75; }
+
+/* PROTOCOLS PAGE */
+.proto-num { font-family:'JetBrains Mono',monospace; font-size:1.05rem; font-weight:700; min-width:2.2rem; text-align:right; flex-shrink:0; }
+.proto-group-head { display:flex; align-items:center; gap:.75rem; margin-bottom:1rem; padding-bottom:.65rem; border-bottom:2px solid var(--border); }
+.proto-group-icon { font-size:1.35rem; line-height:1; }
+.proto-group-label { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.95rem; color:var(--text); }
+.proto-group-desc { font-size:.78rem; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.proto-section { margin-bottom:2.25rem; }
+
+/* IP TABLES PAGE */
+.port-range-legend { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1.75rem; }
+.port-range-chip { font-family:'JetBrains Mono',monospace; font-size:.7rem; padding:.3rem .75rem; border-radius:var(--r); border:1px solid; }
+.prc-wk   { background:rgba(0,255,136,.07); border-color:rgba(0,255,136,.25); color:var(--accent); }
+.prc-reg  { background:rgba(251,191,36,.07); border-color:rgba(251,191,36,.25); color:var(--orange); }
+.prc-dyn  { background:rgba(148,163,184,.07); border-color:var(--border); color:var(--muted); }
+[data-theme=light] .prc-wk  { background:rgba(10,124,62,.07); border-color:rgba(10,124,62,.25); color:var(--accent); }
+.port-table-wrap { margin-bottom:2rem; }
+.port-group-head { display:flex; align-items:center; gap:.65rem; margin-bottom:.75rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+.port-group-icon { font-size:1.2rem; line-height:1; }
+.port-group-label { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.88rem; color:var(--text); }
+.port-group-section { margin-bottom:2rem; }
 </style>
 </head>
 <body>
@@ -513,8 +534,10 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   <div class="nav-links">
     <button onclick="showPage('home')" class="active" id="nav-home" data-i18n="nav.home">Home</button>
     <span class="nav-sep"></span>
-    <button onclick="showPage('osi')"    id="nav-osi">OSI Model</button>
-    <button onclick="showPage('guides')" id="nav-guides" data-i18n="nav.guides">PT Guides</button>
+    <button onclick="showPage('osi')"       id="nav-osi">OSI Model</button>
+    <button onclick="showPage('guides')"    id="nav-guides" data-i18n="nav.guides">PT Guides</button>
+    <button onclick="showPage('protocols')" id="nav-protocols" style="opacity:.75">Protocols</button>
+    <button onclick="showPage('iptables')"  id="nav-iptables"  style="opacity:.75">IP Tables</button>
     <span class="nav-sep"></span>
     <button onclick="showPage('terminal')"   id="nav-terminal">Terminal Lab</button>
     <button onclick="showPage('subnetting')" id="nav-subnetting" data-i18n="nav.subnetting">Subnetting</button>
@@ -645,6 +668,12 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   </div></section>
 
   <section class="section"><div class="container">
+    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.25rem;align-items:center">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);margin-right:.25rem">// see also:</span>
+      <button class="chip-link" onclick="showPage('protocols')">📡 Protocol Numbers</button>
+      <button class="chip-link" onclick="showPage('iptables')">🔌 Port Reference</button>
+      <button class="chip-link" onclick="showPage('osi')">🧠 OSI Model</button>
+    </div>
     <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;">
       <div class="search-bar" style="flex:1;min-width:200px;">
         <span class="search-icon">&gt;_</span>
@@ -898,6 +927,15 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
       </table>
     </div>
 
+    <div class="intro-box" style="margin-top:-.5rem;margin-bottom:1.5rem;font-size:.83rem">
+      <strong>Quick references:</strong>
+      <span style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem">
+        <button class="chip-link" onclick="showPage('protocols')">📡 Protocol Numbers</button>
+        <button class="chip-link" onclick="showPage('iptables')">🔌 Port Reference</button>
+        <button class="chip-link" onclick="showPage('osi')">🧠 OSI Model</button>
+        <button class="chip-link" onclick="showPage('commands')">📋 Command Library</button>
+      </span>
+    </div>
     <p class="section-label">// step-by-step playbooks</p>
     <h2 style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-bottom:.4rem;">Common <em>Scenarios</em></h2>
     <p class="section-sub">Click a scenario to expand the diagnostic steps.</p>
@@ -1111,8 +1149,10 @@ function showPage(id, fromPop) {
   if (nb) nb.classList.add('active');
   if (!fromPop) history.pushState({page:id}, '', '#'+id);
   window.scrollTo(0,0);
-  if (id === 'osi'    && typeof renderOsi    === 'function') renderOsi();
-  if (id === 'netmap' && typeof renderNetMap === 'function') renderNetMap();
+  if (id === 'osi'       && typeof renderOsi       === 'function') renderOsi();
+  if (id === 'netmap'    && typeof renderNetMap    === 'function') renderNetMap();
+  if (id === 'protocols' && typeof renderProtocols === 'function') renderProtocols();
+  if (id === 'iptables'  && typeof renderIPTables  === 'function') renderIPTables();
   if (id === 'terminal' && typeof termChangeScenario === 'function') {
     const sel = document.getElementById('termScenario');
     if (sel && !document.getElementById('termScreen')?.children.length) termChangeScenario(sel.value);
@@ -2020,6 +2060,189 @@ function renderAchGallery() {
 }
 document.addEventListener('DOMContentLoaded', renderAchGallery);
 
+// ── PROTOCOLS ─────────────────────────────────────────────────────────────────
+const PROTO_GROUPS = [
+  { id:'transport', label:'Transport', icon:'⇄',
+    desc:'Layer 4 — end-to-end delivery between hosts',
+    items:[
+      { num:6,  name:'TCP',  full:'Transmission Control Protocol', layer:4,
+        use:'Reliable, ordered, connection-oriented delivery. Three-way handshake before data flows. Used by HTTP, HTTPS, SSH, FTP, BGP, SMTP, Telnet.',
+        ts:'Test TCP reachability with <code>telnet &lt;ip&gt; &lt;port&gt;</code>. "Connection refused" = port not listening. Timeout = ACL or firewall blocking. Check <code>show access-lists</code> for implicit denies.',
+        cmds:['show tcp brief','show access-lists','telnet 10.0.0.1 80'] },
+      { num:17, name:'UDP',  full:'User Datagram Protocol', layer:4,
+        use:'Connectionless, low-overhead delivery. No handshake, no guaranteed order. Used by DNS (53), DHCP (67/68), SNMP (161), TFTP (69), NTP (123), RIP (520).',
+        ts:'No handshake means no easy port test. If UDP traffic is missing, check ACLs explicitly permitting UDP. Use <code>debug ip udp</code> with caution in production.',
+        cmds:['show ip nat translations','show access-lists'] },
+    ]},
+  { id:'control', label:'Control & Diagnostics', icon:'📡',
+    desc:'Layer 3 — error reporting and reachability testing',
+    items:[
+      { num:1,  name:'ICMP',   full:'Internet Control Message Protocol', layer:3,
+        use:'Network diagnostics and error reporting. Echo/reply powers ping. TTL exceeded powers traceroute. Destination unreachable reveals routing or filtering problems.',
+        ts:'Ping fails but routing is correct? An ACL is likely blocking ICMP. Add <code>permit icmp any any</code> during testing. Extended ACLs often deny ICMP implicitly.',
+        cmds:['ping 10.0.0.1','traceroute 10.0.0.1','show ip access-lists'] },
+      { num:58, name:'ICMPv6', full:'Internet Control Message Protocol v6', layer:3,
+        use:'IPv6 equivalent of ICMP. Also handles Neighbor Discovery Protocol (NDP) — replaces ARP. Router solicitation/advertisement. Mandatory for IPv6 to function.',
+        ts:'ICMPv6 MUST be permitted in IPv6 ACLs or IPv6 breaks entirely. NDP uses types 135/136 (Neighbor Solicitation/Advertisement). Never block ICMPv6 without careful filtering.',
+        cmds:['ping ipv6 FE80::1','show ipv6 neighbors','show ipv6 route'] },
+    ]},
+  { id:'routing', label:'Routing Protocols', icon:'🔀',
+    desc:'Layer 3 — dynamic route exchange; run directly over IP, not TCP/UDP',
+    items:[
+      { num:89, name:'OSPF',  full:'Open Shortest Path First', layer:3,
+        use:'Link-state IGP. Routers flood LSAs to build identical topology maps. SPF (Dijkstra) picks lowest-cost paths. Open standard (RFC 2328). Default AD = 110.',
+        ts:'No neighbor: check hello/dead timers match, area IDs match, subnet masks match, no passive-interface. Stuck in EXSTART = MTU mismatch. Use <code>debug ip ospf events</code> to trace.',
+        cmds:['show ip ospf neighbor','show ip ospf interface brief','show ip route ospf','debug ip ospf events'] },
+      { num:88, name:'EIGRP', full:'Enhanced Interior Gateway Routing Protocol', layer:3,
+        use:'Cisco-proprietary hybrid IGP. DUAL algorithm gives fast convergence. Sends partial updates only on topology change. Supports unequal-cost load balancing. Default AD = 90.',
+        ts:'No neighbor: AS number must match on both sides. K-values must match. Check passive-interface and network statements. Hold timer expiry in <code>show ip eigrp neighbors</code>.',
+        cmds:['show ip eigrp neighbors','show ip eigrp topology','show ip route eigrp'] },
+      { num:112, name:'VRRP', full:'Virtual Router Redundancy Protocol', layer:3,
+        use:'First-hop redundancy. Multiple routers share a virtual IP. One master, others standby. Elected by priority (default 100). Open standard (RFC 5798).',
+        ts:'Check priority values and group ID match on all routers. Virtual IP must match the default gateway configured on hosts. Preempt must be enabled to recover master role.',
+        cmds:['show vrrp brief','show vrrp'] },
+    ]},
+  { id:'tunneling', label:'Tunneling & Security', icon:'🔒',
+    desc:'Layer 3 — VPN encapsulation and encrypted transport over IP',
+    items:[
+      { num:47, name:'GRE',     full:'Generic Routing Encapsulation', layer:3,
+        use:'Encapsulates any Layer 3 protocol inside IP. Creates virtual point-to-point tunnels. Often paired with IPsec for encrypted site-to-site VPNs.',
+        ts:'Tunnel up/down: verify source and destination IPs are routable. GRE adds 24-byte overhead — set MTU to 1476 to prevent fragmentation. Recursive routing (tunnel and route using same interface) breaks GRE.',
+        cmds:['show interfaces tunnel 0','show ip route','ping <tunnel-dest>'] },
+      { num:50, name:'ESP',     full:'Encapsulating Security Payload', layer:3,
+        use:'IPsec encryption and integrity. Provides confidentiality, anti-replay, and authentication. Standard choice for IPsec VPNs. Can be used without encryption for integrity only.',
+        ts:'NAT rewrites the IP header and breaks ESP unless NAT-T (UDP 4500) is enabled. Check IKE phase 1 (ISAKMP SA) before phase 2 (IPsec SA). Mismatched transform sets = no SA negotiated.',
+        cmds:['show crypto ipsec sa','show crypto isakmp sa','show crypto session'] },
+      { num:51, name:'AH',      full:'Authentication Header', layer:3,
+        use:'IPsec authentication without encryption. Signs the entire IP packet including the outer header, proving origin and integrity.',
+        ts:'Incompatible with NAT — NAT modifies IP headers, breaking the AH signature. Avoid AH in NATed environments. Use ESP with authentication instead.',
+        cmds:['show crypto ipsec sa'] },
+      { num:4,  name:'IP-in-IP',full:'IP Encapsulation within IP', layer:3,
+        use:'Wraps an IPv4 packet inside another IPv4 packet. Simpler than GRE with less overhead, but carries IPv4 only. Used in some multicast and mobile IP scenarios.',
+        ts:'Ensure intermediate routers permit IP protocol 4 if ACLs are applied. Rarely used in modern Cisco configs — GRE or IPsec preferred.',
+        cmds:['show interfaces tunnel','show ip route'] },
+    ]},
+];
+
+function renderProtocols() {
+  const host = document.getElementById('protoContent');
+  if (!host || host.children.length) return;
+  const LC = {3:'#fbbf24',4:'#34d399'};
+  host.innerHTML = PROTO_GROUPS.map(g => `
+    <div class="proto-section" id="proto-${g.id}">
+      <div class="proto-group-head">
+        <span class="proto-group-icon">${g.icon}</span>
+        <div>
+          <div class="proto-group-label">${g.label}</div>
+          <div class="proto-group-desc">${g.desc}</div>
+        </div>
+      </div>
+      ${g.items.map(p => `
+        <div class="accordion-item" id="proto-${g.id}-${p.num}">
+          <button class="accordion-trigger" aria-expanded="false" onclick="toggleGuide('proto-${g.id}-${p.num}')">
+            <span style="display:flex;align-items:center;gap:.75rem">
+              <span class="proto-num" style="color:${LC[p.layer]||'var(--accent)'}">${p.num}</span>
+              <span>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700">${p.name}</span>
+                <span style="color:var(--muted);font-size:.8rem;margin-left:.35rem">${p.full}</span>
+              </span>
+            </span>
+            <span style="display:flex;align-items:center;gap:.5rem;flex-shrink:0">
+              <span class="badge badge-${p.layer===4?'green':'blue'}" style="font-size:.6rem">L${p.layer}</span>
+              <span class="accordion-icon">+</span>
+            </span>
+          </button>
+          <div class="accordion-body" id="proto-${g.id}-${p.num}-body" style="display:none">
+            <p style="font-size:.86rem;color:var(--muted);line-height:1.75;margin:.75rem 0">${p.use}</p>
+            <div class="intro-box" style="font-size:.82rem;margin-bottom:.85rem">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent);text-transform:uppercase;letter-spacing:.07em">// troubleshooting note</span><br>
+              ${p.ts}
+            </div>
+            <div style="margin-bottom:1rem">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">// key commands</div>
+              ${p.cmds.map(c=>`<code style="display:block;margin-bottom:.25rem;font-size:.79rem">${c}</code>`).join('')}
+            </div>
+            <div class="osi-layer-cta">
+              <button class="chip-link" onclick="osiOpenLayer(${p.layer})">🧠 OSI Layer ${p.layer}</button>
+              <button class="chip-link" onclick="showPage('terminal')">⌨ Terminal Lab</button>
+              <button class="chip-link" onclick="showPage('iptables')">🔌 Port Reference</button>
+              <button class="chip-link" onclick="showPage('troubleshooting')">🔥 Troubleshooting</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+  // wire up accordion bodies (toggleGuide looks for .accordion-body, not the id-body variant)
+  host.querySelectorAll('.accordion-body').forEach(b => { b.style.display=''; b.classList.remove('open'); });
+}
+
+// ── IP TABLES ──────────────────────────────────────────────────────────────────
+const PORT_GROUPS = [
+  { id:'remote', label:'Remote Access', icon:'🔐', ports:[
+    { svc:'SSH',     port:22,   proto:'TCP',     use:'Encrypted remote shell. Replaces Telnet.', cisco:'VTY access. Requires hostname + ip domain-name + RSA key. <code>transport input ssh</code> on VTY lines.' },
+    { svc:'Telnet',  port:23,   proto:'TCP',     use:'Unencrypted remote shell. Sends credentials in plaintext.', cisco:'Common in PT labs for testing. Replace with SSH in production.' },
+    { svc:'RDP',     port:3389, proto:'TCP',     use:'Windows Remote Desktop — GUI remote access.', cisco:'Relevant when managing Windows servers behind a Cisco firewall/ACL.' },
+  ]},
+  { id:'web', label:'Web', icon:'🌐', ports:[
+    { svc:'HTTP',     port:80,  proto:'TCP',     use:'Unencrypted web traffic.', cisco:'Common ACL permit/deny target. NAT/PAT destination port for web server scenarios.' },
+    { svc:'HTTPS',    port:443, proto:'TCP',     use:'TLS-encrypted HTTP.', cisco:'Standard permit target in extended ACLs. Web server access through NAT.' },
+    { svc:'HTTP Alt', port:8080,proto:'TCP',     use:'Alternative HTTP used by dev servers and proxies.', cisco:'NAT/PAT port remapping scenario: external 80 → internal 8080.' },
+  ]},
+  { id:'dns', label:'Name Resolution', icon:'🔍', ports:[
+    { svc:'DNS',         port:53, proto:'UDP/TCP', use:'Resolves hostnames to IPs. UDP for queries; TCP for responses >512B or zone transfers.', cisco:'<code>show ip name-server</code>. DHCP delivers DNS IP. Common ACL permit: <code>permit udp any any eq 53</code>.' },
+    { svc:'DHCP Server', port:67, proto:'UDP',     use:'Server listens here. Clients broadcast DISCOVER, server responds with OFFER.', cisco:'<code>show ip dhcp binding</code>. <code>ip helper-address</code> relays broadcasts across subnets.' },
+    { svc:'DHCP Client', port:68, proto:'UDP',     use:'Client receives OFFER/ACK on this port.', cisco:'ACL to permit DHCP: <code>permit udp any eq 68 any eq 67</code>.' },
+  ]},
+  { id:'file', label:'File Transfer', icon:'📁', ports:[
+    { svc:'FTP Control', port:21, proto:'TCP', use:'Command channel for FTP sessions — login, file listing, transfer commands.', cisco:'Classic ACL teaching example. Active FTP needs <code>ip inspect ftp</code> for stateful firewall.' },
+    { svc:'FTP Data',    port:20, proto:'TCP', use:'Active FTP data channel. Server connects back to client — blocked by NAT/firewalls.', cisco:'Why passive FTP is preferred in NATed environments. Passive uses ephemeral ports.' },
+    { svc:'TFTP',        port:69, proto:'UDP', use:'Trivial FTP — lightweight, no authentication. Used for IOS image and config transfer.', cisco:'<code>copy tftp: flash:</code> — standard IOS upgrade and backup method.' },
+  ]},
+  { id:'mail', label:'Mail', icon:'✉️', ports:[
+    { svc:'SMTP', port:25,  proto:'TCP', use:'Server-to-server mail delivery.',        cisco:'Common extended ACL scenario: permit outbound SMTP for mail servers.' },
+    { svc:'POP3', port:110, proto:'TCP', use:'Client retrieves mail, often deletes from server.', cisco:'Standard multi-service ACL example.' },
+    { svc:'IMAP', port:143, proto:'TCP', use:'Client syncs mail across devices, leaves on server.', cisco:'Firewall ACL scenario alongside SMTP and POP3.' },
+  ]},
+  { id:'mgmt', label:'Network Management', icon:'📊', ports:[
+    { svc:'SNMP',      port:161, proto:'UDP', use:'Polls device stats — CPU, interfaces, error counters.', cisco:'<code>show snmp</code>. Configure community strings. SNMPv3 preferred for security.' },
+    { svc:'SNMP Trap', port:162, proto:'UDP', use:'Device-initiated alerts to NMS — link down, threshold exceeded.', cisco:'<code>snmp-server enable traps</code>. ACL: permit UDP src any dst eq 162.' },
+    { svc:'Syslog',    port:514, proto:'UDP', use:'Log messages from devices to a central syslog server.', cisco:'<code>logging host &lt;ip&gt;</code>. Severity levels 0 (emergencies) – 7 (debug).' },
+    { svc:'NTP',       port:123, proto:'UDP', use:'Time synchronisation. Critical for logs, certificates, OSPF, debugging.', cisco:'<code>ntp server &lt;ip&gt;</code>. <code>show ntp status</code>. Correct time required for SSH and TLS.' },
+  ]},
+  { id:'infra', label:'Routing & Infrastructure', icon:'🔀', ports:[
+    { svc:'BGP',     port:179, proto:'TCP', use:'Border Gateway Protocol — inter-AS routing. Internet backbone. TCP for reliable session.',   cisco:'<code>show ip bgp summary</code>. AD=20 (eBGP) / 200 (iBGP). Typically CCNA+.' },
+    { svc:'RIP',     port:520, proto:'UDP', use:'Legacy distance-vector routing. Max 15 hops. Still appears in PT lab exercises.', cisco:'<code>show ip rip database</code>. AD=120. Avoid in new designs.' },
+    { svc:'RADIUS',  port:1812,proto:'UDP', use:'AAA authentication for VPN, 802.1X, VTY login. Multi-vendor standard.',      cisco:'<code>aaa authentication login</code>. <code>show aaa servers</code>.' },
+    { svc:'TACACS+', port:49,  proto:'TCP', use:'Cisco AAA protocol. Separates authentication, authorisation, accounting. More granular than RADIUS.', cisco:'<code>tacacs-server host &lt;ip&gt;</code>. <code>show tacacs</code>.' },
+  ]},
+];
+
+function renderIPTables() {
+  const host = document.getElementById('iptContent');
+  if (!host || host.children.length) return;
+  host.innerHTML = PORT_GROUPS.map(g => `
+    <div class="port-group-section">
+      <div class="port-group-head">
+        <span class="port-group-icon">${g.icon}</span>
+        <span class="port-group-label">${g.label}</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Service</th><th style="width:60px">Port</th><th style="width:80px">TCP/UDP</th><th>Purpose</th><th>Cisco relevance</th></tr></thead>
+          <tbody>
+            ${g.ports.map(p => `
+              <tr>
+                <td><code>${p.svc}</code></td>
+                <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent)">${p.port}</td>
+                <td><span class="badge ${p.proto==='TCP'?'badge-green':p.proto==='UDP'?'badge-orange':'badge-blue'}" style="font-size:.6rem">${p.proto}</span></td>
+                <td style="font-size:.84rem;color:var(--muted)">${p.use}</td>
+                <td style="font-size:.82rem;color:var(--muted)">${p.cisco}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`).join('');
+}
+
 // ── OSI MODEL ──────────────────────────────────────────────────────────────────
 const OSI_LAYERS = [
   { n:7, name:'Application', color:'#e879f9', unit:'Data',
@@ -2085,6 +2308,9 @@ function renderOsi() {
           <button class="chip-link" onclick="showPage('terminal')">⌨ Try in Terminal Lab</button>
           <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
           <button class="chip-link" onclick="showPage('troubleshooting')">🔥 Troubleshoot this layer</button>
+          ${(l.n===3||l.n===4)?'<button class="chip-link" onclick="showPage(\'protocols\')">📡 Protocol Numbers</button>':''}
+          ${(l.n===3||l.n===4||l.n===7)?'<button class="chip-link" onclick="showPage(\'iptables\')">🔌 Port Reference</button>':''}
+          ${l.n===3?'<button class="chip-link" onclick="showPage(\'protocols\');setTimeout(()=>{const el=document.getElementById(\'proto-routing\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'})},80)">🔀 Routing Protocols</button>':''}
         </div>
       </div>
     </div>`).join('');
@@ -2588,6 +2814,8 @@ window.buildSearchIndex = function() {
   [['terminal','Terminal Lab — Interactive Cisco IOS simulator'],
    ['osi','OSI Model — 7 layers with protocols, faults and CLI commands'],
    ['netmap','Network Map — Live topology view'],
+   ['protocols','Protocols — IP protocol numbers reference (TCP, UDP, OSPF, ICMP, GRE, ESP)'],
+   ['iptables','IP Tables — Well-known port reference (SSH, HTTP, DNS, DHCP, SNMP, BGP)'],
    ['profile','Profile — Account & achievements'],
    ['legal','Legal — Privacy policy, terms of use']
   ].forEach(([id,label]) => {
@@ -2899,6 +3127,46 @@ window.buildSearchIndex = function() {
       <button class="btn" onclick="showPage('home')">← Back to home</button>
     </div>
   </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PROTOCOLS
+═══════════════════════════════════════════ -->
+<div class="page" id="page-protocols">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// learn — protocol numbers</p>
+    <h1>IP <em>Protocol Numbers</em></h1>
+    <p>The IP header's Protocol field (8 bits) identifies what's inside the packet. These are the numbers that matter for Cisco networking and troubleshooting.</p>
+  </div></section>
+  <section class="section"><div class="container-sm">
+    <div class="intro-box">
+      <strong>What is a protocol number?</strong> Every IP packet has a Protocol field in its header (byte 10). This tells the receiving device what comes next — TCP (6), UDP (17), OSPF (89), etc. ACLs that match <code>ip</code> traffic see all of these. To match specifically, use the protocol number or keyword (<code>permit tcp</code>, <code>permit ospf</code>).<br><br>
+      <strong>Not the same as port numbers.</strong> Protocol numbers identify the transport layer or encapsulation. Port numbers live inside TCP/UDP segments and identify the application. See <button class="chip-link" style="display:inline-flex;padding:.15rem .5rem;font-size:.75rem" onclick="showPage('iptables')">🔌 Port Reference</button> for ports.
+    </div>
+    <div id="protoContent"></div>
+  </div></section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     IP TABLES
+═══════════════════════════════════════════ -->
+<div class="page" id="page-iptables">
+  <section class="hero"><div class="container">
+    <p class="hero-eyebrow">// learn — port reference</p>
+    <h1>Port <em>Reference</em></h1>
+    <p>Well-known TCP and UDP ports relevant to Cisco networking, Packet Tracer labs and ACL configuration. Organised by function, not by number.</p>
+  </div></section>
+  <section class="section"><div class="container-sm">
+    <div class="port-range-legend">
+      <span class="port-range-chip prc-wk">0 – 1023 · Well-known (IANA assigned)</span>
+      <span class="port-range-chip prc-reg">1024 – 49151 · Registered (vendor/app use)</span>
+      <span class="port-range-chip prc-dyn">49152 – 65535 · Dynamic / Ephemeral (client source ports)</span>
+    </div>
+    <div class="intro-box" style="margin-bottom:1.75rem">
+      <strong>ACL tip:</strong> Extended ACLs match both source and destination port. To permit inbound SSH: <code>permit tcp any host 10.0.0.1 eq 22</code>. To permit DNS responses back: <code>permit udp any eq 53 any</code>. For return TCP traffic use <code>established</code> or a stateful firewall. See <button class="chip-link" style="display:inline-flex;padding:.15rem .5rem;font-size:.75rem" onclick="showPage('protocols')">📡 Protocol Numbers</button> for the IP-level protocol field.
+    </div>
+    <div id="iptContent"></div>
+  </div></section>
 </div>
 
 <footer class="app-footer">
