@@ -2308,9 +2308,9 @@ function renderOsi() {
           <button class="chip-link" onclick="showPage('terminal')">⌨ Try in Terminal Lab</button>
           <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
           <button class="chip-link" onclick="showPage('troubleshooting')">🔥 Troubleshoot this layer</button>
-          ${(l.n===3||l.n===4)?'<button class="chip-link" onclick="showPage(\'protocols\')">📡 Protocol Numbers</button>':''}
-          ${(l.n===3||l.n===4||l.n===7)?'<button class="chip-link" onclick="showPage(\'iptables\')">🔌 Port Reference</button>':''}
-          ${l.n===3?'<button class="chip-link" onclick="showPage(\'protocols\');setTimeout(()=>{const el=document.getElementById(\'proto-routing\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'})},80)">🔀 Routing Protocols</button>':''}
+          ${(l.n===3||l.n===4)?`<button class="chip-link" onclick="showPage('protocols')">📡 Protocol Numbers</button>`:''}
+          ${(l.n===3||l.n===4||l.n===7)?`<button class="chip-link" onclick="showPage('iptables')">🔌 Port Reference</button>`:''}
+          ${l.n===3?`<button class="chip-link" onclick="showPage('protocols');setTimeout(()=>{const el=document.getElementById('proto-routing');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},80)">🔀 Routing Protocols</button>`:''}
         </div>
       </div>
     </div>`).join('');
