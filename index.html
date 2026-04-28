@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -464,6 +464,31 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   .term-screen { height:50vh; min-height:300px; }
   .labs-secondary { grid-template-columns:1fr; }
 }
+
+/* ENTRY DOORS */
+.entry-doors { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:2rem; }
+.entry-door { background:var(--s1); border:1px solid var(--border); border-radius:var(--r2); padding:1.5rem 1.25rem 1.25rem; cursor:pointer; transition:border-color .15s,transform .12s,box-shadow .15s; text-align:left; }
+.entry-door:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,.06); }
+.door-icon { font-size:1.5rem; line-height:1; margin-bottom:.65rem; }
+.door-label { font-family:'JetBrains Mono',monospace; font-size:.9rem; font-weight:700; color:var(--text); margin-bottom:.4rem; line-height:1.4; }
+.door-sub { font-size:.76rem; color:var(--accent); font-family:'JetBrains Mono',monospace; }
+@media(max-width:700px){ .entry-doors { grid-template-columns:1fr; } }
+
+/* LEARNING PATH RAIL */
+.learn-path { display:flex; align-items:stretch; flex-wrap:wrap; gap:.4rem; margin-top:.75rem; }
+.lp-step { background:var(--s1); border:1px solid var(--border); border-radius:var(--r2); padding:.55rem .9rem; cursor:pointer; transition:border-color .15s; display:flex; flex-direction:column; gap:.1rem; }
+.lp-step:hover { border-color:var(--accent); }
+.lp-step-label { font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:600; color:var(--text); }
+.lp-step-sub { font-family:'JetBrains Mono',monospace; font-size:.62rem; color:var(--muted); }
+.lp-arrow { font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--muted2); align-self:center; }
+@media(max-width:700px){ .lp-arrow { display:none; } }
+
+/* NAV SEPARATOR */
+.nav-sep { width:1px; height:14px; background:var(--border); margin:0 .15rem; flex-shrink:0; align-self:center; }
+
+/* TS OSI BADGE */
+.ts-osi-badge { display:inline-flex; align-items:center; font-family:'JetBrains Mono',monospace; font-size:.63rem; font-weight:700; padding:.15rem .5rem; border-radius:3px; border:1px solid; cursor:pointer; vertical-align:middle; margin-right:.45rem; transition:opacity .15s; }
+.ts-osi-badge:hover { opacity:.75; }
 </style>
 </head>
 <body>
@@ -486,21 +511,25 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 <nav>
   <span class="nav-logo" onclick="showPage('home')">cisco<span>:learn</span></span>
   <div class="nav-links">
-    <button onclick="showPage('home')"       class="active" id="nav-home"       data-i18n="nav.home">Home</button>
-    <button onclick="showPage('commands')"   id="nav-commands"   data-i18n="nav.commands">Commands</button>
+    <button onclick="showPage('home')" class="active" id="nav-home" data-i18n="nav.home">Home</button>
+    <span class="nav-sep"></span>
+    <button onclick="showPage('osi')"    id="nav-osi">OSI Model</button>
+    <button onclick="showPage('guides')" id="nav-guides" data-i18n="nav.guides">PT Guides</button>
+    <span class="nav-sep"></span>
+    <button onclick="showPage('terminal')"   id="nav-terminal">Terminal Lab</button>
     <button onclick="showPage('subnetting')" id="nav-subnetting" data-i18n="nav.subnetting">Subnetting</button>
-    <button onclick="showPage('explainer')"  id="nav-explainer"  data-i18n="nav.explainer">Config Explainer</button>
-    <button onclick="showPage('guides')"     id="nav-guides"     data-i18n="nav.guides">PT Guides</button>
-    <button onclick="showPage('quiz')"           id="nav-quiz"           data-i18n="nav.quiz">Quiz</button>
+    <button onclick="showPage('quiz')"       id="nav-quiz" data-i18n="nav.quiz">Quiz</button>
+    <span class="nav-sep"></span>
     <button onclick="showPage('troubleshooting')" id="nav-troubleshooting" data-i18n="nav.troubleshooting">Troubleshooting</button>
-    <button onclick="showPage('terminal')"       id="nav-terminal">Terminal Lab</button>
-    <button onclick="showPage('osi')"            id="nav-osi">OSI Model</button>
-    <button onclick="showPage('netmap')"         id="nav-netmap">Network Map</button>
+    <button onclick="showPage('commands')"        id="nav-commands" data-i18n="nav.commands">Commands</button>
+    <span class="nav-sep"></span>
+    <button onclick="showPage('netmap')"   id="nav-netmap">Network Map</button>
+    <button onclick="showPage('explainer')" id="nav-explainer" data-i18n="nav.explainer">Config Explainer</button>
   </div>
   <div class="nav-ctrl">
     <button onclick="openSearch()" title="Search (/)">⌕</button>
     <button id="langBtn"  onclick="toggleLang()">NO</button>
-    <button id="themeBtn" onclick="toggleTheme()">☀ Light</button>
+    <button id="themeBtn" onclick="toggleTheme()">◑ Dark</button>
     <button class="nav-sign-in-btn" id="navSignInBtn" onclick="window.location.href='login.html'" style="display:none">Sign In</button>
     <button class="nav-user-pill"   id="navUserPill"  onclick="showPage('profile')"></button>
   </div>
@@ -512,59 +541,80 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 <div class="page active" id="page-home">
   <section class="hero">
     <div class="container">
-      <p class="hero-eyebrow">$ cisco_learn --mode reference</p>
-      <h1>cisco:<em>learn</em><br>--interactive<span class="cursor"></span></h1>
-      <p>// A hands-on reference for Cisco IOS and Packet Tracer.<br>// Subnetting · Commands · Config Explainer · Guides · Quiz · Troubleshooting</p>
-      <p style="margin-top:1rem;font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">// Unofficial educational resource — not affiliated with or endorsed by Cisco Systems, Inc.<br>// Cisco®, IOS®, Packet Tracer® and CCNA® are registered trademarks of Cisco Systems, Inc.</p>
+      <p class="hero-eyebrow">$ cisco_learn --mode interactive</p>
+      <h1>What are you doing<br><em>right now?</em><span class="cursor"></span></h1>
+      <div class="entry-doors">
+        <div class="entry-door" onclick="showPage('troubleshooting')">
+          <div class="door-icon">🔥</div>
+          <div class="door-label">Something is broken</div>
+          <div class="door-sub">Diagnose your PT lab →</div>
+        </div>
+        <div class="entry-door" onclick="showPage('guides')">
+          <div class="door-icon">🔧</div>
+          <div class="door-label">I need to configure something</div>
+          <div class="door-sub">Step-by-step PT guides →</div>
+        </div>
+        <div class="entry-door" onclick="showPage('osi')">
+          <div class="door-icon">🧭</div>
+          <div class="door-label">Explore the network</div>
+          <div class="door-sub">OSI, topology and labs →</div>
+        </div>
+      </div>
+      <p style="margin-top:1.5rem;font-size:.68rem;color:var(--muted2);font-family:'JetBrains Mono',monospace;line-height:1.7;">// Unofficial educational resource — not affiliated with or endorsed by Cisco Systems, Inc. Cisco®, IOS®, Packet Tracer® and CCNA® are registered trademarks of Cisco Systems, Inc.</p>
     </div>
   </section>
 
   <section class="section">
-    <div class="container-sm">
-      <p class="section-label">// new here?</p>
-      <h2>Getting <em>started</em></h2>
-      <p class="section-sub">Never touched a Cisco device before? Read this first.</p>
-      <div class="intro-box">
-        <strong>What is Cisco IOS?</strong> IOS (Internetwork Operating System) is the software that runs on Cisco routers and switches. You interact with it through a command-line interface (CLI) — a text terminal where you type commands to configure the device.<br><br>
-        <strong>What is Packet Tracer?</strong> A free Cisco simulation tool. Build virtual networks with routers, switches, and PCs — no physical hardware needed. Standard tool for learning and exam preparation.<br><br>
-        <strong>Where do I start?</strong> Check out <strong>PT Guides</strong> for step-by-step walkthroughs, or browse the <strong>Command Library</strong> to learn the CLI.
+    <div class="container">
+      <p class="section-label">// learning path</p>
+      <h2>From <em>concept</em> to execution</h2>
+      <p class="section-sub">Follow the path in order, or jump to any stage.</p>
+      <div class="learn-path">
+        <div class="lp-step" onclick="showPage('osi')"><div class="lp-step-label">OSI Model</div><div class="lp-step-sub">Concept</div></div>
+        <div class="lp-arrow">→</div>
+        <div class="lp-step" onclick="showPage('netmap')"><div class="lp-step-label">Network Map</div><div class="lp-step-sub">Context</div></div>
+        <div class="lp-arrow">→</div>
+        <div class="lp-step" onclick="showPage('commands')"><div class="lp-step-label">Commands</div><div class="lp-step-sub">Reference</div></div>
+        <div class="lp-arrow">→</div>
+        <div class="lp-step" onclick="showPage('terminal')"><div class="lp-step-label">Terminal Lab</div><div class="lp-step-sub">Execution</div></div>
+        <div class="lp-arrow">→</div>
+        <div class="lp-step" onclick="showPage('troubleshooting')"><div class="lp-step-label">Troubleshooting</div><div class="lp-step-sub">Diagnosis</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="section-label">// all modules</p>
+      <h2>Everything in <em>one place</em></h2>
+      <div class="card-grid">
+        <span class="card-nav" onclick="showPage('osi')"><div class="card"><div class="card-icon">learn — concept</div><h3>OSI Model</h3><p>7 layers with protocols, common faults and CLI commands. The hub connecting theory to every other tool.</p></div></span>
+        <span class="card-nav" onclick="showPage('terminal')"><div class="card"><div class="card-icon">practice — execution</div><h3>Terminal Lab</h3><p>Interactive Cisco IOS simulator. 8 fault scenarios — run real commands, see real output.</p></div></span>
+        <span class="card-nav" onclick="showPage('troubleshooting')"><div class="card"><div class="card-icon">fix — diagnosis</div><h3>Troubleshooting</h3><p>OSI-based playbooks for the 5 most common Packet Tracer faults, with step-by-step commands.</p></div></span>
+        <span class="card-nav" onclick="showPage('guides')"><div class="card"><div class="card-icon">learn — step-by-step</div><h3>PT Guides</h3><p>Routing, VLANs, DHCP, NAT/PAT, ACLs, IPv6, SSH — every step with CLI output.</p></div></span>
+        <span class="card-nav" onclick="showPage('commands')"><div class="card"><div class="card-icon">fix — reference</div><h3>Command Library</h3><p>Searchable Cisco IOS command reference organized by category, including IPv6 and NAT.</p></div></span>
+        <span class="card-nav" onclick="showPage('netmap')"><div class="card"><div class="card-icon">explore — topology</div><h3>Network Map</h3><p>Visual topology linked to Terminal Lab scenarios. See the network before you type.</p></div></span>
+        <span class="card-nav" onclick="showPage('quiz')"><div class="card"><div class="card-icon">practice — quiz</div><h3>Quiz</h3><p>Multiple-choice questions on subnetting, VLANs, routing, NAT and security.</p></div></span>
+        <span class="card-nav" onclick="showPage('subnetting')"><div class="card"><div class="card-icon">practice — subnetting</div><h3>Subnetting Trainer</h3><p>Calculate network addresses, broadcasts and host ranges. Includes binary visualizer.</p></div></span>
+        <span class="card-nav" onclick="showPage('explainer')"><div class="card"><div class="card-icon">explore — explainer</div><h3>Config Explainer</h3><p>Paste any IOS config and get a plain-English breakdown of every line.</p></div></span>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container-sm">
-      <p class="section-label">// reference</p>
-      <h2>OSI &amp; TCP/IP <em>Models</em></h2>
-      <p class="section-sub">The foundation behind everything Cisco. Every troubleshooting method and protocol maps to one of these layers.</p>
-      <div class="table-wrap"><table>
-        <thead><tr><th>OSI Layer</th><th>Name</th><th>TCP/IP Layer</th><th>Key Protocols / Devices</th></tr></thead>
-        <tbody>
-          <tr><td><code>7</code></td><td>Application</td><td rowspan="3" style="vertical-align:middle;color:var(--accent);">Application</td><td>HTTP, HTTPS, FTP, DNS, DHCP, SSH, Telnet, SNMP</td></tr>
-          <tr><td><code>6</code></td><td>Presentation</td><td>SSL/TLS, JPEG, encryption/encoding</td></tr>
-          <tr><td><code>5</code></td><td>Session</td><td>NetBIOS, RPC — establishes/manages sessions</td></tr>
-          <tr><td><code>4</code></td><td>Transport</td><td style="color:var(--orange);">Transport</td><td>TCP (reliable), UDP (fast) — ports, segments</td></tr>
-          <tr><td><code>3</code></td><td>Network</td><td style="color:var(--green);">Internet</td><td>IP, ICMP, OSPF, EIGRP — <strong>Routers</strong>, Layer 3 switches</td></tr>
-          <tr><td><code>2</code></td><td>Data Link</td><td rowspan="2" style="vertical-align:middle;color:var(--muted);">Network Access</td><td>Ethernet, 802.1Q, MAC addresses — <strong>Switches</strong>, Bridges</td></tr>
-          <tr><td><code>1</code></td><td>Physical</td><td>Cables, fibre, hubs, bits — voltage, timing</td></tr>
-        </tbody>
-      </table></div>
-      <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">Tip: troubleshoot <strong>bottom-up</strong> — always confirm Layer 1 (cable/power) before blaming Layer 3 (routing).</p>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <p class="section-label">// modules</p>
-      <h2>What do you want to <em>learn?</em></h2>
-      <p class="section-sub">Six modules covering the core skills for Cisco networking.</p>
-      <div class="card-grid">
-        <span class="card-nav" onclick="showPage('commands')"><div class="card"><div class="card-icon">01 — commands</div><h3>Command Library</h3><p>Searchable reference of Cisco IOS commands — including IPv6 and NAT.</p></div></span>
-        <span class="card-nav" onclick="showPage('subnetting')"><div class="card"><div class="card-icon">02 — subnetting</div><h3>Subnetting Trainer</h3><p>Practice calculating network addresses, broadcasts and host ranges. Includes VLSM reference.</p></div></span>
-        <span class="card-nav" onclick="showPage('explainer')"><div class="card"><div class="card-icon">03 — explainer</div><h3>Config Explainer</h3><p>Paste any Cisco IOS configuration and get a plain-English breakdown of every line.</p></div></span>
-        <span class="card-nav" onclick="showPage('guides')"><div class="card"><div class="card-icon">04 — guides</div><h3>Packet Tracer Guides</h3><p>Step-by-step guides: routing, VLANs, DHCP, NAT/PAT, ACLs, IPv6, SSH and more.</p></div></span>
-        <span class="card-nav" onclick="showPage('quiz')"><div class="card"><div class="card-icon">05 — quiz</div><h3>Quiz</h3><p>Multiple-choice questions on subnetting, VLANs, routing, NAT, security and more.</p></div></span>
-        <span class="card-nav" onclick="showPage('troubleshooting')"><div class="card"><div class="card-icon">06 — troubleshooting</div><h3>Troubleshooting</h3><p>Systematic OSI-based approach to diagnosing network faults with key show commands.</p></div></span>
+      <p class="section-label">// new here?</p>
+      <h2>Never used <em>Cisco</em> before?</h2>
+      <p class="section-sub">Start here.</p>
+      <div class="intro-box">
+        <strong>Cisco IOS</strong> is the operating system on Cisco routers and switches. You control it through a text CLI — type commands, configure interfaces, set up routing.<br><br>
+        <strong>Packet Tracer</strong> is Cisco's free simulation tool. Build virtual networks without physical hardware — the standard tool for CCNA study.<br><br>
+        Start with <strong>PT Guides</strong> for step-by-step walkthroughs, or open the <strong>Terminal Lab</strong> to run live IOS commands right now.
+        <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="chip-link" onclick="showPage('guides')">📋 PT Guides</button>
+          <button class="chip-link" onclick="showPage('terminal')">⌨ Terminal Lab</button>
+          <button class="chip-link" onclick="showPage('osi')">🧠 OSI Model</button>
+        </div>
       </div>
     </div>
   </section>
@@ -579,7 +629,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   </section>
 
   <footer><div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
-    <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);">CiscoLearn — for educational use</span>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);">cisco:learn — for educational use</span>
     <a href="https://github.com/cgarmann/ciscolearn" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-decoration:none;">GitHub ↗</a>
   </div></footer>
 </div>
@@ -984,7 +1034,7 @@ function resetStats(module){
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
 function initTheme(){
-  const saved=localStorage.getItem('cl-theme')||'dark';
+  const saved=localStorage.getItem('cl-theme')||'light';
   document.documentElement.setAttribute('data-theme',saved);
   document.getElementById('themeBtn').textContent=saved==='dark'?'☀ Light':'◑ Dark';
 }
@@ -1662,34 +1712,34 @@ renderGuides();
 
 // ── TROUBLESHOOTING ───────────────────────────────────────────────────────────
 const TS_SCENARIOS=[
-  {title:'PC cannot ping its default gateway',steps:[
+  {title:'PC cannot ping its default gateway',layer:3,steps:[
     {n:'01',h:'Check Layer 1 — is the cable connected?',p:'In Packet Tracer, a red link means the cable is disconnected or the interface is shutdown.',code:'Switch# show interfaces Fa0/1\n-- Look for: "is up, line protocol is up"'},
     {n:'02',h:'Check the PC IP address and mask',p:'Verify the PC has an IP in the correct subnet. A wrong subnet mask is the most common mistake.'},
     {n:'03',h:'Check the gateway interface on the router',code:'Router# show ip interface brief\n-- Interface must be "up / up"\nRouter# show running-config interface Gi0/0/0\n-- Verify correct IP and mask'},
     {n:'04',h:'Check if the interface is shutdown',code:'Router(config)# interface GigabitEthernet0/0/0\nRouter(config-if)# no shutdown'},
     {n:'05',h:'Ping from the router toward the PC',p:'If the router cannot ping the PC, the problem is on the LAN side (cable, switch port, VLAN).',code:'Router# ping 192.168.1.10'},
   ]},
-  {title:'Two routers cannot reach each other (WAN/serial link)',steps:[
+  {title:'Two routers cannot reach each other (WAN/serial link)',layer:1,steps:[
     {n:'01',h:'Verify both ends have IPs in the same /30 subnet',code:'RouterA# show ip interface brief\nRouterB# show ip interface brief\n-- Both Serial interfaces must be "up / up"'},
     {n:'02',h:'Check DCE/DTE — set clock rate on DCE side',p:'In Packet Tracer, one end of a serial link is DCE (needs clock rate). Check with show controllers.',code:'Router# show controllers Serial0/1/0\n-- If "DCE cable", set:\nRouter(config-if)# clock rate 64000'},
     {n:'03',h:'Check encapsulation matches on both ends',p:'Default is HDLC. Both ends must use the same encapsulation.',code:'Router# show interfaces Serial0/1/0\n-- Look for "Encapsulation HDLC"'},
     {n:'04',h:'Ping across the link',code:'RouterA# ping 10.0.0.2'},
   ]},
-  {title:'Inter-VLAN routing not working',steps:[
+  {title:'Inter-VLAN routing not working',layer:2,steps:[
     {n:'01',h:'Confirm VLANs exist on the switch',code:'Switch# show vlan brief\n-- Both VLANs must appear as "active"'},
     {n:'02',h:'Check the trunk port to the router',code:'Switch# show interfaces trunk\n-- Uplink port must appear with both VLANs allowed'},
     {n:'03',h:'Verify router sub-interfaces and encapsulation',code:'Router# show ip interface brief\n-- Gi0/0/0.10 and Gi0/0/0.20 must be "up / up"\nRouter# show running-config\n-- Each sub-if needs: encapsulation dot1q <id> + ip address'},
     {n:'04',h:'Check PC default gateways',p:'VLAN 10 PCs must use the .10 sub-interface IP as gateway. Wrong gateway = no inter-VLAN routing.'},
     {n:'05',h:'Ping between VLANs',code:'PC> ping 192.168.20.1'},
   ]},
-  {title:'DHCP clients not getting an IP address',steps:[
+  {title:'DHCP clients not getting an IP address',layer:3,steps:[
     {n:'01',h:'Check DHCP pool configuration',code:'Router# show running-config | section dhcp\n-- Verify: network, default-router, excluded-address range'},
     {n:'02',h:'Verify the excluded range does not cover the whole pool',p:'Common mistake: excluding .1–.254 leaves nothing for clients.'},
     {n:'03',h:'Check active DHCP leases',code:'Router# show ip dhcp binding\nRouter# show ip dhcp pool'},
     {n:'04',h:'If client is on a different subnet — add ip helper-address',p:'DHCP uses broadcasts which routers block by default.',code:'Router(config-if)# ip helper-address 10.0.0.1'},
     {n:'05',h:'Release and renew on the PC',p:'In Packet Tracer: PC → Desktop → IP Configuration → click DHCP.'},
   ]},
-  {title:'NAT not translating — internet unreachable',steps:[
+  {title:'NAT not translating — internet unreachable',layer:4,steps:[
     {n:'01',h:'Verify inside/outside is set on correct interfaces',code:'Router# show running-config | include nat\n-- Must see "ip nat inside" on LAN int, "ip nat outside" on WAN int'},
     {n:'02',h:'Check the ACL referenced in the NAT statement',code:'Router# show access-lists\n-- ACL must permit the private subnet (e.g. 192.168.1.0 0.0.0.255)'},
     {n:'03',h:'Confirm a default route to the ISP exists',code:'Router# show ip route\n-- Must see "S* 0.0.0.0/0" (gateway of last resort)'},
@@ -1699,10 +1749,15 @@ const TS_SCENARIOS=[
 ];
 
 function renderTS(){
-  document.getElementById('tsContainer').innerHTML=TS_SCENARIOS.map((s,i)=>`
+  document.getElementById('tsContainer').innerHTML=TS_SCENARIOS.map((s,i)=>{
+    const lay = s.layer ? OSI_LAYERS.find(l => l.n === s.layer) : null;
+    const badge = lay
+      ? `<span class="ts-osi-badge" style="color:${lay.color};border-color:${lay.color};background:${lay.color}1a" onclick="osiOpenLayer(${lay.n});event.stopPropagation()">L${lay.n} — ${lay.name}</span>`
+      : '';
+    return `
     <div class="accordion-item" id="ts${i}">
       <button class="accordion-trigger" aria-expanded="false" onclick="toggleGuide('ts${i}')">
-        <span>${s.title}</span>
+        <span>${badge}${s.title}</span>
         <span class="accordion-icon">+</span>
       </button>
       <div class="accordion-body">
@@ -1715,8 +1770,13 @@ function renderTS(){
               ${st.code?`<pre>${st.code}</pre>`:''}
             </div>
           </div>`).join('')}
+        <div class="ts-lab-cta">
+          <button class="chip-link" onclick="showPage('terminal')">⌨ Try in Terminal Lab</button>
+          ${lay ? `<button class="chip-link" onclick="osiOpenLayer(${lay.n})">🧠 L${lay.n} ${lay.name} — OSI hub</button>` : ''}
+        </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 renderTS();
 
@@ -2023,8 +2083,8 @@ function renderOsi() {
         <pre><code>${l.cli.join('\n')}</code></pre>
         <div class="osi-layer-cta">
           <button class="chip-link" onclick="showPage('terminal')">⌨ Try in Terminal Lab</button>
-          <button class="chip-link" onclick="showPage('netmap')">🗺 See Network Map</button>
-          <button class="chip-link" onclick="showPage('troubleshooting')">🧰 Playbooks</button>
+          <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
+          <button class="chip-link" onclick="showPage('troubleshooting')">🔥 Troubleshoot this layer</button>
         </div>
       </div>
     </div>`).join('');
