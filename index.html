@@ -82,6 +82,8 @@ nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(13,17
 .badge-green  { background:rgba(74,222,128,.1);   color:var(--green);  border:1px solid rgba(74,222,128,.2); }
 .badge-orange { background:rgba(251,146,60,.1);   color:var(--orange); border:1px solid rgba(251,146,60,.2); }
 .badge-red    { background:rgba(248,113,113,.1);  color:var(--red);    border:1px solid rgba(248,113,113,.2); }
+.clickable-badge { cursor:pointer; transition:transform .1s ease, filter .15s ease; user-select:none; }
+.clickable-badge:hover { transform:translateX(2px); filter:brightness(1.15); }
 
 /* INPUTS */
 input[type=text],input[type=number],textarea,select { width:100%; background:var(--s2); border:1px solid var(--border); border-radius:var(--r); color:var(--text); padding:.55rem .85rem; font-family:'DM Sans',sans-serif; font-size:.9rem; transition:border-color .15s; outline:none; }
@@ -892,7 +894,15 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 
   <section class="section"><div class="container-sm">
     <div class="intro-box">
-      <strong>Bottom-up approach:</strong> Always start at Layer 1 (Physical) and work your way up. A routing problem at Layer 3 is pointless to debug if the cable at Layer 1 is unplugged. Confirm each layer before moving to the next.
+      <strong>Bottom-up approach:</strong> Always start at Layer 1 (Physical) and work your way up. A routing problem at Layer 3 is pointless to debug if the cable at Layer 1 is unplugged. Confirm each layer before moving to the next. <a onclick="showPage('osi')" style="cursor:pointer;color:var(--accent);font-weight:600">View the OSI model →</a>
+    </div>
+
+    <div class="term-nav-chips" style="margin-bottom:1.5rem;justify-content:center">
+      <button class="chip-link" onclick="showPage('terminal')">⌨ Open Terminal Lab</button>
+      <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
+      <button class="chip-link" onclick="showPage('osi')">🧠 OSI Model</button>
+      <button class="chip-link" onclick="showPage('protocols')">📡 Protocol Numbers</button>
+      <button class="chip-link" onclick="showPage('iptables')">🔌 Port Reference</button>
     </div>
 
     <div class="table-wrap" style="margin-bottom:2rem;">
@@ -900,41 +910,31 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
         <thead><tr><th>Layer</th><th>What to check</th><th>Key commands</th><th>Common fault</th></tr></thead>
         <tbody>
           <tr>
-            <td><span class="badge badge-red">L1 Physical</span></td>
+            <td><span class="badge badge-red clickable-badge" onclick="osiOpenLayer(1)" title="Open Layer 1 in OSI Model">L1 Physical →</span></td>
             <td>Cable connected, port not disabled, correct media</td>
             <td><code>show interfaces</code></td>
             <td>Status: <em>down/down</em> — cable fault or shutdown</td>
           </tr>
           <tr>
-            <td><span class="badge badge-orange">L2 Data Link</span></td>
+            <td><span class="badge badge-orange clickable-badge" onclick="osiOpenLayer(2)" title="Open Layer 2 in OSI Model">L2 Data Link →</span></td>
             <td>Correct VLAN, trunk config, no duplex mismatch</td>
             <td><code>show vlan brief</code><br><code>show interfaces trunk</code><br><code>show mac address-table</code></td>
             <td>Status: <em>up/down</em> — encapsulation or VLAN mismatch</td>
           </tr>
           <tr>
-            <td><span class="badge badge-blue">L3 Network</span></td>
+            <td><span class="badge badge-blue clickable-badge" onclick="osiOpenLayer(3)" title="Open Layer 3 in OSI Model">L3 Network →</span></td>
             <td>IP address, subnet mask, default gateway, routing table</td>
             <td><code>show ip interface brief</code><br><code>show ip route</code><br><code>ping</code> / <code>traceroute</code></td>
             <td>Wrong mask, missing route, wrong gateway</td>
           </tr>
           <tr>
-            <td><span class="badge badge-green">L4 Transport</span></td>
+            <td><span class="badge badge-green clickable-badge" onclick="osiOpenLayer(4)" title="Open Layer 4 in OSI Model">L4 Transport →</span></td>
             <td>Correct port open, ACL not blocking, NAT translations</td>
             <td><code>show ip nat translations</code><br><code>show access-lists</code><br><code>telnet &lt;ip&gt; &lt;port&gt;</code></td>
             <td>ACL denying traffic, NAT not translating</td>
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <div class="intro-box" style="margin-top:-.5rem;margin-bottom:1.5rem;font-size:.83rem">
-      <strong>Quick references:</strong>
-      <span style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem">
-        <button class="chip-link" onclick="showPage('protocols')">📡 Protocol Numbers</button>
-        <button class="chip-link" onclick="showPage('iptables')">🔌 Port Reference</button>
-        <button class="chip-link" onclick="showPage('osi')">🧠 OSI Model</button>
-        <button class="chip-link" onclick="showPage('commands')">📋 Command Library</button>
-      </span>
     </div>
     <p class="section-label">// step-by-step playbooks</p>
     <h2 style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-bottom:.4rem;">Common <em>Scenarios</em></h2>
@@ -3076,8 +3076,16 @@ window.buildSearchIndex = function() {
 
   <section class="section"><div class="container-sm">
     <div class="intro-box">
-      <strong>Why it matters:</strong> The OSI model is the mental map every network engineer uses to isolate faults. When something breaks, you don't guess — you walk the stack. Start at <b>Layer 1</b> (is the cable in?) and move upward only when the layer below is confirmed healthy.
+      <strong>Why it matters:</strong> The OSI model is the mental map every network engineer uses to isolate faults. When something breaks, you don't guess — you walk the stack. Start at <b>Layer 1</b> (is the cable in?) and move upward only when the layer below is confirmed healthy. Each layer adds its own header, its own concerns, and its own <code>show</code> commands.
     </div>
+
+    <div class="term-nav-chips" style="margin-bottom:1.5rem;justify-content:center">
+      <button class="chip-link" onclick="showPage('terminal')">⌨ Open Terminal Lab</button>
+      <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
+      <button class="chip-link" onclick="showPage('protocols')">📡 Protocol Numbers</button>
+      <button class="chip-link" onclick="showPage('iptables')">🔌 Port Reference</button>
+    </div>
+
     <div class="osi-stack" id="osiStack"></div>
     <div class="intro-box" style="margin-top:2rem">
       <strong>Mnemonic (bottom → top):</strong> <em>Please Do Not Throw Sausage Pizza Away</em> — <b>P</b>hysical · <b>D</b>ata Link · <b>N</b>etwork · <b>T</b>ransport · <b>S</b>ession · <b>P</b>resentation · <b>A</b>pplication.
