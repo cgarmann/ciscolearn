@@ -445,6 +445,39 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 .nav-sign-in-btn { color:var(--accent); border-left-color:rgba(0,255,136,.4) !important; }
 .nav-user-pill { display:none; }
 
+/* AUTH PANEL */
+.auth-panel-overlay { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.65); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem; }
+.auth-panel-overlay.open { display:flex; }
+.auth-panel { background:var(--s1); border:1px solid var(--border); border-radius:10px; width:100%; max-width:370px; padding:1.75rem 1.5rem; position:relative; box-shadow:0 8px 40px rgba(0,0,0,.4); }
+.auth-panel-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+.auth-panel-logo { font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700; color:var(--text); letter-spacing:.02em; }
+.auth-panel-logo span { color:var(--accent); }
+.auth-panel-close { background:none; border:none; color:var(--muted); font-size:1.1rem; cursor:pointer; padding:.2rem .4rem; line-height:1; border-radius:var(--r); transition:color .15s; }
+.auth-panel-close:hover { color:var(--text); }
+.auth-tabs { display:flex; gap:.4rem; margin-bottom:1.25rem; background:var(--bg); border-radius:var(--r); padding:3px; }
+.auth-tab { flex:1; background:none; border:none; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:600; padding:.5rem; border-radius:var(--r); cursor:pointer; transition:all .15s; }
+.auth-tab.active { background:var(--s2); color:var(--accent); }
+.auth-msg { font-family:'JetBrains Mono',monospace; font-size:.78rem; padding:.55rem .8rem; border-radius:var(--r); margin-bottom:1rem; line-height:1.5; }
+.auth-msg-error { background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.3); color:var(--red); }
+.auth-msg-success { background:rgba(0,255,136,.08); border:1px solid rgba(0,255,136,.2); color:var(--accent); }
+.auth-google-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:.6rem; background:var(--s2); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:.82rem; padding:.65rem; cursor:pointer; transition:border-color .15s; margin-bottom:.85rem; }
+.auth-google-btn:hover:not(:disabled) { border-color:var(--border2); }
+.auth-google-btn:disabled { opacity:.5; cursor:default; }
+.auth-divider { display:flex; align-items:center; gap:.6rem; margin-bottom:.85rem; }
+.auth-divider::before,.auth-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.auth-divider span { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); }
+.auth-field { margin-bottom:.85rem; }
+.auth-field label { display:block; font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); margin-bottom:.3rem; letter-spacing:.04em; text-transform:uppercase; }
+.auth-field input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:var(--r); color:var(--text); font-family:'DM Sans',sans-serif; font-size:.9rem; padding:.55rem .8rem; outline:none; transition:border-color .15s; }
+.auth-field input:focus { border-color:var(--accent); }
+.auth-field input::placeholder { color:var(--muted2); }
+.auth-forgot { display:block; text-align:right; font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); cursor:pointer; margin-top:.3rem; }
+.auth-forgot:hover { color:var(--accent); }
+.auth-submit-btn { width:100%; padding:.7rem; background:var(--accent); color:#0d1117; border:none; border-radius:var(--r); font-family:'JetBrains Mono',monospace; font-size:.82rem; font-weight:700; cursor:pointer; transition:opacity .15s; margin-top:.1rem; }
+.auth-submit-btn:hover:not(:disabled) { opacity:.88; }
+.auth-submit-btn:disabled { opacity:.45; cursor:default; }
+[data-theme=light] .auth-field input { background:var(--bg); }
+
 /* HOME STATS */
 .home-stats-row { display:flex; gap:.45rem; flex-wrap:wrap; margin-bottom:1.75rem; }
 .stat-pill { display:inline-flex; align-items:center; gap:.35rem; background:transparent; border:1px solid var(--border); border-radius:20px; padding:.25rem .7rem; font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); }
@@ -648,7 +681,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
       <button class="sidebar-item" id="nav-legal" onclick="showPage('legal');closeSidebar()">
         <span class="sidebar-icon">📜</span><span class="sidebar-item-text">Legal</span>
       </button>
-      <button class="sidebar-item nav-sign-in-btn" id="navSignInBtn" onclick="window.location.href='login.html'" style="display:none">
+      <button class="sidebar-item nav-sign-in-btn" id="navSignInBtn" onclick="openAuthPanel();closeSidebar()" style="display:none">
         <span class="sidebar-icon">→</span><span class="sidebar-item-text">Sign In</span>
       </button>
       <button class="sidebar-item nav-user-pill" id="navUserPill" onclick="showPage('profile');closeSidebar()">
@@ -672,6 +705,56 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     </button>
   </div>
 </aside>
+
+<!-- AUTH PANEL -->
+<div class="auth-panel-overlay" id="authPanelOverlay" onclick="authOverlayClick(event)">
+  <div class="auth-panel" id="authPanel">
+    <div class="auth-panel-header">
+      <span class="auth-panel-logo">cisco<span>:learn</span></span>
+      <button class="auth-panel-close" onclick="closeAuthPanel()" aria-label="Close">✕</button>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="authTabSignin"   onclick="authSwitchTab('signin')">Sign In</button>
+      <button class="auth-tab"        id="authTabRegister" onclick="authSwitchTab('register')">Register</button>
+    </div>
+    <div id="authError"   class="auth-msg auth-msg-error"   style="display:none"></div>
+    <div id="authSuccess" class="auth-msg auth-msg-success" style="display:none"></div>
+    <button class="auth-google-btn" id="authGoogleBtn" onclick="authGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+    <div class="auth-divider"><span>or</span></div>
+    <!-- Sign In -->
+    <div id="authFormSignin">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email" maxlength="254"/>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" maxlength="256"/>
+        <span class="auth-forgot" onclick="authForgot()">Forgot password?</span>
+      </div>
+      <button class="auth-submit-btn" id="authSubmitSignin" onclick="authSignIn()">Sign In</button>
+    </div>
+    <!-- Register -->
+    <div id="authFormRegister" style="display:none">
+      <div class="auth-field">
+        <label>Display name</label>
+        <input type="text" id="authRegName" placeholder="Your name" autocomplete="name" maxlength="40"/>
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="authRegEmail" placeholder="you@example.com" autocomplete="email" maxlength="254"/>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="authRegPassword" placeholder="Min. 8 chars + digit" autocomplete="new-password" maxlength="128"/>
+      </div>
+      <button class="auth-submit-btn" id="authSubmitRegister" onclick="authRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════
      HOME
@@ -3023,7 +3106,7 @@ window.buildSearchIndex = function() {
     <div id="profileSignedOut" class="sign-in-note">
       <p>Sign in to sync progress across devices,<br>unlock achievements, and manage your profile.</p>
       <br>
-      <a href="login.html" style="background:var(--accent);color:#0d1117;padding:.6rem 1.4rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;display:inline-block;text-decoration:none">Sign In / Register</a>
+      <button onclick="openAuthPanel()" style="background:var(--accent);color:#0d1117;padding:.6rem 1.4rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;border:none;cursor:pointer">Sign In / Register</button>
     </div>
 
     <div id="profileSignedIn" style="display:none">
@@ -3348,7 +3431,7 @@ window.buildSearchIndex = function() {
 
 <script type="module">
 // ── FIREBASE AUTH ──────────────────────────────────────────────────────────────
-import { onAuth, logout } from './js/auth.js';
+import { onAuth, logout, signInEmail, registerEmail, signInGoogle, checkRedirectResult, resetPassword } from './js/auth.js';
 
 let currentUser = null;
 window.currentUser = null;
@@ -3392,6 +3475,8 @@ onAuth(user => {
 
     // Hydrate terminal state from cloud
     if (typeof window.termHydrateFromCloud === 'function') window.termHydrateFromCloud();
+    // Close auth panel on successful sign-in
+    closeAuthPanel();
   } else {
     if (signInBtn)  signInBtn.style.display  = 'flex';
     if (signOutBtn) signOutBtn.style.display = 'none';
@@ -3403,11 +3488,123 @@ onAuth(user => {
   }
 });
 
+// Handle Google redirect return
+checkRedirectResult().then(({ error }) => {
+  if (error) authShowError(error);
+});
+
 window.doSignOut = async function() {
   await logout();
   localStorage.removeItem('cl-avatar');
   window.location.reload();
 };
+
+// ── AUTH PANEL ────────────────────────────────────────────────────────────────
+window.openAuthPanel = function() {
+  document.getElementById('authPanelOverlay').classList.add('open');
+  authClearMessages();
+  setTimeout(() => document.getElementById('authEmail')?.focus(), 50);
+};
+window.closeAuthPanel = function() {
+  document.getElementById('authPanelOverlay').classList.remove('open');
+};
+window.authOverlayClick = function(e) {
+  if (e.target === document.getElementById('authPanelOverlay')) closeAuthPanel();
+};
+window.authSwitchTab = function(tab) {
+  const isSignin = tab === 'signin';
+  document.getElementById('authFormSignin').style.display   = isSignin ? 'block' : 'none';
+  document.getElementById('authFormRegister').style.display = isSignin ? 'none'  : 'block';
+  document.getElementById('authTabSignin').classList.toggle('active', isSignin);
+  document.getElementById('authTabRegister').classList.toggle('active', !isSignin);
+  authClearMessages();
+};
+
+function authShowError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('authSuccess').style.display = 'none';
+}
+function authShowSuccess(msg) {
+  const el = document.getElementById('authSuccess');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('authError').style.display = 'none';
+}
+function authClearMessages() {
+  document.getElementById('authError').style.display   = 'none';
+  document.getElementById('authSuccess').style.display = 'none';
+}
+function authSetLoading(btnId, loading, label) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Please wait…' : label;
+}
+
+window.authGoogle = async function() {
+  authClearMessages();
+  document.getElementById('authGoogleBtn').disabled = true;
+  document.getElementById('authGoogleBtn').textContent = 'Redirecting…';
+  const { error } = await signInGoogle();
+  if (error) {
+    authShowError(error);
+    document.getElementById('authGoogleBtn').disabled = false;
+    document.getElementById('authGoogleBtn').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google';
+  }
+};
+
+window.authSignIn = async function() {
+  const email    = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  if (!email || !password) { authShowError('Please fill in all fields.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authShowError('Invalid email address.'); return; }
+  authSetLoading('authSubmitSignin', true, 'Sign In');
+  authClearMessages();
+  const { error } = await signInEmail(email, password);
+  authSetLoading('authSubmitSignin', false, 'Sign In');
+  if (error) authShowError(error);
+  // success: onAuth fires → closeAuthPanel()
+};
+
+window.authRegister = async function() {
+  const name     = document.getElementById('authRegName').value.trim();
+  const email    = document.getElementById('authRegEmail').value.trim();
+  const password = document.getElementById('authRegPassword').value;
+  if (!name || !email || !password) { authShowError('Please fill in all fields.'); return; }
+  if (name.length > 40) { authShowError('Name too long (max 40 chars).'); return; }
+  if (!/^[\p{L}\p{N} '.\-_]+$/u.test(name)) { authShowError("Name contains invalid characters."); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authShowError('Invalid email address.'); return; }
+  if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+    authShowError('Password: min 8 chars, must contain letters and a digit.'); return;
+  }
+  authSetLoading('authSubmitRegister', true, 'Create Account');
+  authClearMessages();
+  const { error } = await registerEmail(email, password, name);
+  authSetLoading('authSubmitRegister', false, 'Create Account');
+  if (error) authShowError(error);
+  // success: onAuth fires → closeAuthPanel()
+};
+
+window.authForgot = async function() {
+  const email = document.getElementById('authEmail').value.trim();
+  if (!email) { authShowError('Enter your email above first.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authShowError('Enter a valid email address.'); return; }
+  authClearMessages();
+  const forgotEl = document.querySelector('.auth-forgot');
+  if (forgotEl) { forgotEl.textContent = 'Sending…'; forgotEl.style.pointerEvents = 'none'; }
+  const { error } = await resetPassword(email);
+  if (forgotEl) { forgotEl.textContent = 'Forgot password?'; forgotEl.style.pointerEvents = ''; }
+  if (error) authShowError(error);
+  else authShowSuccess('Reset email sent to ' + email + ' — check your inbox.');
+};
+
+// Keyboard: Enter submits active form
+document.getElementById('authPanel').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const signinVisible = document.getElementById('authFormSignin').style.display !== 'none';
+  if (signinVisible) window.authSignIn();
+  else window.authRegister();
+});
 
 // ── PROFILE SAVE ACTIONS ───────────────────────────────────────────────────────
 function profileMsg(id, msg, isErr) {
