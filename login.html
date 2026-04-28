@@ -136,7 +136,7 @@ input::placeholder { color:var(--muted); }
 </div>
 
 <script type="module">
-import { signInEmail, registerEmail, signInGoogle, checkRedirectResult, onAuth } from './js/auth.js';
+import { signInEmail, registerEmail, signInGoogle, onAuth } from './js/auth.js';
 
 window.showTab = function(tab) {
   document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
@@ -193,11 +193,6 @@ window.doGoogle = async function() {
   const { error } = await signInGoogle();
   if (error) showError(error);
 };
-
-// Handle Google redirect return before showing UI
-checkRedirectResult().then(({ error }) => {
-  if (error) showError(error);
-});
 
 onAuth(user => {
   if (user) {
