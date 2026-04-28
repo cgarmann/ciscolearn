@@ -2683,8 +2683,14 @@ async function termExec(raw) {
     return;
   }
   if (cmd === 'show ip route') {
-    termPrint('Codes: L - local, C - connected, S - static, * - candidate default','dim'); termPrint('');
-    sc.routes.forEach(r => termPrintFmt(r)); return;
+    termPrint('Codes: L - local, C - connected, S - static, O - OSPF, D - EIGRP, * - candidate default','dim'); termPrint('');
+    sc.routes.forEach(r => termPrintFmt(r));
+    const hasOspf = sc.routes.some(r => r.trim().startsWith('O'));
+    const hasEigrp = sc.routes.some(r => r.trim().startsWith('D'));
+    if (hasOspf) termPrint('// O = OSPF (IP protocol 89, AD 110). Routes learned via link-state flooding. → Protocols > Routing','dim');
+    else if (hasEigrp) termPrint('// D = EIGRP (IP protocol 88, AD 90). Cisco-proprietary. → Protocols > Routing','dim');
+    else termPrint('// No dynamic routing entries. S = static (AD 1). C = directly connected. → Protocols > Routing','dim');
+    return;
   }
   if (cmd === 'show running-config') {
     termPrint('Building configuration...','dim'); await termSleep(200);
@@ -2704,7 +2710,9 @@ async function termExec(raw) {
     if (!sc.dhcp?.bindings) { termPrint('No bindings.','dim'); return; }
     termPrint('IP address          Client-ID/Hardware address   Lease expiration        Type','dim');
     sc.dhcp.bindings.forEach(b => termPrintFmt(b.ip.padEnd(20)+b.mac.padEnd(29)+b.expires.padEnd(24)+b.type));
-    if (sc.dhcp.pool.available === 0) termPrintFmt('! Pool exhausted — 0 addresses available'); return;
+    if (sc.dhcp.pool.available === 0) termPrintFmt('! Pool exhausted — 0 addresses available');
+    termPrint('// DHCP: server listens UDP 67, clients on UDP 68. Broadcasts don\'t cross routers — use ip helper-address. → Port Reference','dim');
+    return;
   }
   if (cmd === 'show ip dhcp pool') {
     if (!sc.dhcp?.pool) { termPrint('No pools configured.','dim'); return; }
@@ -2717,12 +2725,17 @@ async function termExec(raw) {
       termPrintFmt(`Extended IP access list ${al.num}`);
       al.rules.forEach((r,i) => termPrintFmt(`    ${i+1}0 ${r.action} ${r.proto} ${r.src} ${r.dst} (${r.hits} matches)`));
       termPrintFmt(`  Applied to: ${al.appliedTo}`);
-    }); return;
+    });
+    termPrint('// ACLs filter by protocol (TCP=6, UDP=17, ICMP=1) and port. "eq 22" = SSH, "eq 80" = HTTP, "eq 53" = DNS. → Port Reference','dim');
+    return;
   }
   if (cmd === 'show ip name-server') {
-    if (!sc.dns) { termPrint('Default name server: 8.8.8.8','dim'); return; }
-    termPrint('Default name server: '+sc.dns.servers.join(', '),'dim');
-    if (!sc.dns.reachable) termPrintFmt('! Name servers unreachable — DNS resolution failing'); return;
+    if (!sc.dns) { termPrint('Default name server: 8.8.8.8','dim'); } else {
+      termPrint('Default name server: '+sc.dns.servers.join(', '),'dim');
+      if (!sc.dns.reachable) termPrintFmt('! Name servers unreachable — DNS resolution failing');
+    }
+    termPrint('// DNS uses UDP port 53 (queries) and TCP port 53 (large responses/zone transfers). Check ACL permits UDP/TCP eq 53. → Port Reference','dim');
+    return;
   }
   if (cmd === 'ping') {
     if (TERM.mode === 'user') { termPrint('% Only available in privileged EXEC mode (type: enable)','err'); return; }
@@ -2731,18 +2744,27 @@ async function termExec(raw) {
     termPrint(`Sending 5, 100-byte ICMP Echos to ${target}, timeout is 2 seconds:`, 'dim');
     if (!sc.pingSuccess) {
       await termSleep(600); termPrint('.....','err');
-      termPrint('Success rate is 0 percent (0/5)','err'); return;
+      termPrint('Success rate is 0 percent (0/5)','err');
+      termPrint('// ping uses ICMP (IP protocol 1, Layer 3). If routing is OK but ping fails, check ACLs blocking ICMP. → Protocols > Control & Diagnostics','dim');
+      return;
     }
     if (sc.pingLossy) {
       await termSleep(400); termPrint('!.!.!','ok');
-      termPrint('Success rate is 60 percent (3/5), round-trip min/avg/max = 140/180/220 ms','dim'); return;
+      termPrint('Success rate is 60 percent (3/5), round-trip min/avg/max = 140/180/220 ms','dim');
+      termPrint('// Packet loss: ICMP uses IP protocol 1. Possible duplex mismatch or congestion at Layer 1/2.','dim');
+      return;
     }
     await termSleep(300); termPrint('!!!!!','ok');
-    termPrint('Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms','dim'); return;
+    termPrint('Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms','dim');
+    termPrint('// ping = ICMP echo/reply (IP protocol 1). Confirms Layer 3 reachability. Does not test TCP/UDP ports. → Protocols','dim');
+    return;
   }
   if (cmd === 'traceroute') {
     if (TERM.mode === 'user') { termPrint('% Only available in privileged EXEC mode','err'); return; }
-    if (!sc.tracePath) { termPrint('% Trace failed — no route to host','err'); return; }
+    if (!sc.tracePath) { termPrint('% Trace failed — no route to host','err');
+      termPrint('// traceroute uses ICMP TTL-exceeded messages (protocol 1) to map hops. No route = Layer 3 problem. → Protocols > Control','dim');
+      return;
+    }
     termPrint('Type escape sequence to abort.','dim');
     termPrint('Tracing the route to '+( arg||'8.8.8.8'),'dim'); termPrint('');
     for (const h of sc.tracePath) {
@@ -2751,6 +2773,7 @@ async function termExec(raw) {
       const ms = h.ms === 'timeout' ? '* * *' : (Array.isArray(h.ms) ? h.ms.map(m=>m+' ms').join('  ') : '* * *');
       termPrintFmt(`  ${h.hop}   ${h.ip||'*'}  ${ms}`);
     }
+    termPrint('// traceroute = ICMP TTL-exceeded (protocol 1). Each * = no ICMP response — hop exists but filters ICMP. → Protocols','dim');
     return;
   }
   // Config-mode stubs
@@ -2981,6 +3004,8 @@ window.buildSearchIndex = function() {
         <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
         <button class="chip-link" onclick="showPage('osi')">🧠 OSI Model</button>
         <button class="chip-link" onclick="showPage('troubleshooting')">🧰 Playbooks</button>
+        <button class="chip-link" onclick="showPage('protocols')">📡 Protocols</button>
+        <button class="chip-link" onclick="showPage('iptables')">🔌 Ports</button>
       </div>
     </div>
     <div class="term-briefing" id="termBriefing"></div>
