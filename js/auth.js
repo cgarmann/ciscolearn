@@ -2,7 +2,8 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/fireba
 import {
   getAuth,
   onAuthStateChanged,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -20,12 +21,22 @@ export function onAuth(callback) {
   onAuthStateChanged(auth, callback);
 }
 
+export async function checkRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result?.user) return { user: result.user, error: null };
+    return { user: null, error: null };
+  } catch (e) {
+    return { user: null, error: friendlyError(e.code) || e.message };
+  }
+}
+
 export async function signInGoogle() {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    return { user: result.user, error: null };
+    await signInWithRedirect(auth, googleProvider);
+    return { user: null, error: null };
   } catch (e) {
-    return { user: null, error: e.message };
+    return { user: null, error: friendlyError(e.code) || e.message };
   }
 }
 

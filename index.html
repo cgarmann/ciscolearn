@@ -33,17 +33,28 @@
 html { scroll-behavior:smooth; }
 body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.6; min-height:100vh; }
 
-/* NAV */
-nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(13,17,23,.92); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); height:52px; display:flex; align-items:center; padding:0 2rem; gap:0; }
-.nav-logo { font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700; color:var(--text); text-decoration:none; letter-spacing:.02em; margin-right:2rem; white-space:nowrap; cursor:pointer; }
-.nav-logo span { color:var(--accent); }
-.nav-links { display:flex; align-items:center; gap:.1rem; flex:1; overflow-x:auto; }
-.nav-links button { background:none; border:none; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:400; letter-spacing:.04em; padding:6px 12px; border-radius:var(--r); cursor:pointer; transition:color .15s,background .15s; white-space:nowrap; }
-.nav-links button:hover { color:var(--text); background:var(--s2); }
-.nav-links button.active { color:var(--accent); background:rgba(0,255,136,.07); border-bottom:2px solid var(--accent); }
+/* SIDEBAR */
+:root { --sidebar-w:220px; --sidebar-collapsed:58px; }
+#sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); z-index:200; background:var(--s1); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; transition:width .2s ease, transform .25s ease; }
+.sidebar-logo { font-family:'JetBrains Mono',monospace; font-size:.95rem; font-weight:700; color:var(--text); cursor:pointer; padding:1rem .9rem .85rem; border-bottom:1px solid var(--border); white-space:nowrap; flex-shrink:0; letter-spacing:.02em; }
+.sidebar-logo span { color:var(--accent); }
+.sidebar-nav { flex:1; overflow-y:auto; overflow-x:hidden; padding:.4rem 0; }
+.sidebar-group { margin-bottom:.15rem; }
+.sidebar-group-label { font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2); padding:.65rem .9rem .25rem; white-space:nowrap; overflow:hidden; }
+.sidebar-item { display:flex; align-items:center; gap:.6rem; width:100%; background:none; border:none; border-left:3px solid transparent; text-align:left; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.78rem; padding:.48rem .75rem .48rem calc(.75rem - 3px); cursor:pointer; transition:color .15s,background .15s; white-space:nowrap; }
+.sidebar-item:hover { color:var(--text); background:var(--s2); }
+.sidebar-item.active { color:var(--accent); background:rgba(0,255,136,.07); border-left-color:var(--accent); }
+.sidebar-icon { font-size:.85rem; flex-shrink:0; width:1rem; text-align:center; }
+.sidebar-item-text { overflow:hidden; text-overflow:ellipsis; }
+.sidebar-footer { border-top:1px solid var(--border); padding:.35rem 0; flex-shrink:0; }
+.sidebar-footer .sidebar-item { font-size:.72rem; }
+.sidebar-overlay { display:none; position:fixed; inset:0; z-index:199; background:rgba(0,0,0,.55); }
+.sidebar-overlay.open { display:block; }
+.sidebar-burger { display:none; position:fixed; top:.6rem; left:.6rem; z-index:201; background:var(--s1); border:1px solid var(--border); border-radius:var(--r); width:36px; height:36px; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; color:var(--text); transition:all .15s; }
+.sidebar-burger:hover { border-color:var(--accent); color:var(--accent); }
 
 /* PAGES */
-.page { display:none; padding-top:52px; min-height:100vh; }
+.page { display:none; min-height:100vh; margin-left:var(--sidebar-w); }
 .page.active { display:block; }
 .container { max-width:1100px; margin:0 auto; padding:0 2rem; }
 .container-sm { max-width:760px; margin:0 auto; padding:0 2rem; }
@@ -223,7 +234,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   --text:#0d1f12; --muted:#4a6b52; --muted2:#8aab92;
   --accent:#0a7c3e;
 }
-[data-theme=light] nav { background:rgba(240,246,241,.94); }
+[data-theme=light] #sidebar { background:rgba(240,246,241,.98); border-right-color:var(--border); }
 [data-theme=light] pre { background:var(--s2); }
 [data-theme=light] pre::after { background:var(--s3); border-bottom-color:var(--border); }
 [data-theme=light] select option { background:var(--s1); }
@@ -231,10 +242,9 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 [data-theme=light] code { background:rgba(10,124,62,.07); border-color:rgba(10,124,62,.2); }
 * { transition:background-color .2s,border-color .2s,color .15s; }
 
-/* THEME + LANG BUTTONS */
-.nav-ctrl { display:flex; align-items:center; gap:.4rem; margin-left:.5rem; flex-shrink:0; }
-.nav-ctrl button { background:none; border:1px solid var(--border); color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.06em; padding:4px 9px; border-radius:4px; cursor:pointer; transition:color .15s,border-color .15s; white-space:nowrap; }
-.nav-ctrl button:hover { color:var(--text); border-color:var(--border2); }
+/* SIDEBAR CTRL BUTTONS (theme/lang/search in footer) */
+.sidebar-ctrl-btn { background:none; border:1px solid var(--border); color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.04em; padding:3px 8px; border-radius:4px; cursor:pointer; transition:color .15s,border-color .15s; white-space:nowrap; }
+.sidebar-ctrl-btn:hover { color:var(--text); border-color:var(--border2); }
 
 /* SUBNET VISUALIZER */
 .sub-visual { margin-top:1.25rem; display:flex; flex-direction:column; gap:1rem; }
@@ -419,11 +429,9 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 .legal-section a { color:var(--accent); }
 .legal-badge { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.65rem; padding:2px 8px; border-radius:3px; margin-bottom:1rem; background:rgba(0,255,136,.08); border:1px solid rgba(0,255,136,.2); color:var(--accent); }
 
-/* NAV AUTH BUTTON */
-.nav-sign-in-btn { background:rgba(0,255,136,.1); border:1px solid rgba(0,255,136,.25); color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.04em; padding:5px 10px; border-radius:4px; cursor:pointer; white-space:nowrap; transition:all .15s; }
-.nav-sign-in-btn:hover { background:rgba(0,255,136,.2); }
-.nav-user-pill { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); border:1px solid var(--border); padding:4px 8px; border-radius:4px; cursor:pointer; white-space:nowrap; transition:color .15s; display:none; }
-.nav-user-pill:hover { color:var(--text); border-color:var(--border2); }
+/* SIDEBAR AUTH BUTTON */
+.nav-sign-in-btn { color:var(--accent); border-left-color:rgba(0,255,136,.4) !important; }
+.nav-user-pill { display:none; }
 
 /* HOME STATS */
 .home-stats-row { display:flex; gap:.45rem; flex-wrap:wrap; margin-bottom:1.75rem; }
@@ -454,10 +462,27 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 /* TS LAB CTA */
 .ts-lab-cta { padding:.9rem 1rem; border-top:1px dashed var(--border); text-align:center; }
 
+/* TABLET: collapsed sidebar (icons only) */
+@media(max-width:1024px) and (min-width:641px) {
+  #sidebar { width:var(--sidebar-collapsed); }
+  .sidebar-logo { font-size:0; padding:.85rem; letter-spacing:0; }
+  .sidebar-logo::after { content:'CL'; font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:700; color:var(--accent); display:block; }
+  .sidebar-group-label { opacity:0; padding:.45rem 0 .1rem; }
+  .sidebar-item { justify-content:center; padding:.52rem 0; gap:0; border-left-width:2px; padding-left:2px; }
+  .sidebar-item-text { display:none; }
+  .page { margin-left:var(--sidebar-collapsed); }
+}
+
+/* MOBILE: burger + drawer */
+@media(max-width:640px) {
+  .sidebar-burger { display:flex; }
+  #sidebar { transform:translateX(-100%); width:var(--sidebar-w); }
+  #sidebar.open { transform:translateX(0); }
+  .page { margin-left:0; padding-top:52px; }
+}
+
 @media(max-width:700px){
   .container,.container-sm { padding:0 1rem; }
-  nav { padding:0 1rem; }
-  .nav-logo { margin-right:.75rem; font-size:1.1rem; }
   .explain-line { grid-template-columns:1fr; }
   .hero { padding:3rem 0 2rem; }
   .sub-bin-val { font-size:.66rem; }
@@ -485,8 +510,6 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 .lp-arrow { font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--muted2); align-self:center; }
 @media(max-width:700px){ .lp-arrow { display:none; } }
 
-/* NAV SEPARATOR */
-.nav-sep { width:1px; height:14px; background:var(--border); margin:0 .15rem; flex-shrink:0; align-self:center; }
 
 /* TS OSI BADGE */
 .ts-osi-badge { display:inline-flex; align-items:center; font-family:'JetBrains Mono',monospace; font-size:.63rem; font-weight:700; padding:.15rem .5rem; border-radius:3px; border:1px solid; cursor:pointer; vertical-align:middle; margin-right:.45rem; transition:opacity .15s; }
@@ -530,35 +553,86 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   </div>
 </div>
 
-<!-- NAV -->
-<nav>
-  <span class="nav-logo" onclick="showPage('home')">cisco<span>:learn</span></span>
-  <div class="nav-links">
-    <button onclick="showPage('home')" class="active" id="nav-home" data-i18n="nav.home">Home</button>
-    <span class="nav-sep"></span>
-    <button onclick="showPage('osi')"       id="nav-osi">OSI Model</button>
-    <button onclick="showPage('guides')"    id="nav-guides" data-i18n="nav.guides">PT Guides</button>
-    <button onclick="showPage('protocols')" id="nav-protocols" style="opacity:.75">Protocols</button>
-    <button onclick="showPage('iptables')"  id="nav-iptables"  style="opacity:.75">IP Tables</button>
-    <span class="nav-sep"></span>
-    <button onclick="showPage('terminal')"   id="nav-terminal">Terminal Lab</button>
-    <button onclick="showPage('subnetting')" id="nav-subnetting" data-i18n="nav.subnetting">Subnetting</button>
-    <button onclick="showPage('quiz')"       id="nav-quiz" data-i18n="nav.quiz">Quiz</button>
-    <span class="nav-sep"></span>
-    <button onclick="showPage('troubleshooting')" id="nav-troubleshooting" data-i18n="nav.troubleshooting">Troubleshooting</button>
-    <button onclick="showPage('commands')"        id="nav-commands" data-i18n="nav.commands">Commands</button>
-    <span class="nav-sep"></span>
-    <button onclick="showPage('netmap')"   id="nav-netmap">Network Map</button>
-    <button onclick="showPage('explainer')" id="nav-explainer" data-i18n="nav.explainer">Config Explainer</button>
+<!-- MOBILE BURGER -->
+<button class="sidebar-burger" id="sidebarBurger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo" onclick="showPage('home');closeSidebar()">cisco<span>:learn</span></div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Quick Start</div>
+      <button class="sidebar-item active" id="nav-home" onclick="showPage('home');closeSidebar()">
+        <span class="sidebar-icon">🏠</span><span class="sidebar-item-text">Home</span>
+      </button>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Learn</div>
+      <button class="sidebar-item" id="nav-osi" onclick="showPage('osi');closeSidebar()">
+        <span class="sidebar-icon">🧠</span><span class="sidebar-item-text">OSI Model</span>
+      </button>
+      <button class="sidebar-item" id="nav-guides" onclick="showPage('guides');closeSidebar()">
+        <span class="sidebar-icon">📋</span><span class="sidebar-item-text">PT Guides</span>
+      </button>
+      <button class="sidebar-item" id="nav-commands" onclick="showPage('commands');closeSidebar()">
+        <span class="sidebar-icon">⌨</span><span class="sidebar-item-text">Commands</span>
+      </button>
+      <button class="sidebar-item" id="nav-subnetting" onclick="showPage('subnetting');closeSidebar()">
+        <span class="sidebar-icon">🔢</span><span class="sidebar-item-text">Subnetting</span>
+      </button>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Practice</div>
+      <button class="sidebar-item" id="nav-terminal" onclick="showPage('terminal');closeSidebar()">
+        <span class="sidebar-icon">💻</span><span class="sidebar-item-text">Terminal Lab</span>
+      </button>
+      <button class="sidebar-item" id="nav-netmap" onclick="showPage('netmap');closeSidebar()">
+        <span class="sidebar-icon">🗺</span><span class="sidebar-item-text">Network Map</span>
+      </button>
+      <button class="sidebar-item" id="nav-quiz" onclick="showPage('quiz');closeSidebar()">
+        <span class="sidebar-icon">❓</span><span class="sidebar-item-text">Quiz</span>
+      </button>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Diagnose</div>
+      <button class="sidebar-item" id="nav-troubleshooting" onclick="showPage('troubleshooting');closeSidebar()">
+        <span class="sidebar-icon">🔥</span><span class="sidebar-item-text">Troubleshooting</span>
+      </button>
+      <button class="sidebar-item" id="nav-protocols" onclick="showPage('protocols');closeSidebar()">
+        <span class="sidebar-icon">📡</span><span class="sidebar-item-text">Protocols</span>
+      </button>
+      <button class="sidebar-item" id="nav-iptables" onclick="showPage('iptables');closeSidebar()">
+        <span class="sidebar-icon">🔌</span><span class="sidebar-item-text">Port Reference</span>
+      </button>
+      <button class="sidebar-item" id="nav-explainer" onclick="showPage('explainer');closeSidebar()">
+        <span class="sidebar-icon">🔍</span><span class="sidebar-item-text">Config Explainer</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="sidebar-item" onclick="openSearch()">
+      <span class="sidebar-icon">⌕</span><span class="sidebar-item-text">Search</span>
+    </button>
+    <button class="sidebar-item" id="themeBtn" onclick="toggleTheme()">
+      <span class="sidebar-icon">◑</span><span class="sidebar-item-text" id="themeBtnText">Light</span>
+    </button>
+    <button class="sidebar-item" id="langBtn" onclick="toggleLang()">
+      <span class="sidebar-icon">🌐</span><span class="sidebar-item-text" id="langBtnText">NO</span>
+    </button>
+    <button class="sidebar-item nav-sign-in-btn" id="navSignInBtn" onclick="window.location.href='login.html'" style="display:none">
+      <span class="sidebar-icon">→</span><span class="sidebar-item-text">Sign In</span>
+    </button>
+    <button class="sidebar-item nav-user-pill" id="navUserPill" onclick="showPage('profile');closeSidebar()">
+      <span class="sidebar-icon">👤</span><span class="sidebar-item-text" id="navUserName"></span>
+    </button>
   </div>
-  <div class="nav-ctrl">
-    <button onclick="openSearch()" title="Search (/)">⌕</button>
-    <button id="langBtn"  onclick="toggleLang()">NO</button>
-    <button id="themeBtn" onclick="toggleTheme()">◑ Dark</button>
-    <button class="nav-sign-in-btn" id="navSignInBtn" onclick="window.location.href='login.html'" style="display:none">Sign In</button>
-    <button class="nav-user-pill"   id="navUserPill"  onclick="showPage('profile')"></button>
-  </div>
-</nav>
+</aside>
 
 <!-- ══════════════════════════════════════════
      HOME
@@ -1074,14 +1148,16 @@ function resetStats(module){
 function initTheme(){
   const saved=localStorage.getItem('cl-theme')||'light';
   document.documentElement.setAttribute('data-theme',saved);
-  document.getElementById('themeBtn').textContent=saved==='dark'?'☀ Light':'◑ Dark';
+  const el=document.getElementById('themeBtnText');
+  if(el) el.textContent=saved==='dark'?'Light':'Dark';
 }
 function toggleTheme(){
   const cur=document.documentElement.getAttribute('data-theme');
   const next=cur==='dark'?'light':'dark';
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('cl-theme',next);
-  document.getElementById('themeBtn').textContent=next==='dark'?'☀ Light':'◑ Dark';
+  const el=document.getElementById('themeBtnText');
+  if(el) el.textContent=next==='dark'?'Light':'Dark';
 }
 
 // ── LANGUAGE ──────────────────────────────────────────────────────────────────
@@ -1127,7 +1203,7 @@ function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     el.textContent=T(el.dataset.i18n);
   });
-  document.getElementById('langBtn').textContent=LANG==='en'?'NO':'EN';
+  const lb=document.getElementById('langBtnText'); if(lb) lb.textContent=LANG==='en'?'NO':'EN';
 }
 function toggleLang(){
   LANG=LANG==='en'?'no':'en';
@@ -1142,7 +1218,7 @@ function initLang(){
 // ── PAGE NAVIGATION ──────────────────────────────────────────────────────────
 function showPage(id, fromPop) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
   const pg = document.getElementById('page-'+id);
   if (pg) pg.classList.add('active');
   const nb = document.getElementById('nav-'+id);
@@ -1164,6 +1240,15 @@ window.addEventListener('popstate', e => {
   else showPage('home', true);
 });
 document.addEventListener('DOMContentLoaded', () => { history.replaceState({page:'home'}, '', '#home'); });
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
 
 // ── COMMANDS ─────────────────────────────────────────────────────────────────
 const COMMANDS = [
@@ -3228,8 +3313,9 @@ onAuth(user => {
   if (user) {
     if (signInBtn) signInBtn.style.display = 'none';
     if (userPill) {
-      userPill.style.display = 'inline-block';
-      userPill.textContent = user.displayName || user.email?.split('@')[0] || 'Profile';
+      userPill.style.display = 'flex';
+      const nameEl = document.getElementById('navUserName');
+      if (nameEl) nameEl.textContent = user.displayName || user.email?.split('@')[0] || 'Profile';
     }
     // Update profile page
     const pName = document.getElementById('profileHeadName');
@@ -3255,7 +3341,7 @@ onAuth(user => {
     // Hydrate terminal state from cloud
     if (typeof window.termHydrateFromCloud === 'function') window.termHydrateFromCloud();
   } else {
-    if (signInBtn) signInBtn.style.display = 'inline-block';
+    if (signInBtn) signInBtn.style.display = 'flex';
     if (userPill) userPill.style.display = 'none';
     const signedIn = document.getElementById('profileSignedIn');
     const signedOut = document.getElementById('profileSignedOut');
