@@ -149,10 +149,17 @@ window.showForgot = async function(e) {
   e.preventDefault();
   const email = document.getElementById('loginEmail').value.trim();
   if (!email) { showError('Enter your email address first.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Enter a valid email address.'); return; }
+  const link = e.target;
+  const orig = link.textContent;
+  link.textContent = 'Sending…';
+  link.style.pointerEvents = 'none';
   const { resetPassword } = await import('./js/auth.js');
   const { error } = await resetPassword(email);
+  link.textContent = orig;
+  link.style.pointerEvents = '';
   if (error) showError(error);
-  else showReset('Password reset email sent — check your inbox.');
+  else showReset('Reset email sent to ' + email + ' — check your inbox (and spam).');
 };
 
 window.doLogin = async function() {

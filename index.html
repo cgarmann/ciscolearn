@@ -36,12 +36,24 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 /* SIDEBAR */
 :root { --sidebar-w:220px; --sidebar-collapsed:58px; }
 #sidebar { position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); z-index:200; background:var(--s1); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; transition:width .2s ease, transform .25s ease; }
-.sidebar-logo { font-family:'JetBrains Mono',monospace; font-size:.95rem; font-weight:700; color:var(--text); cursor:pointer; padding:1rem .9rem .85rem; border-bottom:1px solid var(--border); white-space:nowrap; flex-shrink:0; letter-spacing:.02em; }
+.sidebar-logo-row { display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); flex-shrink:0; }
+.sidebar-logo { font-family:'JetBrains Mono',monospace; font-size:.95rem; font-weight:700; color:var(--text); cursor:pointer; padding:1rem .9rem .85rem; white-space:nowrap; flex:1; letter-spacing:.02em; }
 .sidebar-logo span { color:var(--accent); }
+.sidebar-collapse-btn { background:none; border:none; color:var(--muted); cursor:pointer; padding:.5rem .7rem; font-size:1rem; line-height:1; transition:color .15s; flex-shrink:0; }
+.sidebar-collapse-btn:hover { color:var(--text); }
+#sidebar.collapsed { width:var(--sidebar-collapsed); }
+#sidebar.collapsed .sidebar-logo { font-size:0; padding:.85rem; }
+#sidebar.collapsed .sidebar-logo::after { content:'CL'; font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:700; color:var(--accent); display:block; }
+#sidebar.collapsed .sidebar-collapse-btn { transform:scaleX(-1); }
+#sidebar.collapsed .sidebar-group-label { opacity:0; padding:.45rem 0 .1rem; height:.6rem; }
+#sidebar.collapsed .sidebar-item { justify-content:center; padding:.52rem 0; gap:0; border-left-width:2px; padding-left:2px; }
+#sidebar.collapsed .sidebar-item-text { display:none; }
+#sidebar.collapsed + .sidebar-overlay + * { margin-left:var(--sidebar-collapsed); }
+body.sidebar-collapsed .page { margin-left:var(--sidebar-collapsed) !important; }
 .sidebar-nav { flex:1; overflow-y:auto; overflow-x:hidden; padding:.4rem 0; }
 .sidebar-group { margin-bottom:.15rem; }
 .sidebar-group-label { font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2); padding:.65rem .9rem .25rem; white-space:nowrap; overflow:hidden; }
-.sidebar-item { display:flex; align-items:center; gap:.6rem; width:100%; background:none; border:none; border-left:3px solid transparent; text-align:left; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.78rem; padding:.48rem .75rem .48rem calc(.75rem - 3px); cursor:pointer; transition:color .15s,background .15s; white-space:nowrap; }
+.sidebar-item { display:flex; align-items:center; gap:.6rem; width:100%; background:none; border:none; border-left:3px solid transparent; text-align:left; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.78rem; padding:.48rem .75rem .48rem calc(.75rem - 3px); cursor:pointer; transition:color .15s,background .15s; white-space:nowrap; text-decoration:none; box-sizing:border-box; }
 .sidebar-item:hover { color:var(--text); background:var(--s2); }
 .sidebar-item.active { color:var(--accent); background:rgba(0,255,136,.07); border-left-color:var(--accent); }
 .sidebar-icon { font-size:.85rem; flex-shrink:0; width:1rem; text-align:center; }
@@ -462,15 +474,19 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 /* TS LAB CTA */
 .ts-lab-cta { padding:.9rem 1rem; border-top:1px dashed var(--border); text-align:center; }
 
-/* TABLET: collapsed sidebar (icons only) */
+/* TABLET: auto-collapsed sidebar */
 @media(max-width:1024px) and (min-width:641px) {
   #sidebar { width:var(--sidebar-collapsed); }
   .sidebar-logo { font-size:0; padding:.85rem; letter-spacing:0; }
   .sidebar-logo::after { content:'CL'; font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:700; color:var(--accent); display:block; }
-  .sidebar-group-label { opacity:0; padding:.45rem 0 .1rem; }
+  .sidebar-group-label { opacity:0; padding:.45rem 0 .1rem; height:.6rem; }
   .sidebar-item { justify-content:center; padding:.52rem 0; gap:0; border-left-width:2px; padding-left:2px; }
   .sidebar-item-text { display:none; }
   .page { margin-left:var(--sidebar-collapsed); }
+  .sidebar-collapse-btn { display:none; }
+}
+@media(max-width:640px) {
+  .sidebar-collapse-btn { display:none; }
 }
 
 /* MOBILE: burger + drawer */
@@ -559,7 +575,10 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 
 <!-- SIDEBAR -->
 <aside id="sidebar">
-  <div class="sidebar-logo" onclick="showPage('home');closeSidebar()">cisco<span>:learn</span></div>
+  <div class="sidebar-logo-row">
+    <div class="sidebar-logo" onclick="showPage('home');closeSidebar()">cisco<span>:learn</span></div>
+    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" title="Collapse sidebar">‹</button>
+  </div>
 
   <nav class="sidebar-nav">
     <div class="sidebar-group">
@@ -613,6 +632,32 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
         <span class="sidebar-icon">🔍</span><span class="sidebar-item-text">Config Explainer</span>
       </button>
     </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Tools</div>
+      <a class="sidebar-item" href="https://cgarmann.github.io/cisco-config-generator/" target="_blank" rel="noopener">
+        <span class="sidebar-icon">⚙</span><span class="sidebar-item-text">Config Generator ↗</span>
+      </a>
+    </div>
+
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Account</div>
+      <button class="sidebar-item" id="nav-profile" onclick="showPage('profile');closeSidebar()">
+        <span class="sidebar-icon">👤</span><span class="sidebar-item-text">Profile</span>
+      </button>
+      <button class="sidebar-item" id="nav-legal" onclick="showPage('legal');closeSidebar()">
+        <span class="sidebar-icon">📜</span><span class="sidebar-item-text">Legal</span>
+      </button>
+      <button class="sidebar-item nav-sign-in-btn" id="navSignInBtn" onclick="window.location.href='login.html'" style="display:none">
+        <span class="sidebar-icon">→</span><span class="sidebar-item-text">Sign In</span>
+      </button>
+      <button class="sidebar-item nav-user-pill" id="navUserPill" onclick="showPage('profile');closeSidebar()">
+        <span class="sidebar-icon">👤</span><span class="sidebar-item-text" id="navUserName"></span>
+      </button>
+      <button class="sidebar-item" id="navSignOutBtn" onclick="doSignOut()" style="display:none">
+        <span class="sidebar-icon">⏻</span><span class="sidebar-item-text">Sign Out</span>
+      </button>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
@@ -624,12 +669,6 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     </button>
     <button class="sidebar-item" id="langBtn" onclick="toggleLang()">
       <span class="sidebar-icon">🌐</span><span class="sidebar-item-text" id="langBtnText">NO</span>
-    </button>
-    <button class="sidebar-item nav-sign-in-btn" id="navSignInBtn" onclick="window.location.href='login.html'" style="display:none">
-      <span class="sidebar-icon">→</span><span class="sidebar-item-text">Sign In</span>
-    </button>
-    <button class="sidebar-item nav-user-pill" id="navUserPill" onclick="showPage('profile');closeSidebar()">
-      <span class="sidebar-icon">👤</span><span class="sidebar-item-text" id="navUserName"></span>
     </button>
   </div>
 </aside>
@@ -1249,6 +1288,17 @@ function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
+function toggleSidebarCollapse() {
+  const collapsed = document.getElementById('sidebar').classList.toggle('collapsed');
+  document.body.classList.toggle('sidebar-collapsed', collapsed);
+  localStorage.setItem('cl-sidebar-collapsed', collapsed ? '1' : '');
+}
+(function initSidebarCollapse() {
+  if (localStorage.getItem('cl-sidebar-collapsed') === '1') {
+    document.getElementById('sidebar').classList.add('collapsed');
+    document.body.classList.add('sidebar-collapsed');
+  }
+})();
 
 // ── COMMANDS ─────────────────────────────────────────────────────────────────
 const COMMANDS = [
@@ -3307,11 +3357,13 @@ onAuth(user => {
   currentUser = user;
   window.currentUser = user;
 
-  const signInBtn = document.getElementById('navSignInBtn');
-  const userPill  = document.getElementById('navUserPill');
+  const signInBtn  = document.getElementById('navSignInBtn');
+  const userPill   = document.getElementById('navUserPill');
+  const signOutBtn = document.getElementById('navSignOutBtn');
 
   if (user) {
-    if (signInBtn) signInBtn.style.display = 'none';
+    if (signInBtn)  signInBtn.style.display  = 'none';
+    if (signOutBtn) signOutBtn.style.display = 'flex';
     if (userPill) {
       userPill.style.display = 'flex';
       const nameEl = document.getElementById('navUserName');
@@ -3341,8 +3393,9 @@ onAuth(user => {
     // Hydrate terminal state from cloud
     if (typeof window.termHydrateFromCloud === 'function') window.termHydrateFromCloud();
   } else {
-    if (signInBtn) signInBtn.style.display = 'flex';
-    if (userPill) userPill.style.display = 'none';
+    if (signInBtn)  signInBtn.style.display  = 'flex';
+    if (signOutBtn) signOutBtn.style.display = 'none';
+    if (userPill)   userPill.style.display   = 'none';
     const signedIn = document.getElementById('profileSignedIn');
     const signedOut = document.getElementById('profileSignedOut');
     if (signedIn) signedIn.style.display = 'none';
