@@ -1149,10 +1149,11 @@ function showPage(id, fromPop) {
   if (nb) nb.classList.add('active');
   if (!fromPop) history.pushState({page:id}, '', '#'+id);
   window.scrollTo(0,0);
-  if (id === 'osi'       && typeof renderOsi       === 'function') renderOsi();
-  if (id === 'netmap'    && typeof renderNetMap    === 'function') renderNetMap();
-  if (id === 'protocols' && typeof renderProtocols === 'function') renderProtocols();
-  if (id === 'iptables'  && typeof renderIPTables  === 'function') renderIPTables();
+  if (id === 'osi'              && typeof renderOsi       === 'function') renderOsi();
+  if (id === 'netmap'           && typeof renderNetMap    === 'function') renderNetMap();
+  if (id === 'troubleshooting'  && typeof renderTS        === 'function') renderTS();
+  if (id === 'protocols'        && typeof renderProtocols === 'function') renderProtocols();
+  if (id === 'iptables'         && typeof renderIPTables  === 'function') renderIPTables();
   if (id === 'terminal' && typeof termChangeScenario === 'function') {
     const sel = document.getElementById('termScenario');
     if (sel && !document.getElementById('termScreen')?.children.length) termChangeScenario(sel.value);
@@ -1789,7 +1790,9 @@ const TS_SCENARIOS=[
 ];
 
 function renderTS(){
-  document.getElementById('tsContainer').innerHTML=TS_SCENARIOS.map((s,i)=>{
+  const host = document.getElementById('tsContainer');
+  if (!host || host.children.length) return;
+  host.innerHTML=TS_SCENARIOS.map((s,i)=>{
     const lay = s.layer ? OSI_LAYERS.find(l => l.n === s.layer) : null;
     const badge = lay
       ? `<span class="ts-osi-badge" style="color:${lay.color};border-color:${lay.color};background:${lay.color}1a" onclick="osiOpenLayer(${lay.n});event.stopPropagation()">L${lay.n} — ${lay.name}</span>`
@@ -1818,7 +1821,6 @@ function renderTS(){
     </div>`;
   }).join('');
 }
-renderTS();
 
 // ── QUIZ ─────────────────────────────────────────────────────────────────────
 const QUIZ_QS=[
