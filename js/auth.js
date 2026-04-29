@@ -3,6 +3,7 @@ import {
   getAuth,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithCredential,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -16,19 +17,47 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
+// True when running inside a native Capacitor app (Android/iOS)
+const isNative = () => !!(window.Capacitor?.isNativePlatform?.());
+
 export function onAuth(callback) {
   onAuthStateChanged(auth, callback);
 }
 
 export async function signInGoogle() {
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    return { user: result.user, error: null };
-  } catch (e) {
-    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
-      return { user: null, error: null };
+  if (isNative()) {
+    // Native Android/iOS: use Capacitor Google Auth plugin (no browser popup)
+    try {
+      const googleUser = await window.Capacitor.Plugins.GoogleAuth.signIn();
+      const idToken = googleUser.authentication.idToken;
+      const credential = GoogleAuthProvider.credential(idToken);
+      const result = await signInWithCredential(auth, credential);
+      return { user: result.user, error: null };
+    } catch (e) {
+      const msg = e.message || '';
+      // User dismissed the native account picker
+      if (
+        msg.includes('canceled') || msg.includes('cancelled') ||
+        msg.includes('12501') || msg.includes('sign_in_cancelled')
+      ) {
+        return { user: null, error: null };
+      }
+      return { user: null, error: msg || 'Google sign-in failed.' };
     }
-    return { user: null, error: friendlyError(e.code) || e.message };
+  } else {
+    // Web: standard Firebase popup flow
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return { user: result.user, error: null };
+    } catch (e) {
+      if (
+        e.code === 'auth/popup-closed-by-user' ||
+        e.code === 'auth/cancelled-popup-request'
+      ) {
+        return { user: null, error: null };
+      }
+      return { user: null, error: friendlyError(e.code) || e.message };
+    }
   }
 }
 
