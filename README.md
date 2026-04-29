@@ -2,7 +2,7 @@
 
 A browser-based learning platform for Cisco IOS and Packet Tracer.
 
-**Live:** [cgarmann.github.io/ciscolearn](https://cgarmann.github.io/ciscolearn/)
+**Live:** [[(https://ciscolearn.schjoldr.io/)](https://ciscolearn.schjoldr.io/)](https://cgarmann.github.io/ciscolearn/)
 
 No installation, no server, no dependencies — one HTML file that runs anywhere.
 
@@ -25,7 +25,7 @@ No installation, no server, no dependencies — one HTML file that runs anywhere
 
 ## Getting Started
 
-1. Open [[cgarmann.github.io/ciscolearn](https://cgarmann.github.io/ciscolearn/](https://ciscolearn.schjoldr.io/)) in any browser, or
+1. Open [(https://ciscolearn.schjoldr.io/)) in any browser, or
 2. Clone the repo and open `index.html` directly — no build step needed
 
 ## Design
