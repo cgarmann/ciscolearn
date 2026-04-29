@@ -13,7 +13,7 @@ const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const DEFAULT_DATA = {
-  settings: { theme: 'dark', lang: 'no' },
+  settings: { theme: 'light', lang: 'no' },
   progress: {
     quizScores: [], guidesRead: [], troubleshootingRead: [],
     subnetStreak: 0, subnetBest: 0, subnetTotal: 0,
