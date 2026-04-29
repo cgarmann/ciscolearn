@@ -25,7 +25,7 @@ No installation, no server, no dependencies — one HTML file that runs anywhere
 
 ## Getting Started
 
-1. Open [cgarmann.github.io/ciscolearn](https://cgarmann.github.io/ciscolearn/) in any browser, or
+1. Open [[cgarmann.github.io/ciscolearn](https://cgarmann.github.io/ciscolearn/](https://ciscolearn.schjoldr.io/)) in any browser, or
 2. Clone the repo and open `index.html` directly — no build step needed
 
 ## Design
