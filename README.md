@@ -2,7 +2,7 @@
 
 A browser-based learning platform for Cisco IOS and Packet Tracer.
 
-**Live:** [[(https://ciscolearn.schjoldr.io/)]]([https://ciscolearn.schjoldr.io/)
+**Live:** [https://ciscolearn.schjoldr.io/](https://ciscolearn.schjoldr.io/)
 
 No installation, no server, no dependencies — one HTML file that runs anywhere.
 
@@ -19,14 +19,14 @@ No installation, no server, no dependencies — one HTML file that runs anywhere
 
 ## Features
 
-- Light / dark theme toggle (persisted)
+- Light / dark theme toggle
 - Norwegian / English language toggle
 - Single self-contained file — works on GitHub Pages or any static host
 
 ## Getting Started
 
-1. Open [(https://ciscolearn.schjoldr.io/)) in any browser, or
-2. Clone the repo and open `index.html` directly — no build step needed
+1. Open [https://ciscolearn.schjoldr.io/](https://ciscolearn.schjoldr.io/) in any browser
+2. Or clone the repo and open `index.html` directly — no build step needed
 
 ## Design
 
