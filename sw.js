@@ -1,4 +1,4 @@
-const CACHE = 'ciscolearn-v1';
+const CACHE = 'ciscolearn-v2';
 const PRECACHE = [
   '/ciscolearn/',
   '/ciscolearn/index.html',
