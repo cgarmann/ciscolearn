@@ -441,8 +441,12 @@ function sgenPickFaults(difficulty) {
   return picked.slice(0, count);
 }
 
-function sgenGenerate(difficulty) {
-  var defs   = sgenPickFaults(difficulty);
+function sgenGenerate(difficulty, faultIds) {
+  var defs = faultIds
+    ? faultIds.map(function (id) {
+        return FAULT_LIBRARY.find(function (f) { return f.id === id; });
+      }).filter(Boolean)
+    : sgenPickFaults(difficulty);
   var config = sgenDeepClone(HEALTHY_BASE);
 
   var faults = defs.map(function (def) {
@@ -718,10 +722,10 @@ function sgenShowHint(hintText) {
 }
 
 // ── MAIN ACTIONS ──────────────────────────────────────────────────────────────
-window.sgenStart = function (difficulty) {
+window.sgenStart = function (difficulty, faultIds) {
   sgenStopTimer();
 
-  var result = sgenGenerate(difficulty);
+  var result = sgenGenerate(difficulty, faultIds || null);
   SGEN.active     = true;
   SGEN.difficulty = difficulty;
   SGEN.faults     = result.faults;
@@ -801,6 +805,35 @@ window.sgenNew = function () {
   if (termSel) termSel.disabled = false;
   window.sgenStart(d);
 };
+
+window.sgenShareScenario = function () {
+  if (!SGEN.active || !SGEN.faults.length) return;
+  var payload = JSON.stringify({ d: SGEN.difficulty, f: SGEN.faults.map(function (f) { return f.id; }) });
+  var encoded = btoa(payload);
+  var url = location.origin + location.pathname + '#sgen=' + encoded;
+  var elapsed = sgenElapsed();
+  var m = String(Math.floor(Math.floor(elapsed / 1000) / 60)).padStart(2, '0');
+  var s = String(Math.floor(elapsed / 1000) % 60).padStart(2, '0');
+  var text = 'cisco:learn — hjelp meg! 🔧\n' +
+    DIFF_NAMES[SGEN.difficulty] + ' | ' + SGEN.faults.length +
+    ' fault' + (SGEN.faults.length !== 1 ? 's' : '') +
+    ' | ' + m + ':' + s + ' elapsed\n' + url;
+  if (typeof shareResult === 'function') shareResult(text);
+};
+
+function sgenCheckHash() {
+  var match = location.hash.match(/^#sgen=([A-Za-z0-9+/=]+)$/);
+  if (!match) return;
+  try {
+    var payload = JSON.parse(atob(match[1]));
+    if (!payload.d || !Array.isArray(payload.f) || !payload.f.length) return;
+    history.replaceState(null, '', location.pathname + location.search);
+    setTimeout(function () {
+      if (typeof showPage === 'function') showPage('terminal');
+      window.sgenStart(payload.d, payload.f);
+    }, 150);
+  } catch (e) {}
+}
 
 window.sgenExit = function () {
   sgenStopTimer();
@@ -963,6 +996,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Show the selector panel on page load
     sgenShowSelector();
+
+    // Load shared scenario from URL hash if present
+    sgenCheckHash();
   }, 0);
 });
 
