@@ -584,6 +584,75 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 .port-group-icon { font-size:1.2rem; line-height:1; }
 .port-group-label { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.88rem; color:var(--text); }
 .port-group-section { margin-bottom:2rem; }
+
+/* SCENARIO GENERATOR — panel */
+.sgen-panel { margin-bottom:.75rem; border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
+.sgen-selector { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.9rem 1.1rem; background:var(--s1); flex-wrap:wrap; }
+.sgen-selector-left { display:flex; align-items:center; gap:.7rem; }
+.sgen-big-icon { font-size:1.35rem; line-height:1; flex-shrink:0; }
+.sgen-title { font-family:'JetBrains Mono',monospace; font-size:.88rem; font-weight:700; color:var(--text); }
+.sgen-subtitle { font-family:'JetBrains Mono',monospace; font-size:.67rem; color:var(--muted); margin-top:.1rem; }
+.sgen-pills { display:flex; gap:.45rem; flex-wrap:wrap; }
+.sgen-pill { min-height:44px; padding:.4rem 1.05rem; border-radius:999px; border:1px solid; font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:700; cursor:pointer; transition:opacity .15s,transform .1s; letter-spacing:.02em; background:transparent; }
+.sgen-pill:active { transform:scale(.95); }
+.sgen-easy      { color:#00ff88; border-color:rgba(0,255,136,.4);  background:rgba(0,255,136,.09); }
+.sgen-easy:hover      { background:rgba(0,255,136,.18); }
+.sgen-medium    { color:#d29922; border-color:rgba(210,153,34,.4); background:rgba(210,153,34,.09); }
+.sgen-medium:hover    { background:rgba(210,153,34,.2); }
+.sgen-hard      { color:#d87010; border-color:rgba(216,112,16,.4); background:rgba(216,112,16,.09); }
+.sgen-hard:hover      { background:rgba(216,112,16,.2); }
+.sgen-nightmare { color:#f85149; border-color:rgba(248,81,73,.4);  background:rgba(248,81,73,.09); }
+.sgen-nightmare:hover { background:rgba(248,81,73,.2); }
+[data-theme=light] .sgen-easy    { color:#0a7c3e; border-color:rgba(10,124,62,.4);  background:rgba(10,124,62,.07); }
+[data-theme=light] .sgen-easy:hover { background:rgba(10,124,62,.15); }
+
+/* SCENARIO GENERATOR — active bar */
+.sgen-active-bar { display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.6rem 1.1rem; background:var(--s1); flex-wrap:wrap; }
+.sgen-status-left { display:flex; align-items:center; gap:.45rem; font-family:'JetBrains Mono',monospace; font-size:.76rem; flex-wrap:wrap; color:var(--muted); }
+.sgen-status-left b { color:var(--text); }
+.sgen-bolt { color:var(--accent); }
+.sgen-sep  { color:var(--muted2); }
+.sgen-status-right { display:flex; gap:.4rem; }
+.sgen-action-btn { min-height:36px; padding:.28rem .75rem; border-radius:var(--r); background:var(--s2); border:1px solid var(--border); color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:.72rem; cursor:pointer; transition:border-color .15s,color .15s; white-space:nowrap; }
+.sgen-action-btn:hover { border-color:var(--border2); color:var(--text); }
+#sgenGiveUpBtn { border-color:rgba(248,81,73,.3); color:var(--red); }
+#sgenGiveUpBtn:hover { background:rgba(248,81,73,.07); border-color:var(--red); }
+
+/* SCENARIO GENERATOR — hint bar */
+.sgen-hint-bar { padding:.48rem 1.1rem; background:rgba(0,255,136,.04); border-top:1px solid rgba(0,255,136,.15); font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--accent); letter-spacing:.01em; }
+
+/* SCENARIO GENERATOR — overlay */
+.sgen-overlay { position:fixed; inset:0; z-index:400; background:rgba(0,0,0,.75); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+.sgen-overlay-box { background:var(--s1); border:1px solid var(--border); border-radius:12px; padding:2rem 1.75rem; width:100%; max-width:480px; max-height:85vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,.5); }
+.sgen-result-icon  { font-size:2.2rem; line-height:1; text-align:center; margin-bottom:.45rem; }
+.sgen-result-title { font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700; text-align:center; margin-bottom:1.4rem; letter-spacing:.05em; }
+.sgen-result-stats { border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:1.4rem; }
+.sgen-stat-row { display:flex; justify-content:space-between; padding:.6rem 1rem; border-bottom:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:.84rem; }
+.sgen-stat-row:last-child { border-bottom:none; }
+.sgen-stat-row span { color:var(--muted); }
+.sgen-stat-row b    { color:var(--text); }
+.sgen-stars { color:var(--accent); letter-spacing:.08em; }
+.sgen-result-btns { display:flex; flex-direction:column; gap:.45rem; margin-bottom:.65rem; }
+.sgen-result-btn { width:100%; padding:.65rem; border-radius:var(--r); background:var(--accent); color:#0d1117; border:none; font-family:'JetBrains Mono',monospace; font-size:.82rem; font-weight:700; cursor:pointer; transition:opacity .15s; }
+.sgen-result-btn:hover { opacity:.88; }
+.sgen-result-btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border); }
+.sgen-result-btn-ghost:hover { opacity:1; border-color:var(--border2); color:var(--text); }
+.sgen-overlay-dismiss { text-align:center; font-family:'JetBrains Mono',monospace; font-size:.64rem; color:var(--muted2); }
+.sgen-reveal-list { margin-bottom:1.4rem; display:flex; flex-direction:column; gap:.85rem; }
+.sgen-reveal-fault { display:grid; grid-template-columns:1.4rem 1fr; gap:.5rem; padding:.85rem; background:var(--bg); border:1px solid var(--border); border-radius:var(--r); }
+.sgen-reveal-num  { font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--accent); font-weight:700; padding-top:.1rem; }
+.sgen-reveal-name { font-family:'JetBrains Mono',monospace; font-size:.8rem; font-weight:700; color:var(--text); margin-bottom:.4rem; }
+.sgen-reveal-item { font-size:.77rem; color:var(--muted); margin-bottom:.2rem; line-height:1.55; }
+.sgen-reveal-lbl  { color:var(--text); font-weight:600; }
+.sgen-reveal-item code { font-size:.75em; }
+@media(max-width:640px) {
+  .sgen-selector { flex-direction:column; align-items:flex-start; }
+  .sgen-pills { width:100%; }
+  .sgen-pill { flex:1; text-align:center; justify-content:center; }
+  .sgen-active-bar { flex-direction:column; align-items:flex-start; }
+  .sgen-status-right { width:100%; }
+  .sgen-action-btn { flex:1; text-align:center; }
+}
 </style>
 </head>
 <body>
@@ -3219,6 +3288,7 @@ window.buildSearchIndex = function() {
           <option value="dhcp-down">Scenario 7 — DHCP pool exhausted</option>
           <option value="dns-fail">Scenario 8 — DNS resolution fails</option>
         </optgroup>
+        <option value="generated" id="sgenGenOption" hidden>⚡ Generated Scenario</option>
       </select>
       <div class="term-nav-chips">
         <button class="chip-link" onclick="showPage('netmap')">🗺 Network Map</button>
@@ -3228,6 +3298,45 @@ window.buildSearchIndex = function() {
         <button class="chip-link" onclick="showPage('iptables')">🔌 Ports</button>
       </div>
     </div>
+
+    <!-- ⚡ SCENARIO GENERATOR PANEL -->
+    <div id="sgenPanel" class="sgen-panel">
+      <!-- Difficulty selector (shown when inactive) -->
+      <div id="sgenSelector" class="sgen-selector">
+        <div class="sgen-selector-left">
+          <span class="sgen-big-icon">⚡</span>
+          <div>
+            <div class="sgen-title">Scenario Generator</div>
+            <div class="sgen-subtitle">Random faults — find and fix them</div>
+          </div>
+        </div>
+        <div class="sgen-pills">
+          <button class="sgen-pill sgen-easy"      onclick="sgenStart(1)">Easy</button>
+          <button class="sgen-pill sgen-medium"    onclick="sgenStart(2)">Medium</button>
+          <button class="sgen-pill sgen-hard"      onclick="sgenStart(3)">Hard</button>
+          <button class="sgen-pill sgen-nightmare" onclick="sgenStart(4)">Nightmare</button>
+        </div>
+      </div>
+      <!-- Active scenario status bar (shown when running) -->
+      <div id="sgenActiveBar" class="sgen-active-bar" style="display:none">
+        <div class="sgen-status-left">
+          <span class="sgen-bolt">⚡</span>
+          <b id="sgenDiffLabel">Easy (1 fault)</b>
+          <span class="sgen-sep">|</span>
+          <span>⏱ <span id="sgenTimer">00:00</span></span>
+          <span class="sgen-sep">|</span>
+          <span>Found: <span id="sgenFound">0/1</span></span>
+        </div>
+        <div class="sgen-status-right">
+          <button class="sgen-action-btn" id="sgenGiveUpBtn" onclick="sgenGiveUp()">Give Up</button>
+          <button class="sgen-action-btn" onclick="sgenNew()">New</button>
+          <button class="sgen-action-btn" onclick="sgenExit()">← Back</button>
+        </div>
+      </div>
+      <!-- Hint bar (Easy / Medium only) -->
+      <div id="sgenHintBar" class="sgen-hint-bar" style="display:none"></div>
+    </div>
+
     <div class="term-briefing" id="termBriefing"></div>
 
     <div class="topo-row" id="termTopology">
@@ -3257,6 +3366,11 @@ window.buildSearchIndex = function() {
     </div>
     <p class="term-hint">Try: <b>enable</b> → <b>show ip interface brief</b> → <b>ping 8.8.8.8</b> · Tab completes · ↑/↓ history · <b>clear</b> clears screen</p>
   </div></section>
+
+  <!-- ⚡ SCENARIO GENERATOR — victory / give-up overlay -->
+  <div id="sgenOverlay" class="sgen-overlay" onclick="sgenOverlayClose(event)" style="display:none">
+    <div class="sgen-overlay-box" id="sgenOverlayBox"></div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -3740,5 +3854,6 @@ window.closeAvatarModal = function(e) {
   });
 })();
 </script>
+<script src="js/scenario-generator.js"></script>
 </body>
 </html>
