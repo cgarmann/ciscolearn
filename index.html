@@ -128,6 +128,8 @@ pre,code { font-family:'JetBrains Mono',monospace; }
 pre { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:1.1rem; padding-top:2.4rem; overflow-x:auto; font-size:.8rem; line-height:1.75; color:var(--text); position:relative; }
 pre::before { content:''; position:absolute; top:.55rem; left:.75rem; width:8px; height:8px; border-radius:50%; background:#f85149; box-shadow:16px 0 0 #d29922, 32px 0 0 #3fb950; }
 pre::after { content:''; position:absolute; top:0; left:0; right:0; height:2rem; background:var(--s2); border-bottom:1px solid var(--border); border-radius:var(--r) var(--r) 0 0; }
+pre.inline-example { padding:0.3rem 0.65rem; font-size:.76rem; border-radius:4px; }
+pre.inline-example::before, pre.inline-example::after { display:none; }
 code { background:rgba(0,255,136,.07); border:1px solid rgba(0,255,136,.15); border-radius:3px; padding:1px 6px; font-size:.8em; color:var(--accent); }
 
 /* TABLE */
@@ -1549,7 +1551,7 @@ function renderCmds(data) {
     <tr>
       <td><code>${r.cmd}</code></td>
       <td style="color:var(--muted)">${r.desc}</td>
-      <td><pre style="margin:0;padding:.35rem .65rem;font-size:.76rem;">${r.example}</pre></td>
+      <td><pre class="inline-example">${r.example}</pre></td>
       <td><span class="badge badge-blue">${r.cat}</span></td>
     </tr>`).join('');
   document.getElementById('cmdCount').textContent = `${data.length} commands`;
