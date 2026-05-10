@@ -900,6 +900,11 @@ function sgenVictory() {
   if (termSel) termSel.disabled = false;
 
   var nextDiff2 = Math.min(SGEN.difficulty + 1, 4);
+  var diffNames = ['', 'Easy', 'Medium', 'Hard', 'Nightmare'];
+  var shareText = 'cisco:learn — Scenario Generator\n' +
+    diffNames[SGEN.difficulty] + ' | ' + starStr + ' | ' + m + ':' + s + '\n' +
+    SGEN.faults.length + ' fault' + (SGEN.faults.length !== 1 ? 's' : '') + ' resolved in ' +
+    SGEN.cmdCount + ' command' + (SGEN.cmdCount !== 1 ? 's' : '') + ' 🔧\nciscolearn.schjoldr.io';
   sgenShowOverlay([
     '<div class="sgen-result-icon" style="color:var(--accent)">✓</div>',
     '<div class="sgen-result-title" style="color:var(--accent)">ALL FAULTS RESOLVED</div>',
@@ -912,6 +917,7 @@ function sgenVictory() {
     '<div class="sgen-result-btns">',
     '  <button class="sgen-result-btn" onclick="sgenNew();sgenCloseOverlay()">Try Again</button>',
     '  <button class="sgen-result-btn" onclick="sgenCloseOverlay();sgenStart(' + nextDiff2 + ')">Harder →</button>',
+    '  <button class="sgen-result-btn sgen-result-btn-ghost" onclick="shareResult(' + JSON.stringify(shareText) + ')">Share</button>',
     '  <button class="sgen-result-btn sgen-result-btn-ghost" onclick="sgenCloseOverlay();sgenShowSelector()">Back to Menu</button>',
     '</div>',
     '<p class="sgen-overlay-dismiss">tap anywhere to dismiss</p>'
