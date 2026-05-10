@@ -3,6 +3,8 @@ const PRECACHE = [
   '/ciscolearn/',
   '/ciscolearn/index.html',
   '/ciscolearn/icon.svg',
+  '/ciscolearn/icon-192.png',
+  '/ciscolearn/icon-512.png',
   '/ciscolearn/manifest.json',
   'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap',
 ];
