@@ -81,22 +81,6 @@ body.sidebar-collapsed .page { margin-left:var(--sidebar-collapsed) !important; 
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 .hero p { font-size:.95rem; color:var(--muted); max-width:540px; line-height:1.75; font-family:'JetBrains Mono',monospace; }
 
-/* HOME TERMINAL HERO */
-.hero-terminal { background:#0a0f0a; border-bottom:1px solid rgba(0,255,136,.18); padding:3.5rem 0 3rem; position:relative; overflow:hidden; }
-.hero-terminal::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle, rgba(0,255,136,.03) 1px, transparent 1px); background-size:24px 24px; pointer-events:none; }
-.hero-term-win { background:#0d1117; border:1px solid rgba(0,255,136,.22); border-radius:10px; padding:1.3rem 1.6rem 1.2rem; max-width:640px; position:relative; z-index:1; }
-.hero-term-prompt { font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--accent); margin-bottom:.85rem; }
-.hero-term-body { font-family:'JetBrains Mono',monospace; font-size:.76rem; line-height:2; }
-.hero-term-row { display:flex; gap:.8rem; flex-wrap:wrap; }
-.hero-term-lbl { color:var(--muted); min-width:110px; flex-shrink:0; }
-.hero-term-val { color:var(--text); }
-.hero-term-next { color:var(--accent); margin-top:.55rem; }
-.hero-term-cursor-line { font-family:'JetBrains Mono',monospace; font-size:.8rem; color:var(--accent); margin-top:.85rem; }
-.hero-term-cursor { display:inline-block; width:7px; height:.85em; background:var(--accent); vertical-align:text-bottom; animation:blink 1.1s step-end infinite; }
-.hero-cta { margin-top:1.6rem; display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; position:relative; z-index:1; }
-.hero-disclaimer { margin-top:1.4rem; font-size:.62rem; color:var(--muted2); font-family:'JetBrains Mono',monospace; line-height:1.7; position:relative; z-index:1; }
-@media(max-width:600px) { .hero-term-win { padding:1rem 1rem .9rem; } .hero-term-body { font-size:.7rem; } .hero-term-lbl { min-width:90px; } }
-
 /* SECTION */
 .section { padding:3rem 0; }
 .section+.section { border-top:1px solid var(--border); }
@@ -851,20 +835,28 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
      HOME
 ═══════════════════════════════════════════ -->
 <div class="page active" id="page-home">
-  <section class="hero-terminal">
+  <section class="hero">
     <div class="container">
-      <div class="hero-term-win">
-        <div class="hero-term-prompt">R1# show learner-status</div>
-        <div class="hero-term-body" id="heroTermBody">
-          <div style="color:var(--muted)">Loading...</div>
+      <p class="hero-eyebrow">$ cisco_learn --mode interactive</p>
+      <h1>What are you doing<br><em>right now?</em><span class="cursor"></span></h1>
+      <div class="entry-doors">
+        <div class="entry-door" onclick="showPage('troubleshooting')">
+          <div class="door-icon">🔥</div>
+          <div class="door-label">Something is broken</div>
+          <div class="door-sub">Diagnose your PT lab →</div>
         </div>
-        <div class="hero-term-cursor-line">R1# <span class="hero-term-cursor"></span></div>
+        <div class="entry-door" onclick="showPage('guides')">
+          <div class="door-icon">🔧</div>
+          <div class="door-label">I need to configure something</div>
+          <div class="door-sub">Step-by-step PT guides →</div>
+        </div>
+        <div class="entry-door" onclick="showPage('osi')">
+          <div class="door-icon">🧭</div>
+          <div class="door-label">Explore the network</div>
+          <div class="door-sub">OSI, topology and labs →</div>
+        </div>
       </div>
-      <div class="hero-cta">
-        <button class="btn btn-primary" id="heroContinueBtn" onclick="showPage('osi')">Kom i gang →</button>
-        <button class="btn btn-ghost" onclick="showPage('terminal');setTimeout(()=>{if(typeof sgenStart==='function')sgenStart(1);},200)">⚡ Nytt scenario</button>
-      </div>
-      <p class="hero-disclaimer">// Unofficial educational resource — not affiliated with or endorsed by Cisco Systems, Inc. Cisco®, IOS®, Packet Tracer® and CCNA® are registered trademarks of Cisco Systems, Inc.</p>
+      <p style="margin-top:1.5rem;font-size:.68rem;color:var(--muted2);font-family:'JetBrains Mono',monospace;line-height:1.7;">// Unofficial educational resource — not affiliated with or endorsed by Cisco Systems, Inc. Cisco®, IOS®, Packet Tracer® and CCNA® are registered trademarks of Cisco Systems, Inc.</p>
     </div>
   </section>
 
@@ -1431,7 +1423,6 @@ function showPage(id, fromPop) {
   if (nb) nb.classList.add('active');
   if (!fromPop) history.pushState({page:id}, '', '#'+id);
   window.scrollTo(0,0);
-  if (id === 'home'             ) heroRender();
   if (id === 'osi'              && typeof renderOsi       === 'function') renderOsi();
   if (id === 'netmap'           && typeof renderNetMap    === 'function') renderNetMap();
   if (id === 'troubleshooting'  && typeof renderTS        === 'function') renderTS();
@@ -2232,85 +2223,6 @@ function quizShowStart(){
   document.getElementById('quizStart').style.display='block';
 }
 
-function heroPBar(n, max, len) {
-  len = len || 8;
-  if (!max) return '░'.repeat(len);
-  const f = Math.min(Math.round((n / max) * len), len);
-  return '▓'.repeat(f) + '░'.repeat(len - f);
-}
-
-function heroRender() {
-  const body = document.getElementById('heroTermBody');
-  const btn  = document.getElementById('heroContinueBtn');
-  if (!body || !btn) return;
-
-  const qPlayed  = LS.get('cl-q-played', 0);
-  const qBest    = LS.get('cl-q-best',   0);
-  const qStreak  = LS.get('cl-q-streak', 0);
-  const sStreak  = LS.get('cl-s-streak', 0);
-  const sBest    = LS.get('cl-s-best',   0);
-  const sgenRaw  = LS.get('cl-sgen-stats', null);
-  const achState = (() => { try { return JSON.parse(localStorage.getItem('cl-ach') || '{}'); } catch(e) { return {}; } })();
-  const achCount = Object.keys(achState).length;
-  const termRaw  = (() => { try { return JSON.parse(localStorage.getItem('cl-term-state')); } catch(e) { return null; } })();
-
-  const sgenSolved = sgenRaw ? Object.values(sgenRaw.solved || {}).reduce((a,b)=>a+b,0) : 0;
-  const sgenStreak = sgenRaw ? (sgenRaw.streak || 0) : 0;
-  const sgenBestMs = sgenRaw ? Math.min(...[1,2,3,4].map(d=>sgenRaw.bestTime&&sgenRaw.bestTime[d]).filter(Boolean)) : null;
-
-  const hasAny = qPlayed > 0 || sStreak > 0 || sgenSolved > 0 || (termRaw && termRaw.history && termRaw.history.length);
-
-  if (!hasAny) {
-    body.innerHTML =
-      '<div class="hero-term-row"><span class="hero-term-lbl" style="color:var(--muted)">status</span><span class="hero-term-val">No activity recorded yet.</span></div>' +
-      '<div class="hero-term-next" style="margin-top:.5rem">→ Start: OSI Model → Commands → Terminal Lab</div>';
-    btn.textContent = 'Kom i gang →';
-    btn.onclick = () => showPage('osi');
-    return;
-  }
-
-  const rows = [];
-
-  if (qPlayed > 0) {
-    rows.push(`<div class="hero-term-row"><span class="hero-term-lbl">Quiz</span><span class="hero-term-val">${qPlayed} sessions · best ${qBest}% [${heroPBar(qBest,100)}]${qStreak>0?' · streak '+qStreak:''}</span></div>`);
-  }
-  if (sStreak > 0 || sBest > 0) {
-    rows.push(`<div class="hero-term-row"><span class="hero-term-lbl">Subnetting</span><span class="hero-term-val">streak ${sStreak} [${heroPBar(sStreak,Math.max(sBest,10))}] · best ${sBest}</span></div>`);
-  }
-  if (sgenSolved > 0) {
-    const bFmt = sgenBestMs ? (String(Math.floor(sgenBestMs/60000)).padStart(2,'0')+':'+String(Math.floor((sgenBestMs%60000)/1000)).padStart(2,'0')) : '--:--';
-    rows.push(`<div class="hero-term-row"><span class="hero-term-lbl">Scenarios</span><span class="hero-term-val">${sgenSolved} solved · best ${bFmt}${sgenStreak>0?' · streak '+sgenStreak:''}</span></div>`);
-  }
-  if (achCount > 0) {
-    rows.push(`<div class="hero-term-row"><span class="hero-term-lbl">Achievements</span><span class="hero-term-val">${achCount} unlocked</span></div>`);
-  }
-
-  let nextLabel, nextDesc, nextFn;
-  if (sgenStreak >= 1) {
-    nextLabel = 'Nytt scenario';
-    nextDesc  = 'fortsett streaken';
-    nextFn    = () => { showPage('terminal'); setTimeout(()=>{ if(typeof sgenStart==='function') sgenStart(Math.min((typeof SGEN!=='undefined'?SGEN.difficulty:1)||1,4)); },200); };
-  } else if (termRaw && termRaw.scenario && termRaw.scenario !== 'all-up') {
-    nextLabel = 'Terminal Lab';
-    nextDesc  = termRaw.scenario;
-    nextFn    = () => showPage('terminal');
-  } else if (qPlayed > 0) {
-    nextLabel = 'Ny quiz';
-    nextDesc  = 'forbedre din beste score';
-    nextFn    = () => showPage('quiz');
-  } else {
-    nextLabel = 'Terminal Lab';
-    nextDesc  = 'fortsett øvingen';
-    nextFn    = () => showPage('terminal');
-  }
-
-  rows.push(`<div class="hero-term-next" style="margin-top:.5rem">→ Fortsett: <b style="color:#fff">${nextLabel}</b> · ${nextDesc}</div>`);
-  body.innerHTML = rows.join('');
-  btn.textContent = nextLabel + ' →';
-  btn.onclick = nextFn;
-}
-
-document.addEventListener('DOMContentLoaded', heroRender);
 
 function shareResult(text){
   if(navigator.share){
