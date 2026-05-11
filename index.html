@@ -213,6 +213,25 @@ tr:hover td { background:var(--s2); }
 .ipv6-grid { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin:1.25rem 0; }
 @media(max-width:600px){ .ipv6-grid { grid-template-columns:1fr; } }
 
+/* VLSM TRAINER */
+.vlsm-row { display:grid; grid-template-columns:1fr auto; gap:.5rem .75rem; align-items:start; padding:.65rem 0; border-bottom:1px solid var(--border); }
+.vlsm-row:last-child { border-bottom:none; }
+.vlsm-row-label { display:flex; flex-direction:column; gap:.15rem; padding-top:.55rem; }
+.vlsm-req-name { font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--accent); font-weight:600; }
+.vlsm-req-hosts { font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--muted); }
+.vlsm-row-inputs { display:flex; align-items:center; gap:.35rem; }
+.vlsm-input { font-family:'JetBrains Mono',monospace; font-size:.88rem; width:130px; }
+.vlsm-prefix-input { width:52px; }
+.vlsm-slash { font-family:'JetBrains Mono',monospace; font-size:1.1rem; color:var(--muted2); line-height:1; }
+.vlsm-input.correct { border-color:var(--green); background:rgba(74,222,128,.05); }
+.vlsm-input.wrong   { border-color:var(--red);   background:rgba(248,113,113,.05); }
+.vlsm-input.warn    { border-color:#f59e0b;       background:rgba(245,158,11,.05); }
+.vlsm-row-msg { grid-column:1/-1; display:flex; flex-direction:column; gap:.2rem; font-size:.75rem; font-family:'JetBrains Mono',monospace; min-height:0; }
+.vlsm-err  { color:var(--red); }
+.vlsm-warn { color:#f59e0b; }
+.vlsm-hint { color:var(--muted); }
+@media(max-width:600px){ .vlsm-input { width:110px; } .vlsm-prefix-input { width:46px; } }
+
 /* GLOBAL SEARCH */
 .search-overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); align-items:flex-start; justify-content:center; padding-top:10vh; }
 .search-overlay.open { display:flex; }
@@ -270,6 +289,15 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 .bit-host { color:var(--orange); }
 .bit-dot { color:var(--muted2); }
 .sub-bin-legend { font-size:.72rem; color:var(--muted); margin-top:.3rem; }
+.bit-host-hi  { color:#fb923c; font-weight:700; }
+.bit-host-dim { color:var(--muted2); }
+.bit-boundary { display:inline-block; border-right:2px solid var(--accent); margin-right:2px; }
+.sub-live-visual { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:.85rem 1.2rem; margin-top:1rem; }
+.sub-live-row { display:flex; align-items:center; gap:.9rem; }
+.sub-live-label { font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; min-width:60px; }
+.sub-live-desc { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); margin-top:.35rem; padding-left:69px; }
+.vlsm-bc-row { grid-column:1/-1; display:flex; align-items:center; gap:.5rem; padding-top:.2rem; }
+.vlsm-bc-label { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted); min-width:74px; }
 
 .sub-range-bar { display:flex; border-radius:var(--r); overflow:hidden; font-size:.75rem; font-family:'JetBrains Mono',monospace; min-height:52px; border:1px solid var(--border); }
 .sub-range-reserved { flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:.3rem .6rem; text-align:center; line-height:1.3; }
@@ -1017,7 +1045,8 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
         <div class="answer-cell"><label data-i18n="sub.hosts">Usable Hosts</label><input type="number" id="sub-hosts" placeholder="number" autocomplete="off" /></div>
         <div class="answer-cell"><label data-i18n="sub.mask">Subnet Mask</label><input type="text" id="sub-mask" placeholder="255.x.x.x" autocomplete="off" /></div>
       </div>
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.4rem;">
+      <div id="subLiveVisual" class="sub-live-visual" style="display:none"></div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem;">
         <button class="btn btn-primary" onclick="subCheck()" data-i18n="sub.check">Check Answers</button>
         <button class="btn btn-ghost"   onclick="subShow()"  data-i18n="sub.show">Show Answers</button>
       </div>
@@ -1080,28 +1109,48 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
   </div></section>
 
   <section class="section"><div class="container-sm">
-    <p class="section-label">// vlsm</p>
-    <h2>VLSM — Variable Length <em>Subnet Masking</em></h2>
-    <p class="section-sub">Instead of splitting a block into equal subnets, VLSM lets you use different prefix lengths for different needs — saving address space.</p>
+    <p class="section-label">// vlsm trainer</p>
+    <h2>VLSM <em>Trainer</em></h2>
+    <p class="section-sub">Variable Length Subnet Masking — pick the smallest fitting prefix for each requirement, then allocate sequentially without overlap.</p>
     <div class="intro-box">
-      <strong>Example:</strong> You have <code>192.168.1.0/24</code> and need to allocate:<br><br>
-      <strong>Step 1 — sort by size, largest first:</strong> LAN-A (60 hosts), LAN-B (28 hosts), LAN-C (12 hosts), WAN link (2 hosts)<br><br>
-      <strong>Step 2 — assign smallest fitting prefix to each:</strong><br>
-      &nbsp; LAN-A: needs 62 usable → <code>/26</code> (64 total, 62 usable) → <code>192.168.1.0/26</code><br>
-      &nbsp; LAN-B: needs 30 usable → <code>/27</code> (32 total, 30 usable) → <code>192.168.1.64/27</code><br>
-      &nbsp; LAN-C: needs 14 usable → <code>/28</code> (16 total, 14 usable) → <code>192.168.1.96/28</code><br>
-      &nbsp; WAN:   needs 2 usable  → <code>/30</code> (4 total, 2 usable)  → <code>192.168.1.112/30</code><br><br>
-      <strong>Key rule:</strong> each new subnet starts right after the previous block ends. Never overlap.
+      <strong>Method:</strong> (1) Assign the <em>smallest fitting prefix</em> to each requirement — e.g. 60 hosts needs 62 usable → <code>/26</code>. (2) Sort subnets largest-first, allocate sequentially from block start. Each new subnet starts immediately after the previous block ends.<br><br>
+      <strong>Quick prefix guide:</strong> /30 = 2 usable &nbsp;·&nbsp; /29 = 6 &nbsp;·&nbsp; /28 = 14 &nbsp;·&nbsp; /27 = 30 &nbsp;·&nbsp; /26 = 62 &nbsp;·&nbsp; /25 = 126 &nbsp;·&nbsp; /24 = 254
     </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Subnet</th><th>Network</th><th>Range</th><th>Broadcast</th><th>Usable</th></tr></thead>
-      <tbody>
-        <tr><td><strong>LAN-A</strong> /26</td><td><code>192.168.1.0</code></td><td>.1 – .62</td><td><code>192.168.1.63</code></td><td>62</td></tr>
-        <tr><td><strong>LAN-B</strong> /27</td><td><code>192.168.1.64</code></td><td>.65 – .94</td><td><code>192.168.1.95</code></td><td>30</td></tr>
-        <tr><td><strong>LAN-C</strong> /28</td><td><code>192.168.1.96</code></td><td>.97 – .110</td><td><code>192.168.1.111</code></td><td>14</td></tr>
-        <tr><td><strong>WAN</strong>  /30</td><td><code>192.168.1.112</code></td><td>.113 – .114</td><td><code>192.168.1.115</code></td><td>2</td></tr>
-      </tbody>
-    </table></div>
+
+    <div style="display:flex;gap:.4rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--muted);">mode</span>
+      <button class="btn btn-ghost btn-sm" id="vlsmDiffEasy" onclick="vlsmSetDiff('easy')" style="color:var(--accent)">Easy</button>
+      <button class="btn btn-ghost btn-sm" id="vlsmDiffMed"  onclick="vlsmSetDiff('medium')">Medium</button>
+      <button class="btn btn-ghost btn-sm" id="vlsmDiffHard" onclick="vlsmSetDiff('hard')">Hard ⚡</button>
+      <button class="btn btn-ghost btn-sm" id="vlsmDiffHc"   onclick="vlsmSetDiff('hardcore')">Hardcore 💀</button>
+    </div>
+
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+        <div>
+          <p class="section-label" style="margin-bottom:.2rem;">Block</p>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:1.45rem;color:var(--accent);" id="vlsmBlockDisplay">—</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="vlsmNewQ()">New question →</button>
+      </div>
+      <div id="vlsmRows"></div>
+      <div id="vlsmLiveVisual" class="sub-live-visual" style="display:none;margin-top:1rem;"></div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;">
+        <button class="btn btn-primary" onclick="vlsmCheck()">Check</button>
+        <button class="btn btn-ghost"   onclick="vlsmShow()">Show Answers</button>
+      </div>
+      <div id="vlsmFeedback" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="streak-display">
+      <span>Correct: <b id="vlsmCorrect">0</b></span>
+      <span>Attempts: <b id="vlsmTotal">0</b></span>
+      <span id="vlsmStreakChip">Streak: <b id="vlsmStreakVal">0</b></span>
+      <span>Best streak: <b id="vlsmBestVal">0</b></span>
+    </div>
+    <div style="margin-top:.6rem;">
+      <button class="btn btn-ghost btn-sm" onclick="resetStats('vlsm')" style="opacity:.45;font-size:.68rem;">reset stats</button>
+    </div>
   </div></section>
 
   <section class="section"><div class="container-sm">
@@ -1346,6 +1395,15 @@ function resetStats(module){
   if(module === 'quiz'){
     ['cl-q-played','cl-q-best','cl-q-streak'].forEach(k => localStorage.removeItem(k));
     quizStatsLoad();
+  } else if(module === 'vlsm'){
+    vlsmCorrect = 0; vlsmTotal = 0; vlsmStreak = 0;
+    ['cl-v-streak','cl-v-best'].forEach(k => localStorage.removeItem(k));
+    document.getElementById('vlsmCorrect').textContent  = '0';
+    document.getElementById('vlsmTotal').textContent    = '0';
+    document.getElementById('vlsmStreakVal').textContent = '0';
+    document.getElementById('vlsmBestVal').textContent  = '0';
+    const chip = document.getElementById('vlsmStreakChip');
+    if (chip) chip.className = '';
   } else {
     subStreak = 0;
     ['cl-s-streak','cl-s-best'].forEach(k => localStorage.removeItem(k));
@@ -1599,6 +1657,7 @@ function subNewQ(){
   document.getElementById('subIpDisplay').textContent=`${ip} /${prefix}`;
   ['network','broadcast','first','last','hosts','mask'].forEach(k=>{const el=document.getElementById('sub-'+k);el.value='';el.className='';el.disabled=false;});
   document.getElementById('subFeedback').innerHTML='';
+  subLiveRender(null);
 }
 
 function subCheck(){
@@ -1689,7 +1748,73 @@ function subBuildVisual(){
   </div>`;
 }
 
+function subLiveRender(focusKey) {
+  const el = document.getElementById('subLiveVisual');
+  if (!el || !subCurrent) return;
+  const c = subCurrent, pfx = c.prefix;
+  const netInt = ipToInt(c.network), bcInt = ipToInt(c.broadcast);
+  const vals = {
+    network: netInt, broadcast: bcInt,
+    first: netInt + 1, last: bcInt - 1,
+    hosts: netInt, mask: ipToInt(c.mask)
+  };
+  const val = vals[focusKey] !== undefined ? vals[focusKey] : ipToInt(c.ip);
+
+  function bitCls(bitIdx, isNet) {
+    const boundary = isNet && bitIdx === pfx ? ' bit-boundary' : '';
+    if (isNet) return 'bit-net' + boundary;
+    switch (focusKey) {
+      case 'network':   return 'bit-host-dim';
+      case 'broadcast': return 'bit-host-hi';
+      case 'hosts':     return 'bit-host-hi';
+      case 'mask':      return 'bit-host-dim';
+      case 'first':     return bitIdx === 32 ? 'bit-host-hi' : 'bit-host-dim';
+      case 'last':      return bitIdx === 32 ? 'bit-host-dim' : 'bit-host-hi';
+      default:          return 'bit-host';
+    }
+  }
+
+  const parts = [];
+  for (let bitPos = 31; bitPos >= 0; bitPos--) {
+    const bitIdx = 32 - bitPos; // 1-indexed, MSB = 1
+    const isNet  = bitIdx <= pfx;
+    const bit    = (val >>> bitPos) & 1;
+    parts.push(`<span class="${bitCls(bitIdx, isNet)}">${bit}</span>`);
+    if (bitPos === 24 || bitPos === 16 || bitPos === 8)
+      parts.push('<span class="bit-dot">.</span>');
+  }
+
+  const label = {network:'Network', broadcast:'Broadcast', first:'First host',
+                 last:'Last host', hosts:'Host bits', mask:'Mask'}[focusKey] || 'IP';
+  const desc  = {
+    network:   `all host bits = 0  (${pfx} net · ${32-pfx} host)`,
+    broadcast: `all host bits = 1  (${pfx} net · ${32-pfx} host)`,
+    first:     `host bits = 0…01  (network + 1, LSB flips to 1)`,
+    last:      `host bits = 1…10  (broadcast − 1, LSB flips to 0)`,
+    hosts:     `${32-pfx} host bits → 2^${32-pfx} − 2 = ${Math.pow(2,32-pfx)-2} usable`,
+    mask:      `${pfx} ones then ${32-pfx} zeros`,
+  }[focusKey] || `/${pfx}  ·  ${32-pfx} host bits  ·  ${Math.pow(2,32-pfx)-2} usable`;
+
+  el.style.display = '';
+  el.innerHTML = `
+    <div class="sub-live-row">
+      <span class="sub-live-label">${label}</span>
+      <code class="sub-bin-val">${parts.join('')}</code>
+    </div>
+    <div class="sub-live-desc">${desc}</div>`;
+}
+
+function subInitListeners() {
+  ['network','broadcast','first','last','hosts','mask'].forEach(k => {
+    const el = document.getElementById('sub-' + k);
+    if (!el) return;
+    el.addEventListener('focus', () => subLiveRender(k));
+    el.addEventListener('blur',  () => subLiveRender(null));
+  });
+}
+
 subNewQ();
+subInitListeners();
 
 // ── IPv6 TRAINER ──────────────────────────────────────────────────────────────
 let ipv6Current = null;
@@ -1765,6 +1890,413 @@ function ipv6Show(){
 }
 
 ipv6NewQ();
+
+// ── VLSM TRAINER ─────────────────────────────────────────────────────────────
+let vlsmCurrent = null, vlsmCorrect = 0, vlsmTotal = 0, vlsmDifficulty = 'easy',
+    vlsmStreak = 0, vlsmLastRender = null;
+
+function vlsmSmallestPrefix(hosts) {
+  for (let p = 30; p >= 8; p--) {
+    if ((2 ** (32 - p)) - 2 >= hosts) return p;
+  }
+  return 8;
+}
+
+function vlsmSolve(question) {
+  const reqs = question.requirements.map(r => ({
+    ...r, fitPrefix: vlsmSmallestPrefix(r.hosts)
+  })).sort((a, b) => a.fitPrefix - b.fitPrefix);
+  let cursor = ipToInt(question.block.network);
+  return reqs.map(r => {
+    const size = 2 ** (32 - r.fitPrefix);
+    const netInt = cursor, bcInt = cursor + size - 1;
+    cursor += size;
+    return { id: r.id, hosts: r.hosts, network: intToIp(netInt), prefix: r.fitPrefix,
+             broadcast: intToIp(bcInt), first: intToIp(netInt + 1),
+             last: intToIp(bcInt - 1), usable: size - 2 };
+  });
+}
+
+function vlsmCrossesOctet(allocations) {
+  return allocations.some(a => {
+    const start = ipToInt(a.network), size = 2 ** (32 - a.prefix);
+    return Math.floor(start / 256) !== Math.floor((start + size - 1) / 256);
+  });
+}
+
+function vlsmGenQuestion() {
+  const names = ['LAN-A','LAN-B','LAN-C','WAN'];
+
+  const easyBlocks = [
+    {network:'192.168.1.0',  prefix:24},
+    {network:'192.168.10.0', prefix:24},
+    {network:'172.16.0.0',   prefix:24},
+    {network:'10.0.1.0',     prefix:24},
+  ];
+  // Easy: no /25 — /26 to /30 only
+  const easySets = [
+    [26,27,28,30],[26,26,28,30],[26,27,29,30],
+    [26,27,28,29],[27,28,29,30],[26,28,29,30],
+  ];
+  // Medium: always one /25
+  const medSets = [
+    [25,27,28,30],[25,26,28,30],[25,26,27,30],
+    [25,26,27,29],[25,26,28,29],[25,27,29,30],
+  ];
+  // Hard/Hardcore: /22 blocks, /23 subnet guarantees cross-octet
+  const hardBlocks = [
+    {network:'10.0.0.0',    prefix:22},
+    {network:'172.16.0.0',  prefix:22},
+    {network:'192.168.0.0', prefix:22},
+    {network:'10.2.0.0',    prefix:22},
+  ];
+  const hardSets = [
+    [23,24,25,30],[23,24,26,30],[23,24,27,30],
+    [23,25,25,30],[23,25,26,30],
+  ];
+
+  const isHard = vlsmDifficulty === 'hard' || vlsmDifficulty === 'hardcore';
+  const blocks = isHard ? hardBlocks : easyBlocks;
+  const sets   = isHard ? hardSets : (vlsmDifficulty === 'medium' ? medSets : easySets);
+
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const block    = blocks[Math.floor(Math.random() * blocks.length)];
+    const prefixes = sets[Math.floor(Math.random() * sets.length)];
+    const shuffled = [...prefixes].sort(() => Math.random() - 0.5);
+    const requirements = shuffled.map((p, i) => {
+      const maxUsable = (2 ** (32 - p)) - 2;
+      const minUsable = p < 30 ? (2 ** (31 - p)) - 1 : 1;
+      const hosts = minUsable + Math.floor(Math.random() * (maxUsable - minUsable + 1));
+      return { id: names[i], hosts };
+    });
+    const question = { block, requirements };
+    if (!isHard || vlsmCrossesOctet(vlsmSolve(question))) return question;
+  }
+  return { block: easyBlocks[0], requirements: easySets[0].map((p, i) => ({
+    id: names[i], hosts: (2 ** (31 - p)) - 1
+  }))};
+}
+
+// ─ Stats ──────────────────────────────────────────────────────────────────────
+function vlsmStatsLoad() {
+  vlsmStreak = LS.get('cl-v-streak', 0);
+  const best = LS.get('cl-v-best', 0);
+  const sv = document.getElementById('vlsmStreakVal');
+  const bv = document.getElementById('vlsmBestVal');
+  if (sv) sv.textContent = vlsmStreak;
+  if (bv) bv.textContent = best;
+  vlsmStreakStyle();
+}
+
+function vlsmStreakStyle() {
+  const chip = document.getElementById('vlsmStreakChip');
+  if (chip) chip.className = vlsmStreak >= 5 ? 'on-fire' : '';
+}
+
+function vlsmStatsUpdate(correct) {
+  if (correct) {
+    vlsmStreak++;
+    const best = Math.max(LS.get('cl-v-best', 0), vlsmStreak);
+    LS.set('cl-v-streak', vlsmStreak);
+    LS.set('cl-v-best',   best);
+    const bv = document.getElementById('vlsmBestVal');
+    if (bv) bv.textContent = best;
+  } else {
+    vlsmStreak = 0;
+    LS.set('cl-v-streak', 0);
+  }
+  const sv = document.getElementById('vlsmStreakVal');
+  if (sv) sv.textContent = vlsmStreak;
+  vlsmStreakStyle();
+}
+
+// ─ Difficulty ─────────────────────────────────────────────────────────────────
+function vlsmSetDiff(d) {
+  vlsmDifficulty = d;
+  ['Easy','Med','Hard','Hc'].forEach(id => {
+    document.getElementById('vlsmDiff' + id).style.color = '';
+  });
+  const activeId = { easy:'Easy', medium:'Med', hard:'Hard', hardcore:'Hc' }[d];
+  if (activeId) document.getElementById('vlsmDiff' + activeId).style.color = 'var(--accent)';
+  vlsmNewQ();
+}
+
+// ─ Live binary visualizer ──────────────────────────────────────────────────────
+function vlsmLiveRender(reqId, mode) {
+  const el = document.getElementById('vlsmLiveVisual');
+  if (!el || !vlsmCurrent) return;
+  const sol = vlsmSolve(vlsmCurrent);
+  const s = sol.find(x => x.id === reqId);
+  if (!s) return;
+  vlsmLastRender = { reqId, mode };
+  const pfx  = s.prefix;
+  const val  = mode === 'bc' ? ipToInt(s.broadcast) : ipToInt(s.network);
+  const label = mode === 'bc' ? 'Broadcast' : 'Network';
+  const desc  = mode === 'bc'
+    ? `${reqId} /${pfx} — all host bits = 1 → broadcast address`
+    : `${reqId} /${pfx} — all host bits = 0 → network address`;
+  const parts = [];
+  for (let bitPos = 31; bitPos >= 0; bitPos--) {
+    const bitIdx = 32 - bitPos;
+    const isNet  = bitIdx <= pfx;
+    const bit    = (val >>> bitPos) & 1;
+    const boundary = isNet && bitIdx === pfx ? ' bit-boundary' : '';
+    let cls;
+    if (isNet) cls = 'bit-net' + boundary;
+    else cls = mode === 'bc' ? 'bit-host-hi' : 'bit-host-dim';
+    parts.push(`<span class="${cls}">${bit}</span>`);
+    if (bitPos === 24 || bitPos === 16 || bitPos === 8)
+      parts.push('<span class="bit-dot">.</span>');
+  }
+  el.style.display = '';
+  el.innerHTML = `
+    <div class="sub-live-row">
+      <span class="sub-live-label">${label}</span>
+      <span class="sub-bin-val">${parts.join('')}</span>
+    </div>
+    <div class="sub-live-desc">${desc}</div>
+  `;
+}
+
+function vlsmLiveHide() {
+  // Easy: stay on last rendered state; all other modes: hide
+  if (vlsmDifficulty === 'easy' && vlsmLastRender) {
+    vlsmLiveRender(vlsmLastRender.reqId, vlsmLastRender.mode);
+    return;
+  }
+  const el = document.getElementById('vlsmLiveVisual');
+  if (el) el.style.display = 'none';
+}
+
+// ─ Question ───────────────────────────────────────────────────────────────────
+function vlsmNewQ() {
+  vlsmCurrent = vlsmGenQuestion();
+  vlsmLastRender = null;
+  const q    = vlsmCurrent;
+  const sol  = vlsmSolve(q);
+  const crossOct = vlsmCrossesOctet(sol);
+  const isHc   = vlsmDifficulty === 'hardcore';
+  const isHard = vlsmDifficulty === 'hard' || isHc;
+
+  const badge = crossOct
+    ? ' <span style="font-size:.68rem;background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:1px 6px;vertical-align:middle;font-family:\'JetBrains Mono\',monospace;">cross-octet</span>'
+    : '';
+  document.getElementById('vlsmBlockDisplay').innerHTML = `${q.block.network}/${q.block.prefix}${badge}`;
+  document.getElementById('vlsmRows').innerHTML = q.requirements.map(r => `
+    <div class="vlsm-row" id="vlsm-row-${r.id}">
+      <div class="vlsm-row-label">
+        <span class="vlsm-req-name">${r.id}</span>
+        <span class="vlsm-req-hosts">${r.hosts} hosts needed</span>
+      </div>
+      <div class="vlsm-row-inputs">
+        <input type="text" id="vlsm-net-${r.id}" class="vlsm-input" placeholder="x.x.x.x" autocomplete="off" spellcheck="false" />
+        <span class="vlsm-slash">/</span>
+        <input type="number" id="vlsm-pfx-${r.id}" class="vlsm-input vlsm-prefix-input" placeholder="xx" min="8" max="30" autocomplete="off" />
+      </div>
+      ${isHc ? `<div class="vlsm-bc-row">
+        <span class="vlsm-bc-label">Broadcast:</span>
+        <input type="text" id="vlsm-bc-${r.id}" class="vlsm-input" placeholder="x.x.x.x" autocomplete="off" spellcheck="false" />
+      </div>` : ''}
+      <div class="vlsm-row-msg" id="vlsm-msg-${r.id}"></div>
+    </div>
+  `).join('');
+  document.getElementById('vlsmFeedback').innerHTML = '';
+
+  // Wire focus/blur listeners based on difficulty
+  q.requirements.forEach(r => {
+    if (!isHard) {
+      // Easy + Medium: network input shows binary (host bits=0)
+      const netEl = document.getElementById('vlsm-net-' + r.id);
+      if (netEl) {
+        netEl.addEventListener('focus', () => vlsmLiveRender(r.id, 'net'));
+        netEl.addEventListener('blur',  vlsmLiveHide);
+      }
+    }
+    if (isHc) {
+      // Hardcore: broadcast input shows binary (host bits=1)
+      const bcEl = document.getElementById('vlsm-bc-' + r.id);
+      if (bcEl) {
+        bcEl.addEventListener('focus', () => vlsmLiveRender(r.id, 'bc'));
+        bcEl.addEventListener('blur',  vlsmLiveHide);
+      }
+    }
+  });
+
+  // Easy: show visualizer immediately for first row (host bits=0)
+  if (vlsmDifficulty === 'easy') {
+    vlsmLiveRender(q.requirements[0].id, 'net');
+  } else {
+    const el = document.getElementById('vlsmLiveVisual');
+    if (el) el.style.display = 'none';
+  }
+}
+
+function vlsmCheck() {
+  if (!vlsmCurrent) return;
+  const q = vlsmCurrent;
+  const solution = vlsmSolve(q);
+  const solMap = {};
+  solution.forEach(s => { solMap[s.id] = s; });
+  const isHc = vlsmDifficulty === 'hardcore';
+  let allOk = true;
+
+  // Pass 1 — per-row: prefix validity, alignment, block bounds
+  const rows = q.requirements.map(r => {
+    const netEl = document.getElementById('vlsm-net-' + r.id);
+    const pfxEl = document.getElementById('vlsm-pfx-' + r.id);
+    const bcEl  = isHc ? document.getElementById('vlsm-bc-' + r.id) : null;
+    const msgEl = document.getElementById('vlsm-msg-' + r.id);
+    const userNet = netEl.value.trim();
+    const userPfx = parseInt(pfxEl.value.trim(), 10);
+    const errors = [], warnings = [], bcErrors = [];
+
+    if (!pfxEl.value.trim()) {
+      errors.push('Enter a prefix length');
+    } else if (isNaN(userPfx) || userPfx < 8 || userPfx > 30) {
+      errors.push('Prefix must be /8 – /30');
+    } else {
+      const capacity  = (2 ** (32 - userPfx)) - 2;
+      const fitPrefix = vlsmSmallestPrefix(r.hosts);
+      if (capacity < r.hosts) {
+        errors.push(`/${userPfx} → ${capacity} usable, need ≥ ${r.hosts}. Smallest fit: /${fitPrefix}`);
+      } else if (userPfx < fitPrefix) {
+        warnings.push(`/${userPfx} wastes space — /${fitPrefix} is smallest fit (${(2**(32-fitPrefix))-2} usable)`);
+      }
+    }
+
+    if (!userNet) {
+      errors.push('Enter a network address');
+    } else {
+      const netInt   = ipToInt(userNet);
+      const blockInt = ipToInt(q.block.network);
+      const blockEnd = blockInt + (2 ** (32 - q.block.prefix));
+      if (netInt < blockInt || netInt >= blockEnd) {
+        errors.push(`${userNet} is outside block ${q.block.network}/${q.block.prefix}`);
+      } else if (!isNaN(userPfx) && userPfx >= 8 && userPfx <= 30) {
+        const size = 2 ** (32 - userPfx);
+        if (netInt % size !== 0) {
+          const alignedBelow = intToIp(netInt - (netInt % size));
+          const alignedAbove = intToIp(netInt - (netInt % size) + size);
+          const crossOctNote = userPfx < 24
+            ? ` — on /${userPfx} host bits occupy octet ${userPfx < 16 ? '2' : '3'}, boundaries fall every ${size} addresses`
+            : '';
+          errors.push(`${userNet} not on /${userPfx} boundary${crossOctNote}. Valid: ${alignedBelow} or ${alignedAbove}`);
+        }
+      }
+    }
+
+    if (isHc && bcEl) {
+      const userBc = bcEl.value.trim();
+      if (!userBc) {
+        bcErrors.push('Enter the broadcast address');
+      } else if (errors.length === 0 && !isNaN(userPfx) && userPfx >= 8 && userPfx <= 30 && userNet) {
+        const netInt = ipToInt(userNet);
+        const size   = 2 ** (32 - userPfx);
+        const expBc  = intToIp(netInt + size - 1);
+        if (userBc !== expBc) bcErrors.push(`Expected ${expBc} — last address in this subnet`);
+      }
+    }
+
+    return { id: r.id, hosts: r.hosts, netEl, pfxEl, bcEl, msgEl,
+             sol: solMap[r.id], userNet, userPfx, errors, warnings, bcErrors };
+  });
+
+  // Pass 2 — pairwise overlap detection
+  for (let i = 0; i < rows.length; i++) {
+    for (let j = i + 1; j < rows.length; j++) {
+      const ra = rows[i], rb = rows[j];
+      if (!ra.userNet || !rb.userNet || isNaN(ra.userPfx) || isNaN(rb.userPfx)) continue;
+      if (ra.userPfx < 8 || ra.userPfx > 30 || rb.userPfx < 8 || rb.userPfx > 30) continue;
+      const aStart = ipToInt(ra.userNet), aEnd = aStart + (2 ** (32 - ra.userPfx)) - 1;
+      const bStart = ipToInt(rb.userNet), bEnd = bStart + (2 ** (32 - rb.userPfx)) - 1;
+      if (aStart <= bEnd && bStart <= aEnd) {
+        ra.errors.push(`Overlaps with ${rb.id} — ${ra.userNet}/${ra.userPfx} and ${rb.userNet}/${rb.userPfx} share addresses`);
+        rb.errors.push(`Overlaps with ${ra.id} — same conflict`);
+      }
+    }
+  }
+
+  // Pass 3 — canonical position hints
+  rows.forEach(rd => {
+    if (rd.errors.length === 0 && rd.warnings.length === 0 && rd.userNet !== rd.sol.network) {
+      rd.warnings.push(`Valid address, expected ${rd.sol.network} — sort largest-first from block start`);
+    }
+  });
+
+  // Pass 4 — style and render each row
+  rows.forEach(rd => {
+    const { netEl, pfxEl, bcEl, msgEl, userNet, userPfx, errors, warnings, bcErrors, sol } = rd;
+    const netPfxOk = errors.length === 0 && warnings.length === 0
+                     && userNet === sol.network && !isNaN(userPfx) && userPfx === sol.prefix;
+    const bcOk = !isHc || (bcEl && bcErrors.length === 0 && bcEl.value.trim() === sol.broadcast);
+    const rowOk = netPfxOk && bcOk;
+    if (!rowOk) allOk = false;
+
+    const netPfxCls = errors.length ? 'wrong' : warnings.length ? 'warn' : 'correct';
+    netEl.className = `vlsm-input ${netPfxCls}`;
+    pfxEl.className = `vlsm-input vlsm-prefix-input ${netPfxCls}`;
+    if (bcEl) bcEl.className = `vlsm-input ${bcErrors.length ? 'wrong' : 'correct'}`;
+
+    msgEl.innerHTML = [
+      ...errors.map(e   => `<span class="vlsm-err">✗ ${e}</span>`),
+      ...warnings.map(w => `<span class="vlsm-warn">⚠ ${w}</span>`),
+      ...bcErrors.map(e => `<span class="vlsm-err">✗ Broadcast: ${e}</span>`),
+    ].join('');
+  });
+
+  vlsmTotal++;
+  if (allOk) vlsmCorrect++;
+  document.getElementById('vlsmCorrect').textContent = vlsmCorrect;
+  document.getElementById('vlsmTotal').textContent   = vlsmTotal;
+  vlsmStatsUpdate(allOk);
+
+  // Medium: show visualizer as hint on error (first errored row, network mode)
+  if (!allOk && vlsmDifficulty === 'medium') {
+    const firstErr = rows.find(rd => rd.errors.length > 0 || rd.warnings.length > 0);
+    if (firstErr) vlsmLiveRender(firstErr.id, 'net');
+  }
+
+  document.getElementById('vlsmFeedback').innerHTML  =
+    `<div class="feedback ${allOk ? 'correct' : 'wrong'}">${allOk ? 'Perfect VLSM allocation! All correct.' : 'Some rows need fixing — see hints above.'}</div>` +
+    vlsmBuildTable(solution);
+}
+
+function vlsmShow() {
+  if (!vlsmCurrent) return;
+  const solution = vlsmSolve(vlsmCurrent);
+  const isHc = vlsmDifficulty === 'hardcore';
+  solution.forEach(s => {
+    const netEl = document.getElementById('vlsm-net-' + s.id);
+    const pfxEl = document.getElementById('vlsm-pfx-' + s.id);
+    const bcEl  = document.getElementById('vlsm-bc-' + s.id);
+    const msgEl = document.getElementById('vlsm-msg-' + s.id);
+    if (netEl) { netEl.value = s.network;   netEl.className = 'vlsm-input correct'; netEl.disabled = true; }
+    if (pfxEl) { pfxEl.value = s.prefix;    pfxEl.className = 'vlsm-input vlsm-prefix-input correct'; pfxEl.disabled = true; }
+    if (isHc && bcEl) { bcEl.value = s.broadcast; bcEl.className = 'vlsm-input correct'; bcEl.disabled = true; }
+    if (msgEl) msgEl.innerHTML = '';
+  });
+  document.getElementById('vlsmFeedback').innerHTML =
+    '<div class="feedback info">Answers revealed — click "New question" to continue.</div>' +
+    vlsmBuildTable(solution);
+}
+
+function vlsmBuildTable(solution) {
+  return `<div class="table-wrap" style="margin-top:1rem;"><table>
+    <thead><tr><th>Subnet</th><th>Network</th><th>Prefix</th><th>First Host</th><th>Last Host</th><th>Broadcast</th><th>Usable</th></tr></thead>
+    <tbody>${solution.map(s => `
+      <tr>
+        <td><strong>${s.id}</strong></td>
+        <td><code>${s.network}</code></td>
+        <td><code>/${s.prefix}</code></td>
+        <td><code>${s.first}</code></td>
+        <td><code>${s.last}</code></td>
+        <td><code>${s.broadcast}</code></td>
+        <td>${s.usable}</td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+vlsmNewQ();
 
 // ── EXPLAINER ────────────────────────────────────────────────────────────────
 const EXP_EXAMPLE=`hostname Router-A
@@ -2349,6 +2881,7 @@ initTheme();
 initLang();
 quizStatsLoad();
 subStatsLoad();
+vlsmStatsLoad();
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('/ciscolearn/sw.js'));
 }
