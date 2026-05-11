@@ -576,14 +576,6 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
 }
 
 /* ENTRY DOORS */
-/* TIPS TICKER */
-.tips-ticker { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--s1); overflow:hidden; padding:.55rem 0; }
-.tips-ticker-track { display:flex; gap:0; white-space:nowrap; animation:ticker-scroll 40s linear infinite; }
-.tips-ticker-track:hover { animation-play-state:paused; }
-.tips-ticker-item { font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--muted); padding:0 2.5rem; flex-shrink:0; }
-.tips-ticker-item span { color:var(--accent); margin-right:.5rem; }
-@keyframes ticker-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-[data-theme=light] .tips-ticker { background:var(--s2); }
 
 .entry-doors { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:2rem; }
 .entry-door { background:var(--s1); border:1px solid var(--border); border-radius:var(--r2); padding:1.5rem 1.25rem 1.25rem; cursor:pointer; transition:border-color .15s,transform .12s,box-shadow .15s; text-align:left; }
@@ -885,21 +877,6 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     </div>
   </section>
 
-  <div class="tips-ticker" id="homeTipsTicker">
-    <div class="tips-ticker-track">
-      <div class="tips-ticker-item"><span>//</span>iPhone: tap Share → "Add to Home Screen" to install the app</div>
-      <div class="tips-ticker-item"><span>//</span>Android: tap ⋮ in Chrome → "Install app" or "Add to Home Screen"</div>
-      <div class="tips-ticker-item"><span>//</span>Works offline after installation — Terminal Lab, Quiz and Commands all work without internet</div>
-      <div class="tips-ticker-item"><span>//</span>Updates automatically in the background — always the latest version</div>
-      <div class="tips-ticker-item"><span>//</span>Share the app with classmates — ciscolearn.schjoldr.io</div>
-      <!-- duplicate for seamless loop -->
-      <div class="tips-ticker-item"><span>//</span>iPhone: tap Share → "Add to Home Screen" to install the app</div>
-      <div class="tips-ticker-item"><span>//</span>Android: tap ⋮ in Chrome → "Install app" or "Add to Home Screen"</div>
-      <div class="tips-ticker-item"><span>//</span>Works offline after installation — Terminal Lab, Quiz and Commands all work without internet</div>
-      <div class="tips-ticker-item"><span>//</span>Updates automatically in the background — always the latest version</div>
-      <div class="tips-ticker-item"><span>//</span>Share the app with classmates — ciscolearn.schjoldr.io</div>
-    </div>
-  </div>
 
   <section class="section">
     <div class="container">
@@ -1494,8 +1471,6 @@ function showPage(id, fromPop) {
   if (nb) nb.classList.add('active');
   if (!fromPop) history.pushState({page:id}, '', '#'+id);
   window.scrollTo(0,0);
-  if (id === 'home'   ) applyTipsTicker();
-  if (id === 'profile') applyTipsTicker();
   if (id === 'osi'              && typeof renderOsi       === 'function') renderOsi();
   if (id === 'netmap'           && typeof renderNetMap    === 'function') renderNetMap();
   if (id === 'troubleshooting'  && typeof renderTS        === 'function') renderTS();
@@ -1510,7 +1485,7 @@ window.addEventListener('popstate', e => {
   if (e.state && e.state.page) showPage(e.state.page, true);
   else showPage('home', true);
 });
-document.addEventListener('DOMContentLoaded', () => { history.replaceState({page:'home'}, '', '#home'); applyTipsTicker(); });
+document.addEventListener('DOMContentLoaded', () => { history.replaceState({page:'home'}, '', '#home'); });
 
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
@@ -2771,21 +2746,6 @@ function quizShowStart(){
 }
 
 
-function applyTipsTicker() {
-  const on = LS.get('cl-show-tips', true);
-  const ticker = document.getElementById('homeTipsTicker');
-  if (ticker) ticker.style.display = on ? '' : 'none';
-  const btn = document.getElementById('tipsToggleBtn');
-  if (btn) {
-    btn.style.background = on ? 'var(--accent)' : 'var(--border)';
-    btn.title = on ? 'On' : 'Off';
-    btn.innerHTML = `<span style="position:absolute;top:3px;${on?'right':'left'}:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:all .2s;"></span>`;
-  }
-}
-function toggleTipsTicker() {
-  LS.set('cl-show-tips', !LS.get('cl-show-tips', true));
-  applyTipsTicker();
-}
 
 function shareResult(text){
   if(navigator.share){
@@ -3834,13 +3794,6 @@ window.buildSearchIndex = function() {
 
     <div class="profile-section">
       <h3>> // preferences</h3>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border);">
-        <div>
-          <div style="font-size:.88rem;font-weight:500;">Show install tips banner</div>
-          <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">Scrolling banner on the home page with mobile install tips</div>
-        </div>
-        <button id="tipsToggleBtn" onclick="toggleTipsTicker()" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;flex-shrink:0;transition:background .2s;"></button>
-      </div>
     </div>
 
     <div class="profile-section">
