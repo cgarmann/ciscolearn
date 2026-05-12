@@ -1,0 +1,27 @@
+node_modules/
+android/
+.gradle/
+*.apk
+*.aab
+*.idsig
+
+# Secrets & signing - never commit
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+keystore.properties
+google-services.json
+
+# Optional: local firebase config override (see firebase-config.example.js)
+js/firebase-config.js
+www/js/firebase-config.local.js
+www/js/firebase-config.js
+android/app/src/main/assets/public/js/firebase-config.js
+.env
+.env.local
+.env.*.local
+
+.DS_Store
+Thumbs.db
