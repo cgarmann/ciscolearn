@@ -1,0 +1,115 @@
+rules_version = '2';
+
+// NetCLI:Learn — Firestore security rules
+// Deploy: firebase deploy --only firestore:rules
+// Or paste into Firebase Console → Firestore → Rules tab
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Users collection ───────────────────────────────────────────────────
+    // Each document is keyed by the Firebase Auth UID.
+    // A user can only read / write their own document.
+    match /users/{uid} {
+
+      // Read: only the owner
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // Create: only on first sign-in, only with sensible defaults
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && validUserDoc(request.resource.data);
+
+      // Update: only the owner, only whitelisted fields, bounded values
+      allow update: if request.auth != null
+                    && request.auth.uid == uid
+                    && validUserDoc(request.resource.data)
+                    && onlyAllowedFields(request.resource.data);
+
+      // Delete: owner may delete their own account data
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Deny everything else by default ────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
+  // Whitelist of top-level keys a client is allowed to write
+  function onlyAllowedFields(data) {
+    return data.keys().hasOnly([
+      'settings', 'progress', 'streak', 'terminal',
+      'createdAt', 'updatedAt'
+    ]);
+  }
+
+  // Bounds-check on values to prevent abuse (giant payloads, fake scores, etc.)
+  function validUserDoc(data) {
+    return
+      // settings
+      (!('settings' in data) || (
+        data.settings is map
+        && (!('theme' in data.settings) || data.settings.theme in ['dark','light'])
+        && (!('lang'  in data.settings) || data.settings.lang  in ['en','no'])
+      ))
+      // progress — cap arrays and numeric fields
+      && (!('progress' in data) || (
+        data.progress is map
+        && (!('quizScores' in data.progress) || (
+          data.progress.quizScores is list
+          && data.progress.quizScores.size() <= 50
+        ))
+        && (!('guidesRead' in data.progress) || (
+          data.progress.guidesRead is list
+          && data.progress.guidesRead.size() <= 200
+        ))
+        && (!('troubleshootingRead' in data.progress) || (
+          data.progress.troubleshootingRead is list
+          && data.progress.troubleshootingRead.size() <= 200
+        ))
+        && (!('subnetStreak' in data.progress) || (
+          data.progress.subnetStreak is number
+          && data.progress.subnetStreak >= 0 && data.progress.subnetStreak <= 100000
+        ))
+        && (!('subnetBest' in data.progress) || (
+          data.progress.subnetBest is number
+          && data.progress.subnetBest >= 0 && data.progress.subnetBest <= 100000
+        ))
+        && (!('subnetTotal' in data.progress) || (
+          data.progress.subnetTotal is number
+          && data.progress.subnetTotal >= 0 && data.progress.subnetTotal <= 1000000
+        ))
+        && (!('ipv6Streak' in data.progress) || (
+          data.progress.ipv6Streak is number
+          && data.progress.ipv6Streak >= 0 && data.progress.ipv6Streak <= 100000
+        ))
+        && (!('ipv6Total' in data.progress) || (
+          data.progress.ipv6Total is number
+          && data.progress.ipv6Total >= 0 && data.progress.ipv6Total <= 1000000
+        ))
+      ))
+      // streak
+      && (!('streak' in data) || (
+        data.streak is map
+        && (!('current' in data.streak) || (
+          data.streak.current is number && data.streak.current >= 0 && data.streak.current <= 10000
+        ))
+        && (!('best' in data.streak) || (
+          data.streak.best is number && data.streak.best >= 0 && data.streak.best <= 10000
+        ))
+      ))
+      // terminal
+      && (!('terminal' in data) || (
+        data.terminal is map
+        && (!('history' in data.terminal) || (
+          data.terminal.history is list && data.terminal.history.size() <= 50
+        ))
+        && (!('scenario' in data.terminal) || (
+          data.terminal.scenario is string && data.terminal.scenario.size() <= 40
+        ))
+      ));
+  }
+}

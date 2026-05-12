@@ -1,0 +1,30 @@
+{
+  "appId": "io.schjoldr.netcli",
+  "appName": "NetCLI",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "clientId": "208454589615-v6utsjnfifusea0vqp8v60a0h3bhkjnf.apps.googleusercontent.com",
+      "androidClientId": "208454589615-v6utsjnfifusea0vqp8v60a0h3bhkjnf.apps.googleusercontent.com",
+      "serverClientId": "208454589615-v6utsjnfifusea0vqp8v60a0h3bhkjnf.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": false
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0d1117",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0d1117"
+    }
+  }
+}

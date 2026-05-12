@@ -1,7 +1,7 @@
 {
-  "name": "cisco:learn",
-  "short_name": "cisco:learn",
-  "description": "Hands-on Cisco IOS and Packet Tracer reference — subnetting, commands, guides, quiz and troubleshooting.",
+  "name": "NetCLI",
+  "short_name": "NetCLI",
+  "description": "NetCLI — Hands-on Cisco IOS and Packet Tracer reference: subnetting, commands, guides, quiz and troubleshooting.",
   "start_url": "/ciscolearn/",
   "scope": "/ciscolearn/",
   "display": "standalone",
