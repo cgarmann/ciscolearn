@@ -1,7 +1,7 @@
 # cisco:learn — CLAUDE.md
 
 ## What this is
-Browser-based Cisco IOS / Packet Tracer learning PWA, packaged as an Android app via Capacitor.
+Browser-based Cisco IOS / Packet Tracer learning PWA, packaged as Android and iOS apps via Capacitor.
 Norwegian UI. Firebase auth. No build step — edit HTML/JS/CSS directly.
 
 ## Project layout
@@ -32,6 +32,19 @@ cd android
 # APK: android/app/build/outputs/apk/debug/app-debug.apk
 ```
 SDK path: `C:\Users\chris\AppData\Local\Android\Sdk`
+
+## iOS build (requires macOS + Xcode)
+```bash
+# On Mac, after git pull:
+cd ~/ciscolearn
+npm install --legacy-peer-deps
+npx cap add ios          # first time only — generates ios/ folder
+npx cap sync             # subsequent syncs
+open ios/App/App.xcworkspace
+# In Xcode: select device → Product → Run
+```
+Bundle ID: `no.cgarmann.ciscolearn`
+Requires Apple Developer account for device deploy (free account works for personal device).
 
 ## Known issues (as of 2026-04-15)
 - `cap sync` doesn't work from bash — use PowerShell or copy manually

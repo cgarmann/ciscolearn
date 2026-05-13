@@ -1,9 +1,13 @@
 node_modules/
 android/
+ios/
 .gradle/
 *.apk
 *.aab
 *.idsig
+*.ipa
+DerivedData/
+*.xcuserstate
 
 # Secrets & signing - never commit
 *.keystore

@@ -5691,26 +5691,32 @@ function customInit() {
     else if(e.key === 'ArrowDown' && CUSTOM_LAB.term.history.length) { CUSTOM_LAB.term.histIdx = Math.min(CUSTOM_LAB.term.history.length, CUSTOM_LAB.term.histIdx + 1); input.value = CUSTOM_LAB.term.history[CUSTOM_LAB.term.histIdx] || ''; e.preventDefault(); }
   });
   if(input) {
-    input.addEventListener('focus', () => setTimeout(customResizeTerminal, 200));
+    input.addEventListener('focus', () => setTimeout(customResizeTerminal, 300));
     input.addEventListener('blur', () => {
       const s = document.getElementById('customTermScreen');
       if(s) s.style.height = '';
     });
   }
   if(window.visualViewport) window.visualViewport.addEventListener('resize', customResizeTerminal);
+  window.addEventListener('resize', customResizeTerminal);
   if(!CUSTOM_LAB.devices.length) customTermPrint('Custom Lab ready. Add devices to start building.', 'dim');
 }
 function customResizeTerminal() {
   const screen = document.getElementById('customTermScreen');
-  if(!screen || !screen.offsetParent) return;
+  if(!screen) return;
+  const vvh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const screenH = window.screen?.height || window.innerHeight;
+  // Only resize when keyboard is likely open (viewport < 72% of physical screen)
+  if(vvh > screenH * 0.72) { screen.style.height = ''; return; }
   const card = screen.closest('.custom-terminal-card');
   if(!card) return;
-  const vvh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const cardRect = card.getBoundingClientRect();
-  const headerH = card.querySelector('.custom-term-header')?.offsetHeight || 0;
-  const promptH = card.querySelector('.custom-term-input')?.offsetHeight || 44;
-  const chipH = document.getElementById('customChipBar')?.classList.contains('visible') ? 72 : 0;
-  const available = vvh - cardRect.top - headerH - promptH - chipH - 8;
+  const promptRow = card.querySelector('.custom-term-input');
+  const termHeader = card.querySelector('.custom-term-header');
+  if(!promptRow || !termHeader) return;
+  // Measure where prompt and header actually are after Android auto-scroll
+  const promptTop = promptRow.getBoundingClientRect().top;
+  const headerBot = termHeader.getBoundingClientRect().bottom;
+  const available = promptTop - Math.max(60, headerBot) - 4;
   screen.style.height = Math.max(80, available) + 'px';
   screen.scrollTop = screen.scrollHeight;
 }
