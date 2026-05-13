@@ -1,0 +1,15 @@
+node_modules/
+ios/
+*.ipa
+DerivedData/
+*.xcuserstate
+
+# Secrets
+js/firebase-config.js
+www/js/firebase-config.js
+www/js/firebase-config.local.js
+.env
+.env.local
+
+.DS_Store
+Thumbs.db
