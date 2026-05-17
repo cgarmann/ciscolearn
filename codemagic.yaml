@@ -38,7 +38,6 @@ workflows:
           xcode-project build-ipa \
             --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME" \
-            --archive-xcargs "PROVISIONING_PROFILE_SPECIFIER='NetCLI AppStore' CODE_SIGN_IDENTITY='Apple Distribution' DEVELOPMENT_TEAM=NV57Y9X3XN" \
             --disable-xcpretty
 
     artifacts:
