@@ -19,8 +19,10 @@ workflows:
       - name: Install dependencies
         script: npm install --legacy-peer-deps
 
-      - name: Capacitor sync
-        script: npx cap sync ios
+      - name: Capacitor add & sync iOS
+        script: |
+          npx cap add ios
+          npx cap sync ios
 
       - name: Set up code signing
         script: xcode-project use-profiles
