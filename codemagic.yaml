@@ -11,7 +11,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: io.schjoldr.netcli
       vars:
-        XCODE_WORKSPACE: ios/App/App.xcworkspace
+        XCODE_PROJECT: ios/App/App.xcodeproj
         XCODE_SCHEME: App
       node: latest
 
@@ -24,13 +24,19 @@ workflows:
           npx cap add ios
           npx cap sync ios
 
+      - name: Resolve Swift packages
+        script: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME"
+
       - name: Set up code signing
         script: xcode-project use-profiles
 
       - name: Build IPA
         script: |
           xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
+            --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
 
     artifacts:
