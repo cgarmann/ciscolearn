@@ -1,5 +1,5 @@
 {
-  "appId": "io.netcli.app",
+  "appId": "io.schjoldr.netcli",
   "appName": "NetCLI",
   "webDir": "www",
   "server": {
