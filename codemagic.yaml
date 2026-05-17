@@ -23,7 +23,6 @@ workflows:
         script: |
           npx cap add ios
           npx cap sync ios
-          cd ios/App && pod install && cd ../..
 
       - name: Set up code signing
         script: xcode-project use-profiles
