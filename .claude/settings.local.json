@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/chris/.claude/projects/C--Users-chris-ciscolearn/**)",
+      "Bash(mkdir -p /c/Users/chris/.claude/projects/C--Users-chris-ciscolearn/memory/)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\), indent=2\\)\\)\")",
+      "Bash(firebase --version)",
+      "Bash(keytool -list -keystore /c/Users/chris/ciscolearn/ciscolearn.jks)",
+      "Bash(xargs grep *)",
+      "Bash(python3 -c \"from PIL import Image; print\\('ok'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -c \"from PIL import Image; print\\('ok'\\)\")"
+    ]
+  }
+}

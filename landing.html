@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' data:;
+    connect-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  " />
+  <title>NetCLI:Learn</title>
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NetCLI" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700&display=swap" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0d1117; --s1:#161b22; --s2:#21262d; --border:#30363d;
+  --text:#e6edf3; --muted:#7d8590; --accent:#00ff88;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* dot grid */
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(0,255,136,.045) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* glow */
+.glow {
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,255,136,.08) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Logo */
+.logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-bottom: .5rem;
+  opacity: 0;
+  animation: fadeUp .5s ease forwards .1s;
+}
+.logo span { color: var(--accent); text-shadow: 0 0 24px rgba(0,255,136,.4); }
+
+/* Terminal line */
+.terminal-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(.75rem, 3vw, .9rem);
+  color: var(--accent);
+  opacity: .7;
+  margin-bottom: 2.5rem;
+  min-height: 1.4em;
+  opacity: 0;
+  animation: fadeUp .5s ease forwards .3s;
+}
+.cursor {
+  display: inline-block;
+  width: 2px; height: 1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Features */
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  margin-bottom: 2.5rem;
+  width: 100%;
+  opacity: 0;
+  animation: fadeUp .5s ease forwards .6s;
+}
+.feature {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .8rem 1rem;
+  text-align: left;
+}
+.feature-icon {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem;
+  color: var(--accent);
+  width: 28px;
+  flex-shrink: 0;
+}
+.feature-text { font-size: .88rem; color: var(--text); }
+.feature-sub { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
+
+/* Buttons */
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  width: 100%;
+  opacity: 0;
+  animation: fadeUp .5s ease forwards .9s;
+}
+.btn {
+  width: 100%;
+  padding: .9rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .03em;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #0d1117;
+}
+.btn-primary:hover { opacity: .88; }
+.btn-secondary {
+  background: var(--s1);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-ghost {
+  background: none;
+  color: var(--muted);
+  font-size: .78rem;
+  padding: .5rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.btn-ghost:hover { color: var(--text); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* tap to skip */
+.skip-hint {
+  position: absolute;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  color: var(--muted);
+  opacity: .5;
+  animation: fadeUp .5s ease forwards 1.2s, pulse 2s ease-in-out infinite 2s;
+  opacity: 0;
+}
+@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.7} }
+</style>
+</head>
+<body onclick="skip()">
+<div class="glow"></div>
+
+<div class="content" onclick="e => e.stopPropagation()">
+  <div class="logo">NetCLI<span>:Learn</span></div>
+  <div class="terminal-line" id="termLine"><span class="cursor"></span></div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">$</div>
+      <div>
+        <div class="feature-text">Commands & Config</div>
+        <div class="feature-sub">Full IOS command library with examples</div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⊞</div>
+      <div>
+        <div class="feature-text">Subnetting Calculator</div>
+        <div class="feature-sub">IPv4, IPv6, VLSM with visual breakdown</div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">▶</div>
+      <div>
+        <div class="feature-text">Packet Tracer Guides</div>
+        <div class="feature-sub">Step-by-step labs for CCNA topics</div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">?</div>
+      <div>
+        <div class="feature-text">Quiz & Progress</div>
+        <div class="feature-sub">Test yourself, track streaks, sync to cloud</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button class="btn btn-primary" onclick="getStarted()">Get Started</button>
+    <button class="btn btn-secondary" onclick="goLogin()">Sign In</button>
+  </div>
+</div>
+
+<div class="skip-hint">tap anywhere to skip</div>
+
+<script>
+// Skip if already launched
+if (localStorage.getItem('cl-launched')) {
+  window.location.replace('index.html');
+}
+
+// Typewriter animation
+const phrases = ['--interactive', '--offline-ready', '--cisco-ccna'];
+let phraseIdx = 0, charIdx = 0, typing = true;
+const el = document.getElementById('termLine');
+
+function typeWriter() {
+  const phrase = phrases[phraseIdx];
+  if (typing) {
+    if (charIdx <= phrase.length) {
+      el.innerHTML = phrase.slice(0, charIdx) + '<span class="cursor"></span>';
+      charIdx++;
+      setTimeout(typeWriter, charIdx === 1 ? 400 : 60);
+    } else {
+      typing = false;
+      setTimeout(typeWriter, 1800);
+    }
+  } else {
+    if (charIdx > 0) {
+      charIdx--;
+      el.innerHTML = phrase.slice(0, charIdx) + '<span class="cursor"></span>';
+      setTimeout(typeWriter, 30);
+    } else {
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+      typing = true;
+      setTimeout(typeWriter, 300);
+    }
+  }
+}
+typeWriter();
+
+function getStarted() {
+  localStorage.setItem('cl-launched', '1');
+  window.location.href = 'index.html';
+}
+
+function goLogin() {
+  localStorage.setItem('cl-launched', '1');
+  window.location.href = 'login.html';
+}
+
+function skip() {
+  getStarted();
+}
+</script>
+</body>
+</html>

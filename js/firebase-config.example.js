@@ -1,6 +1,9 @@
-// Template - copy to firebase-config.js and fill in project values.
-// The web API key is public by design, but it must be restricted in
-// Google Cloud Console before release.
+// Template — copy to firebase-config.js and fill in project values.
+// The web API key is public by design (identifies the Firebase project)
+// but MUST be restricted in Google Cloud Console:
+//   - Android app restriction: package name + SHA-1 of signing cert
+//   - HTTP referrer restriction: your production domain + localhost
+// Firestore security (see firestore.rules) is what prevents abuse.
 export const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",

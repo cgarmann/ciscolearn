@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cisco:learn (www)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "www", "--listen", "3000", "--no-clipboard"],
+      "port": 3000
+    },
+    {
+      "name": "Firebase Hosting Emulator",
+      "runtimeExecutable": "firebase",
+      "runtimeArgs": ["emulators:start", "--only", "hosting"],
+      "port": 5000
+    }
+  ]
+}

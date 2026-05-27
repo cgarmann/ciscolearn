@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com;
@@ -15,8 +15,15 @@
     base-uri 'self';
     form-action 'self';
   " />
-  <title>cisco:learn — Sign in</title>
+  <title>NetCLI:Learn — Sign in</title>
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NetCLI" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700&display=swap" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,23 +72,21 @@ input::placeholder { color:var(--muted); }
 .reset-msg.show { display:block; }
 
 .google-icon { width:18px; height:18px; }
-
-.back-link { text-align:center; margin-top:1.25rem; }
-.back-link a { font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--muted); text-decoration:none; }
-.back-link a:hover { color:var(--accent); }
-
+body.is-native .native-hidden { display:none !important; }
+</style>
+</head>
+<style>
 .auth-checking { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; min-height:120px; }
 .spinner { width:28px; height:28px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
 </style>
-</head>
 <body>
 <div class="card" id="authCard" style="visibility:hidden">
   <div id="authChecking" class="auth-checking">
     <div class="spinner"></div>
   </div>
   <div id="authContent" style="display:none">
-  <div class="logo">cisco<span>:learn</span></div>
+  <div class="logo">NetCLI<span>:Learn</span></div>
   <div class="tagline">> sign in to sync your progress</div>
 
   <div class="tabs">
@@ -92,6 +97,7 @@ input::placeholder { color:var(--muted); }
   <div id="errorMsg" class="error-msg"></div>
   <div id="resetMsg" class="reset-msg"></div>
 
+  <!-- LOGIN FORM -->
   <div id="loginForm">
     <div class="form-group">
       <label>Email</label>
@@ -103,13 +109,14 @@ input::placeholder { color:var(--muted); }
       <div class="forgot"><a href="#" onclick="showForgot(event)">Forgot password?</a></div>
     </div>
     <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button>
-    <div class="divider"><span>or</span></div>
-    <button class="btn btn-google" onclick="doGoogle()">
+    <div class="divider native-hidden"><span>or</span></div>
+    <button class="btn btn-google native-hidden" onclick="doGoogle()">
       <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Continue with Google
     </button>
   </div>
 
+  <!-- REGISTER FORM -->
   <div id="registerForm" style="display:none">
     <div class="form-group">
       <label>Display name</label>
@@ -124,19 +131,19 @@ input::placeholder { color:var(--muted); }
       <input type="password" id="regPassword" placeholder="Min. 8 characters (letters + digit)" autocomplete="new-password" minlength="8" maxlength="128" />
     </div>
     <button class="btn btn-primary" id="registerBtn" onclick="doRegister()">Create Account</button>
-    <div class="divider"><span>or</span></div>
-    <button class="btn btn-google" onclick="doGoogle()">
+    <div class="divider native-hidden"><span>or</span></div>
+    <button class="btn btn-google native-hidden" onclick="doGoogle()">
       <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Continue with Google
     </button>
   </div>
-
-  <div class="back-link"><a href="index.html">← Back to app (no sign-in)</a></div>
-  </div>
-</div>
+  </div><!-- /authContent -->
+</div><!-- /card -->
 
 <script type="module">
 import { signInEmail, registerEmail, signInGoogle, onAuth } from './js/auth.js';
+
+if (window.Capacitor?.isNativePlatform()) document.body.classList.add('is-native');
 
 window.showTab = function(tab) {
   document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
@@ -149,17 +156,10 @@ window.showForgot = async function(e) {
   e.preventDefault();
   const email = document.getElementById('loginEmail').value.trim();
   if (!email) { showError('Enter your email address first.'); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Enter a valid email address.'); return; }
-  const link = e.target;
-  const orig = link.textContent;
-  link.textContent = 'Sending…';
-  link.style.pointerEvents = 'none';
   const { resetPassword } = await import('./js/auth.js');
   const { error } = await resetPassword(email);
-  link.textContent = orig;
-  link.style.pointerEvents = '';
   if (error) showError(error);
-  else showReset('Reset email sent to ' + email + ' — check your inbox (and spam).');
+  else showReset('Password reset email sent — check your inbox.');
 };
 
 window.doLogin = async function() {
@@ -191,9 +191,10 @@ window.doRegister = async function() {
 
 window.doGoogle = async function() {
   const { error } = await signInGoogle();
-  if (error) showError(error);
+  if (error && !error.includes('popup-closed')) showError(error);
 };
 
+// Show spinner while checking auth, redirect if already signed in
 onAuth(user => {
   if (user) {
     window.location.href = 'index.html';
@@ -224,6 +225,7 @@ function setLoading(id, loading) {
   btn.textContent = loading ? 'Please wait…' : (id === 'loginBtn' ? 'Sign In' : 'Create Account');
 }
 
+// Enter key support
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     const active = document.getElementById('loginForm').style.display !== 'none' ? 'login' : 'register';
