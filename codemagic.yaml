@@ -24,6 +24,12 @@ workflows:
           npx cap add ios
           npx cap sync ios
 
+      - name: Set iOS version
+        script: |
+          cd ios/App
+          agvtool new-marketing-version 1.3
+          agvtool new-version -all $BUILD_NUMBER
+
       - name: Set up code signing
         script: xcode-project use-profiles
 

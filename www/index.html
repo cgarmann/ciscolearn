@@ -1597,12 +1597,12 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     </div>
 
     <div class="card" style="margin-bottom:1.25rem;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-        <div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.75rem;margin-bottom:1.25rem;">
+        <div style="min-width:0;flex:1;">
           <p class="section-label" style="margin-bottom:.2rem;">Block</p>
-          <p style="font-family:'JetBrains Mono',monospace;font-size:1.45rem;color:var(--accent);" id="vlsmBlockDisplay">—</p>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:1.45rem;color:var(--accent);white-space:normal;word-break:break-word;" id="vlsmBlockDisplay">—</p>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="vlsmNewQ()">New question →</button>
+        <button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="vlsmNewQ()">New question →</button>
       </div>
       <div id="vlsmRows"></div>
       <div id="vlsmLiveVisual" class="sub-live-visual" style="display:none;margin-top:1rem;"></div>
@@ -1780,6 +1780,7 @@ footer { border-top:1px solid var(--border); padding:1.75rem 0; margin-top:1rem;
     </div>
 
     <div id="quizScreen" style="display:none;">
+      <button class="btn btn-ghost btn-sm" style="margin-bottom:1rem;" onclick="if(confirm('Avslutt quiz og gå tilbake til menyen?'))quizShowStart()">← Tilbake</button>
       <div class="quiz-progress"><div class="quiz-progress-bar" id="quizBar"></div></div>
       <p style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);margin-bottom:1.4rem;" id="quizCounter"></p>
       <div class="card" style="margin-bottom:1.25rem;">
