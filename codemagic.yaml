@@ -19,20 +19,17 @@ workflows:
       - name: Install dependencies
         script: npm install --legacy-peer-deps
 
-      - name: Capacitor sync iOS
-        script: npx cap sync ios
+      - name: Copy web assets
+        script: rsync -av --delete www/ ios/App/App/public/
 
       - name: Set up code signing
         script: xcode-project use-profiles
 
-      - name: Diagnostics
+      - name: Set build version
         script: |
-          echo "=== BUILD_NUMBER ==="
-          echo "$BUILD_NUMBER"
-          echo "=== Info.plist CFBundleVersion ==="
+          sed -i '' 's/$(CURRENT_PROJECT_VERSION)/5/g' ios/App/App/Info.plist
+          echo "=== CFBundleVersion after sed ==="
           grep -A1 CFBundleVersion ios/App/App/Info.plist
-          echo "=== project.pbxproj CURRENT_PROJECT_VERSION ==="
-          grep CURRENT_PROJECT_VERSION ios/App/App.xcodeproj/project.pbxproj
 
       - name: Build IPA
         script: |
