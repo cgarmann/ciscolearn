@@ -24,6 +24,12 @@ workflows:
           npx cap add ios
           npx cap sync ios
 
+      - name: Set build version
+        script: |
+          sed -i '' 's/$(CURRENT_PROJECT_VERSION)/5/g' ios/App/App/Info.plist
+          echo "=== CFBundleVersion ==="
+          grep -A1 CFBundleVersion ios/App/App/Info.plist
+
       - name: Resolve Swift packages
         script: |
           xcodebuild -resolvePackageDependencies \
