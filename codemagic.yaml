@@ -23,6 +23,7 @@ workflows:
         script: |
           npx cap add ios
           npx cap sync ios
+          cp assets/AppIcon-512@2x.png ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
 
       - name: Set build version
         script: |
