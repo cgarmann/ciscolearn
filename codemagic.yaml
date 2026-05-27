@@ -19,16 +19,14 @@ workflows:
       - name: Install dependencies
         script: npm install --legacy-peer-deps
 
-      - name: Capacitor add & sync iOS
-        script: |
-          npx cap add ios
-          npx cap sync ios
+      - name: Capacitor sync iOS
+        script: npx cap sync ios
 
       - name: Set iOS version
         script: |
           cd ios/App
-          agvtool new-marketing-version 1.3
-          agvtool new-version -all $BUILD_NUMBER
+          agvtool new-marketing-version 1.0
+          agvtool new-version -all $((BUILD_NUMBER + 1))
 
       - name: Set up code signing
         script: xcode-project use-profiles
