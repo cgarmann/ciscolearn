@@ -28,7 +28,7 @@ workflows:
       - name: Set iOS version
         script: |
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.0" ios/App/App/Info.plist
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $((${BUILD_NUMBER:-0} + 3))" ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 5" ios/App/App/Info.plist
 
       - name: Build IPA
         script: |
