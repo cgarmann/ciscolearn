@@ -22,14 +22,13 @@ workflows:
       - name: Capacitor sync iOS
         script: npx cap sync ios
 
-      - name: Set iOS version
-        script: |
-          cd ios/App
-          agvtool new-marketing-version 1.0
-          agvtool new-version -all $((${BUILD_NUMBER:-0} + 3))
-
       - name: Set up code signing
         script: xcode-project use-profiles
+
+      - name: Set iOS version
+        script: |
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.0" ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $((${BUILD_NUMBER:-0} + 3))" ios/App/App/Info.plist
 
       - name: Build IPA
         script: |
