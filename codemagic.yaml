@@ -27,7 +27,7 @@ workflows:
 
       - name: Set build version
         script: |
-          sed -i '' 's/$(CURRENT_PROJECT_VERSION)/5/g' ios/App/App/Info.plist
+          sed -i '' 's/$(CURRENT_PROJECT_VERSION)/6/g' ios/App/App/Info.plist
           echo "=== CFBundleVersion ==="
           grep -A1 CFBundleVersion ios/App/App/Info.plist
 
