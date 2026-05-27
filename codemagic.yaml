@@ -26,7 +26,7 @@ workflows:
         script: |
           cd ios/App
           agvtool new-marketing-version 1.0
-          agvtool new-version -all $((BUILD_NUMBER + 1))
+          agvtool new-version -all $((${BUILD_NUMBER:-0} + 3))
 
       - name: Set up code signing
         script: xcode-project use-profiles
