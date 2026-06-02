@@ -5965,6 +5965,7 @@ window.openAuthPanel = function() {
 };
 window.closeAuthPanel = function() {
   document.getElementById('authPanelOverlay')?.classList.remove('open');
+  authResetInFlight();
 };
 window.authOverlayClick = function(e) {
   if (e.target === document.getElementById('authPanelOverlay')) closeAuthPanel();
