@@ -90,8 +90,12 @@ export async function resetPassword(email) {
 export async function signInApple() {
   try {
     const { raw, hashed } = await generateNonce();
-    const result = await window.Capacitor.Plugins.SignInWithApple.authorize({
-      scopes: ['EMAIL', 'FULL_NAME'],
+    const appleProvider = getSignInWithApplePlugin();
+    if (!appleProvider?.authorize) {
+      return { user: null, error: 'Sign in with Apple is not available in this build.' };
+    }
+    const result = await appleProvider.authorize({
+      scopes: 'email name',
       nonce: hashed,
     });
     const provider = new OAuthProvider('apple.com');
@@ -113,6 +117,16 @@ export async function signInApple() {
     }
     return { user: null, error: e.message || 'Sign in with Apple failed.' };
   }
+}
+
+function getSignInWithApplePlugin() {
+  const cap = window.Capacitor;
+  if (!cap) return null;
+  if (cap.Plugins?.SignInWithApple) return cap.Plugins.SignInWithApple;
+  if (typeof cap.registerPlugin === 'function') {
+    return cap.registerPlugin('SignInWithApple');
+  }
+  return null;
 }
 
 async function generateNonce() {
