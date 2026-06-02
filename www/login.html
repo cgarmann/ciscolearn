@@ -162,7 +162,10 @@ if (window.Capacitor?.isNativePlatform()) {
   }
 }
 
+let authInFlight = false;
+
 window.showTab = function(tab) {
+  if (authInFlight) return;
   document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
   document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
@@ -180,19 +183,22 @@ window.showForgot = async function(e) {
 };
 
 window.doLogin = async function() {
+  if (authInFlight) return;
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
   if (!email || !password) { showError('Please fill in all fields.'); return; }
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Invalid email format.'); return; }
   if (password.length > 256) { showError('Password too long.'); return; }
+  setAuthInFlight(true);
   setLoading('loginBtn', true);
   const { user, error } = await signInEmail(email, password);
-  if (error) { showError(error); setLoading('loginBtn', false); return; }
+  if (error) { showError(error); resetAuthInFlight(); return; }
   if (user) goToApp();
-  else { showError('Login did not complete. Please try again.'); setLoading('loginBtn', false); }
+  else { showError('Login did not complete. Please try again.'); resetAuthInFlight(); }
 };
 
 window.doRegister = async function() {
+  if (authInFlight) return;
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
@@ -203,23 +209,30 @@ window.doRegister = async function() {
   if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
   if (password.length > 128) { showError('Password too long (max 128 characters).'); return; }
   if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) { showError('Password must contain letters and at least one digit.'); return; }
+  setAuthInFlight(true);
   setLoading('registerBtn', true);
   const { user, error } = await registerEmail(email, password, name);
-  if (error) { showError(error); setLoading('registerBtn', false); return; }
+  if (error) { showError(error); resetAuthInFlight(); return; }
   if (user) goToApp();
-  else { showError('Account creation did not complete. Please try again.'); setLoading('registerBtn', false); }
+  else { showError('Account creation did not complete. Please try again.'); resetAuthInFlight(); }
 };
 
 window.doGoogle = async function() {
+  if (authInFlight) return;
+  setAuthInFlight(true);
   const { user, error } = await signInGoogle();
-  if (error && !error.includes('popup-closed')) { showError(error); return; }
+  if (error && !error.includes('popup-closed')) { showError(error); resetAuthInFlight(); return; }
   if (user) goToApp();
+  else resetAuthInFlight();
 };
 
 window.doApple = async function() {
+  if (authInFlight) return;
+  setAuthInFlight(true);
   const { user, error } = await signInApple();
-  if (error) { showError(error); return; }
+  if (error) { showError(error); resetAuthInFlight(); return; }
   if (user) goToApp();
+  else resetAuthInFlight();
 };
 
 function goToApp() {
@@ -227,8 +240,7 @@ function goToApp() {
   setTimeout(() => {
     showLoginForm();
     showError('The app did not open. Please try again.');
-    setLoading('loginBtn', false);
-    setLoading('registerBtn', false);
+    resetAuthInFlight();
   }, 5000);
   window.location.replace('index.html');
 }
@@ -268,10 +280,22 @@ function setLoading(id, loading) {
   btn.disabled = loading;
   btn.textContent = loading ? 'Please wait…' : (id === 'loginBtn' ? 'Sign In' : 'Create Account');
 }
+function setAuthInFlight(loading) {
+  authInFlight = loading;
+  document.querySelectorAll('#loginBtn,#registerBtn,.btn-google,.btn-apple,.tab').forEach(btn => {
+    btn.disabled = loading;
+  });
+}
+function resetAuthInFlight() {
+  setAuthInFlight(false);
+  setLoading('loginBtn', false);
+  setLoading('registerBtn', false);
+}
 
 // Enter key support
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
+    if (authInFlight) return;
     const active = document.getElementById('loginForm').style.display !== 'none' ? 'login' : 'register';
     if (active === 'login') window.doLogin();
     else window.doRegister();

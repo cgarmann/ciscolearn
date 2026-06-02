@@ -123,10 +123,11 @@ export async function signInApple() {
     }
     return { user: fbResult.user, error: null };
   } catch (e) {
-    if (e.code === '1001' || (e.message || '').toLowerCase().includes('cancel')) {
+    const msg = e.message || '';
+    if (e.code === '1001' || msg.includes('1001') || msg.toLowerCase().includes('cancel')) {
       return { user: null, error: null };
     }
-    return { user: null, error: e.message || 'Sign in with Apple failed.' };
+    return { user: null, error: msg || 'Sign in with Apple failed.' };
   }
 }
 
