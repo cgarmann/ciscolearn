@@ -1,4 +1,4 @@
-const CACHE = 'netcli-v14';
+const CACHE = 'netcli-v20';
 
 // App shell — cached on install for fast startup and offline fallback
 const SHELL = [
@@ -11,6 +11,7 @@ const SHELL = [
   '/icon-192.png',
   '/icon-512.png',
   '/apple-touch-icon.png',
+  '/js/capacitor.js',
   '/js/auth.js',
   '/js/db.js',
   '/js/scenario-generator.js',
