@@ -2272,7 +2272,7 @@ function profileMsg(id, text, isErr) {
 }
 
 async function profileReauth(password) {
-  const { EmailAuthProvider, reauthenticateWithCredential } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  const { EmailAuthProvider, reauthenticateWithCredential } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
   const cred = EmailAuthProvider.credential(currentUser.email, password);
   await reauthenticateWithCredential(currentUser, cred);
 }
@@ -2284,7 +2284,7 @@ window.profileSaveName = async function() {
   if(name.length > 40) return profileMsg('profileNameMsg','Navnet kan ikke være lengre enn 40 tegn.',true);
   if(!/^[\p{L}\p{N} '.\-_]+$/u.test(name)) return profileMsg('profileNameMsg','Bruk kun bokstaver, tall, mellomrom og - . _ \'',true);
   try {
-    const { updateProfile } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { updateProfile } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await updateProfile(currentUser, { displayName: name });
     document.getElementById('drawerName').textContent = name;
     document.getElementById('profileHeadName').textContent = name;
@@ -2303,7 +2303,7 @@ window.profileSaveEmail = async function() {
   if(!pw)    return profileMsg('profileEmailMsg','Password required',true);
   try {
     await profileReauth(pw);
-    const { updateEmail } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { updateEmail } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await updateEmail(currentUser, email);
     document.getElementById('drawerEmail').textContent = email;
     document.getElementById('profileHeadEmail').textContent = email;
@@ -2323,7 +2323,7 @@ window.profileSavePw = async function() {
     return profileMsg('profilePwMsg','Password must contain letters and at least one digit',true);
   try {
     await profileReauth(cur);
-    const { updatePassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { updatePassword } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await updatePassword(currentUser, nw);
     document.getElementById('profileCurPw').value = '';
     document.getElementById('profileNewPw').value = '';
@@ -2391,7 +2391,7 @@ window.profileSaveAvatar = async function(src) {
   profileMsg('profileAvatarMsg', 'Avatar saved!');
   if(currentUser) {
     try {
-      const { updateProfile } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+      const { updateProfile } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
       await updateProfile(currentUser, { photoURL: src });
     } catch(e) {}
   }
@@ -2445,7 +2445,7 @@ window.profileDelete = async function() {
   if(!confirm('Are you sure? This cannot be undone.')) return;
   try {
     await profileReauth(pw);
-    const { deleteUser } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { deleteUser } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await deleteUser(currentUser);
     window.location.href = 'landing.html';
   } catch(e) { profileMsg('profileDeleteMsg', e.message, true); }
@@ -5817,6 +5817,7 @@ window.addEventListener('load', buildSearchIndex);
 
 // ── FIREBASE AUTH ─────────────────────────────────────────────────────────────
 let currentUser = null;
+let authPanelInFlight = false;
 
 async function initAuth() {
   try {
@@ -5825,6 +5826,7 @@ async function initAuth() {
     const { loadUserData, saveSettings, saveProgress, saveStreak } = await import('./js/db.js');
 
     onAuth(async (user) => {
+      const authUid = user?.uid || null;
       currentUser = user;
       window.currentUser = user;
 
@@ -5854,6 +5856,7 @@ async function initAuth() {
 
         // Load cloud data and apply
         const { data } = await loadUserData(user.uid);
+        if (authUid !== currentUser?.uid) return;
         if (data) {
           // Apply settings
           if (data.settings?.theme) {
@@ -5952,6 +5955,7 @@ window.authOverlayClick = function(e) {
   if (e.target === document.getElementById('authPanelOverlay')) closeAuthPanel();
 };
 window.authSwitchTab = function(tab) {
+  if (authPanelInFlight) return;
   const isSignin = tab === 'signin';
   document.getElementById('authFormSignin').style.display   = isSignin ? 'block' : 'none';
   document.getElementById('authFormRegister').style.display = isSignin ? 'none'  : 'block';
@@ -5982,35 +5986,61 @@ function authSetLoading(btnId, loading, label) {
   btn.disabled = loading;
   btn.textContent = loading ? 'Please wait…' : label;
 }
+function authSetInFlight(loading) {
+  authPanelInFlight = loading;
+  document.querySelectorAll('#authGoogleBtn,#authSubmitSignin,#authSubmitRegister,#authTabSignin,#authTabRegister').forEach(btn => {
+    btn.disabled = loading;
+  });
+}
+function authResetInFlight() {
+  authSetInFlight(false);
+  authSetLoading('authSubmitSignin', false, 'Sign In');
+  authSetLoading('authSubmitRegister', false, 'Create Account');
+}
 
 window.authGoogle = async function() {
+  if (authPanelInFlight) return;
   authClearMessages();
+  authSetInFlight(true);
   const btn = document.getElementById('authGoogleBtn');
   const origHTML = btn.innerHTML;
   btn.disabled = true;
   btn.textContent = 'Signing in…';
   const fns = window._authFns;
-  if (!fns) { btn.disabled = false; btn.innerHTML = origHTML; return; }
+  if (!fns) { btn.innerHTML = origHTML; authResetInFlight(); return; }
   const { user, error } = await fns.signInGoogle();
-  btn.disabled = false;
   btn.innerHTML = origHTML;
-  if (error) authShowError(error);
-  // success → onAuth fires → closeAuthPanel()
+  if (error) { authShowError(error); authResetInFlight(); return; }
+  if (user) {
+    localStorage.setItem('cl-launched', '1');
+    closeAuthPanel();
+  } else {
+    authResetInFlight();
+  }
 };
 
 window.authSignIn = async function() {
+  if (authPanelInFlight) return;
   const email    = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   if (!email || !password) { authShowError('Please fill in all fields.'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authShowError('Invalid email address.'); return; }
+  authSetInFlight(true);
   authSetLoading('authSubmitSignin', true, 'Sign In');
   authClearMessages();
-  const { error } = await window._authFns.signInEmail(email, password);
-  authSetLoading('authSubmitSignin', false, 'Sign In');
-  if (error) authShowError(error);
+  const { user, error } = await window._authFns.signInEmail(email, password);
+  if (error) { authShowError(error); authResetInFlight(); return; }
+  if (user) {
+    localStorage.setItem('cl-launched', '1');
+    closeAuthPanel();
+  } else {
+    authShowError('Login did not complete. Please try again.');
+    authResetInFlight();
+  }
 };
 
 window.authRegister = async function() {
+  if (authPanelInFlight) return;
   const name     = document.getElementById('authRegName').value.trim();
   const email    = document.getElementById('authRegEmail').value.trim();
   const password = document.getElementById('authRegPassword').value;
@@ -6021,11 +6051,18 @@ window.authRegister = async function() {
   if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
     authShowError('Password: min 8 chars, must include letters and a digit.'); return;
   }
+  authSetInFlight(true);
   authSetLoading('authSubmitRegister', true, 'Create Account');
   authClearMessages();
-  const { error } = await window._authFns.registerEmail(email, password, name);
-  authSetLoading('authSubmitRegister', false, 'Create Account');
-  if (error) authShowError(error);
+  const { user, error } = await window._authFns.registerEmail(email, password, name);
+  if (error) { authShowError(error); authResetInFlight(); return; }
+  if (user) {
+    localStorage.setItem('cl-launched', '1');
+    closeAuthPanel();
+  } else {
+    authShowError('Account creation did not complete. Please try again.');
+    authResetInFlight();
+  }
 };
 
 window.authForgot = async function() {
@@ -6043,6 +6080,7 @@ window.authForgot = async function() {
 
 document.getElementById('authPanel').addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
+  if (authPanelInFlight) return;
   if (document.getElementById('authFormSignin').style.display !== 'none') window.authSignIn();
   else window.authRegister();
 });

@@ -19,12 +19,11 @@
   },
   "homepage": "https://github.com/cgarmann/ciscolearn#readme",
   "dependencies": {
-    "@capacitor-community/apple-sign-in": "^7.1.0",
     "@capacitor/android": "^8.3.0",
     "@capacitor/cli": "^8.3.0",
     "@capacitor/core": "^8.3.0",
     "@capacitor/ios": "^8.3.4",
     "@codetrix-studio/capacitor-google-auth": "^3.3.6",
-    "firebase": "^12.12.0"
+    "firebase": "^12.14.0"
   }
 }
