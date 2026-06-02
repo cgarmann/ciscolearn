@@ -100,7 +100,6 @@ export async function signInApple() {
       rawNonce: raw,
     });
     const fbResult = await signInWithCredential(auth, credential);
-    // Apple only sends name on first sign-in; update profile if present
     const fullName = result.response.givenName || result.response.familyName
       ? [result.response.givenName, result.response.familyName].filter(Boolean).join(' ')
       : null;

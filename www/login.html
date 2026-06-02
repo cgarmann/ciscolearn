@@ -221,8 +221,6 @@ function showLoginForm() {
   document.getElementById('authCard').style.visibility = 'visible';
 }
 
-// Show spinner while checking auth, redirect if already signed in.
-// Timeout ensures the form appears even if Firebase never fires (e.g. network issue on device).
 const authTimeout = setTimeout(showLoginForm, 8000);
 onAuth(user => {
   clearTimeout(authTimeout);

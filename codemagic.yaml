@@ -22,14 +22,20 @@ workflows:
       - name: Copy web assets
         script: rsync -av --delete www/ ios/App/App/public/
 
-      - name: Set up code signing
-        script: xcode-project use-profiles
-
       - name: Set build version
         script: |
-          sed -i '' 's/$(CURRENT_PROJECT_VERSION)/5/g' ios/App/App/Info.plist
+          sed -i '' 's/$(CURRENT_PROJECT_VERSION)/7/g' ios/App/App/Info.plist
           echo "=== CFBundleVersion after sed ==="
           grep -A1 CFBundleVersion ios/App/App/Info.plist
+
+      - name: Set up code signing
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files io.schjoldr.netcli \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
+          xcode-project use-profiles
 
       - name: Build IPA
         script: |
