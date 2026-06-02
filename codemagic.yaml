@@ -1,4 +1,63 @@
 workflows:
+  ios-simulator:
+    name: iOS Simulator Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      vars:
+        XCODE_PROJECT: ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+      node: latest
+
+    scripts:
+      - name: Install dependencies
+        script: npm install --legacy-peer-deps
+
+      - name: Patch apple-sign-in for Capacitor 8
+        script: |
+          sed -i '' 's/from: "7.0.0"/from: "8.0.0"/' node_modules/@capacitor-community/apple-sign-in/Package.swift
+
+      - name: Write Firebase config
+        script: echo "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
+
+      - name: Copy Capacitor config files
+        script: |
+          cp capacitor.config.json ios/App/App/capacitor.config.json
+          cat > ios/App/App/config.xml << 'EOF'
+          <?xml version='1.0' encoding='utf-8'?>
+          <widget version="1.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+            <name>NetCLI</name>
+            <content src="index.html" />
+            <access origin="*" />
+          </widget>
+          EOF
+
+      - name: Copy web assets
+        script: rsync -av --delete www/ ios/App/App/public/
+
+      - name: Resolve Swift packages
+        script: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME"
+
+      - name: Build for simulator
+        script: |
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath build/ios \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+    artifacts:
+      - build/ios/Build/Products/Debug-iphonesimulator/*.app
+
   ios-release:
     name: iOS Release
     max_build_duration: 60
