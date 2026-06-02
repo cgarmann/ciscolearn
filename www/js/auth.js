@@ -126,6 +126,11 @@ function getSignInWithApplePlugin() {
   if (typeof cap.registerPlugin === 'function') {
     return cap.registerPlugin('SignInWithApple');
   }
+  if (typeof cap.nativePromise === 'function') {
+    return {
+      authorize: options => cap.nativePromise('SignInWithApple', 'authorize', options)
+    };
+  }
   return null;
 }
 
