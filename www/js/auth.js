@@ -29,7 +29,11 @@ export async function signInGoogle() {
   if (isNative()) {
     // Native Android/iOS: use Capacitor Google Auth plugin (no browser popup)
     try {
-      const googleUser = await window.Capacitor.Plugins.GoogleAuth.signIn();
+      const googleAuth = window.Capacitor?.Plugins?.GoogleAuth;
+      if (!googleAuth?.signIn) {
+        return { user: null, error: 'Google sign-in is not available in this build.' };
+      }
+      const googleUser = await googleAuth.signIn();
       const idToken = googleUser.authentication.idToken;
       const credential = GoogleAuthProvider.credential(idToken);
       const result = await signInWithCredential(auth, credential);
@@ -37,8 +41,10 @@ export async function signInGoogle() {
     } catch (e) {
       const msg = e.message || '';
       const code = e.code || e.errorCode || '';
-      // DEBUG — fjernes etter testing
-      return { user: null, error: `[DEBUG] code=${code} msg=${msg}` };
+      if (code === '12501' || msg.toLowerCase().includes('cancel')) {
+        return { user: null, error: null };
+      }
+      return { user: null, error: friendlyError(code) || msg || 'Google sign-in failed.' };
     }
   } else {
     // Web: standard Firebase popup flow
@@ -98,14 +104,18 @@ export async function signInApple() {
       scopes: 'email name',
       nonce: hashed,
     });
+    const response = result?.response || {};
+    if (!response.identityToken) {
+      return { user: null, error: 'Sign in with Apple did not return an identity token.' };
+    }
     const provider = new OAuthProvider('apple.com');
     const credential = provider.credential({
-      idToken: result.response.identityToken,
+      idToken: response.identityToken,
       rawNonce: raw,
     });
     const fbResult = await signInWithCredential(auth, credential);
-    const fullName = result.response.givenName || result.response.familyName
-      ? [result.response.givenName, result.response.familyName].filter(Boolean).join(' ')
+    const fullName = response.givenName || response.familyName
+      ? [response.givenName, response.familyName].filter(Boolean).join(' ')
       : null;
     if (fullName && !fbResult.user.displayName) {
       await updateProfile(fbResult.user, { displayName: fullName });
@@ -135,7 +145,10 @@ function getSignInWithApplePlugin() {
 }
 
 async function generateNonce() {
-  const raw = Math.random().toString(36).substring(2) + Date.now().toString(36);
+  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const raw = Array.from(bytes, b => chars[b % chars.length]).join('');
   const data = new TextEncoder().encode(raw);
   const hashBuf = await crypto.subtle.digest('SHA-256', data);
   const hashed = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
