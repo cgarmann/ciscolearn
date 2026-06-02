@@ -186,8 +186,10 @@ window.doLogin = async function() {
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Invalid email format.'); return; }
   if (password.length > 256) { showError('Password too long.'); return; }
   setLoading('loginBtn', true);
-  const { error } = await signInEmail(email, password);
-  if (error) { showError(error); setLoading('loginBtn', false); }
+  const { user, error } = await signInEmail(email, password);
+  if (error) { showError(error); setLoading('loginBtn', false); return; }
+  if (user) goToApp();
+  else { showError('Login did not complete. Please try again.'); setLoading('loginBtn', false); }
 };
 
 window.doRegister = async function() {
@@ -202,19 +204,28 @@ window.doRegister = async function() {
   if (password.length > 128) { showError('Password too long (max 128 characters).'); return; }
   if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) { showError('Password must contain letters and at least one digit.'); return; }
   setLoading('registerBtn', true);
-  const { error } = await registerEmail(email, password, name);
-  if (error) { showError(error); setLoading('registerBtn', false); }
+  const { user, error } = await registerEmail(email, password, name);
+  if (error) { showError(error); setLoading('registerBtn', false); return; }
+  if (user) goToApp();
+  else { showError('Account creation did not complete. Please try again.'); setLoading('registerBtn', false); }
 };
 
 window.doGoogle = async function() {
-  const { error } = await signInGoogle();
-  if (error && !error.includes('popup-closed')) showError(error);
+  const { user, error } = await signInGoogle();
+  if (error && !error.includes('popup-closed')) { showError(error); return; }
+  if (user) goToApp();
 };
 
 window.doApple = async function() {
-  const { error } = await signInApple();
-  if (error) showError(error);
+  const { user, error } = await signInApple();
+  if (error) { showError(error); return; }
+  if (user) goToApp();
 };
+
+function goToApp() {
+  localStorage.setItem('cl-launched', '1');
+  window.location.replace('index.html');
+}
 
 function showLoginForm() {
   document.getElementById('authChecking').style.display = 'none';

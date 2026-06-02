@@ -6011,7 +6011,10 @@ window.authGoogle = async function() {
   btn.disabled = false;
   btn.innerHTML = origHTML;
   if (error) authShowError(error);
-  // success → onAuth fires → closeAuthPanel()
+  if (user) {
+    localStorage.setItem('cl-launched', '1');
+    closeAuthPanel();
+  }
 };
 
 window.authApple = async function() {
@@ -6022,10 +6025,14 @@ window.authApple = async function() {
   btn.textContent = 'Signing in...';
   const fns = window._authFns;
   if (!fns) { btn.disabled = false; btn.innerHTML = origHTML; return; }
-  const { error } = await fns.signInApple();
+  const { user, error } = await fns.signInApple();
   btn.disabled = false;
   btn.innerHTML = origHTML;
   if (error) authShowError(error);
+  if (user) {
+    localStorage.setItem('cl-launched', '1');
+    closeAuthPanel();
+  }
 };
 
 window.authSignIn = async function() {
@@ -6035,9 +6042,13 @@ window.authSignIn = async function() {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authShowError('Invalid email address.'); return; }
   authSetLoading('authSubmitSignin', true, 'Sign In');
   authClearMessages();
-  const { error } = await window._authFns.signInEmail(email, password);
+  const { user, error } = await window._authFns.signInEmail(email, password);
   authSetLoading('authSubmitSignin', false, 'Sign In');
   if (error) authShowError(error);
+  if (user) {
+    localStorage.setItem('cl-launched', '1');
+    closeAuthPanel();
+  }
 };
 
 window.authRegister = async function() {
@@ -6053,9 +6064,13 @@ window.authRegister = async function() {
   }
   authSetLoading('authSubmitRegister', true, 'Create Account');
   authClearMessages();
-  const { error } = await window._authFns.registerEmail(email, password, name);
+  const { user, error } = await window._authFns.registerEmail(email, password, name);
   authSetLoading('authSubmitRegister', false, 'Create Account');
   if (error) authShowError(error);
+  if (user) {
+    localStorage.setItem('cl-launched', '1');
+    closeAuthPanel();
+  }
 };
 
 window.authForgot = async function() {

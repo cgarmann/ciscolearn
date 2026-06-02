@@ -12,6 +12,7 @@ import { firebaseConfig } from './firebase-config.js';
 
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const DB_TIMEOUT_MS = 12000;
 
 // ── Default user data structure ───────────────────────────────────────────────
 const DEFAULT_DATA = {
@@ -41,12 +42,12 @@ const DEFAULT_DATA = {
 export async function loadUserData(uid) {
   try {
     const ref = doc(db, 'users', uid);
-    const snap = await getDoc(ref);
+    const snap = await withTimeout(getDoc(ref), 'Cloud profile timed out.');
     if (snap.exists()) {
       return { data: snap.data(), error: null };
     } else {
       // First login — create document with defaults
-      await setDoc(ref, { ...DEFAULT_DATA, createdAt: serverTimestamp() });
+      await withTimeout(setDoc(ref, { ...DEFAULT_DATA, createdAt: serverTimestamp() }), 'Cloud profile setup timed out.');
       return { data: { ...DEFAULT_DATA }, error: null };
     }
   } catch (e) {
@@ -179,4 +180,12 @@ export async function deleteLabSlot(uid, slotId) {
   } catch (e) {
     return { error: e.message };
   }
+}
+
+function withTimeout(promise, message) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), DB_TIMEOUT_MS);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
 }

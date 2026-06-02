@@ -17,6 +17,7 @@ import { firebaseConfig } from './firebase-config.js';
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+const AUTH_TIMEOUT_MS = 15000;
 
 // True when running inside a native Capacitor app (Android/iOS)
 const isNative = () => !!(window.Capacitor?.isNativePlatform?.());
@@ -36,7 +37,7 @@ export async function signInGoogle() {
       const googleUser = await googleAuth.signIn();
       const idToken = googleUser.authentication.idToken;
       const credential = GoogleAuthProvider.credential(idToken);
-      const result = await signInWithCredential(auth, credential);
+      const result = await withTimeout(signInWithCredential(auth, credential));
       return { user: result.user, error: null };
     } catch (e) {
       const msg = e.message || '';
@@ -49,7 +50,7 @@ export async function signInGoogle() {
   } else {
     // Web: standard Firebase popup flow
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const result = await withTimeout(signInWithPopup(auth, googleProvider));
       return { user: result.user, error: null };
     } catch (e) {
       if (
@@ -65,28 +66,28 @@ export async function signInGoogle() {
 
 export async function signInEmail(email, password) {
   try {
-    const result = await signInWithEmailAndPassword(auth, email, password);
+    const result = await withTimeout(signInWithEmailAndPassword(auth, email, password));
     return { user: result.user, error: null };
   } catch (e) {
-    return { user: null, error: friendlyError(e.code) };
+    return { user: null, error: friendlyError(e.code) || e.message };
   }
 }
 
 export async function registerEmail(email, password, displayName) {
   try {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const result = await withTimeout(createUserWithEmailAndPassword(auth, email, password));
     if (displayName) {
-      await updateProfile(result.user, { displayName });
+      await withTimeout(updateProfile(result.user, { displayName }));
     }
     return { user: result.user, error: null };
   } catch (e) {
-    return { user: null, error: friendlyError(e.code) };
+    return { user: null, error: friendlyError(e.code) || e.message };
   }
 }
 
 export async function resetPassword(email) {
   try {
-    await sendPasswordResetEmail(auth, email);
+    await withTimeout(sendPasswordResetEmail(auth, email));
     return { error: null };
   } catch (e) {
     return { error: friendlyError(e.code) };
@@ -100,10 +101,10 @@ export async function signInApple() {
     if (!appleProvider?.authorize) {
       return { user: null, error: 'Sign in with Apple is not available in this build.' };
     }
-    const result = await appleProvider.authorize({
+    const result = await withTimeout(appleProvider.authorize({
       scopes: 'email name',
       nonce: hashed,
-    });
+    }), 'Sign in with Apple timed out. Please try again.');
     const response = result?.response || {};
     if (!response.identityToken) {
       return { user: null, error: 'Sign in with Apple did not return an identity token.' };
@@ -113,16 +114,16 @@ export async function signInApple() {
       idToken: response.identityToken,
       rawNonce: raw,
     });
-    const fbResult = await signInWithCredential(auth, credential);
+    const fbResult = await withTimeout(signInWithCredential(auth, credential));
     const fullName = response.givenName || response.familyName
       ? [response.givenName, response.familyName].filter(Boolean).join(' ')
       : null;
     if (fullName && !fbResult.user.displayName) {
-      await updateProfile(fbResult.user, { displayName: fullName });
+      await withTimeout(updateProfile(fbResult.user, { displayName: fullName }));
     }
     return { user: fbResult.user, error: null };
   } catch (e) {
-    if (e.code === '1001' || (e.message || '').includes('cancel')) {
+    if (e.code === '1001' || (e.message || '').toLowerCase().includes('cancel')) {
       return { user: null, error: null };
     }
     return { user: null, error: e.message || 'Sign in with Apple failed.' };
@@ -153,6 +154,18 @@ async function generateNonce() {
   const hashBuf = await crypto.subtle.digest('SHA-256', data);
   const hashed = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
   return { raw, hashed };
+}
+
+function withTimeout(promise, message = 'Login timed out. Check your connection and try again.') {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      const err = new Error(message);
+      err.code = 'auth/network-request-failed';
+      reject(err);
+    }, AUTH_TIMEOUT_MS);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
 }
 
 export async function logout() {
