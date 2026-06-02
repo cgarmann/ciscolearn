@@ -71,7 +71,7 @@ export async function signInGoogle() {
 
 export async function signInEmail(email, password) {
   try {
-    const result = await signInWithEmailAndPassword(auth, email, password);
+    const result = await withTimeout(signInWithEmailAndPassword(auth, email, password));
     return { user: result.user, error: null };
   } catch (e) {
     return { user: null, error: friendlyError(e.code, e.message) || e.message };
@@ -80,9 +80,9 @@ export async function signInEmail(email, password) {
 
 export async function registerEmail(email, password, displayName) {
   try {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const result = await withTimeout(createUserWithEmailAndPassword(auth, email, password));
     if (displayName) {
-      await updateProfile(result.user, { displayName });
+      await withTimeout(updateProfile(result.user, { displayName }));
     }
     return { user: result.user, error: null };
   } catch (e) {
