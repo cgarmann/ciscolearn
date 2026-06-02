@@ -21,7 +21,10 @@ workflows:
           sed -i '' 's/from: "7.0.0"/from: "8.0.0"/' node_modules/@capacitor-community/apple-sign-in/Package.swift
 
       - name: Write Firebase config
-        script: printf '%s' "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
+        script: |
+          printf '%s' "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
+          echo "=== firebase-config.js size: $(wc -c < www/js/firebase-config.js) bytes ==="
+          echo "=== first line: ===" && head -1 www/js/firebase-config.js
 
       - name: Copy Capacitor config files
         script: |
@@ -85,7 +88,10 @@ workflows:
           sed -i '' 's/from: "7.0.0"/from: "8.0.0"/' node_modules/@capacitor-community/apple-sign-in/Package.swift
 
       - name: Write Firebase config
-        script: printf '%s' "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
+        script: |
+          printf '%s' "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
+          echo "=== firebase-config.js size: $(wc -c < www/js/firebase-config.js) bytes ==="
+          echo "=== first line: ===" && head -1 www/js/firebase-config.js
 
       - name: Copy Capacitor config files
         script: |
