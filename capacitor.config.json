@@ -6,6 +6,10 @@
     "androidScheme": "https",
     "iosScheme": "https"
   },
+  "packageClassList": [
+    "SignInWithApple.SignInWithApple",
+    "CapacitorCommunityAppleSignIn.SignInWithApple"
+  ],
   "plugins": {
     "GoogleAuth": {
       "scopes": ["profile", "email"],

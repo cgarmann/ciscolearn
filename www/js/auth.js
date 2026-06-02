@@ -17,7 +17,7 @@ import { firebaseConfig } from './firebase-config.js';
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
-const AUTH_TIMEOUT_MS = 15000;
+const AUTH_TIMEOUT_MS = 30000;
 
 // True when running inside a native Capacitor app (Android/iOS)
 const isNative = () => !!(window.Capacitor?.isNativePlatform?.());
@@ -35,8 +35,13 @@ export async function signInGoogle() {
         return { user: null, error: 'Google sign-in is not available in this build.' };
       }
       const googleUser = await googleAuth.signIn();
-      const idToken = googleUser.authentication.idToken;
-      const credential = GoogleAuthProvider.credential(idToken);
+      const authentication = googleUser.authentication || {};
+      const idToken = authentication.idToken || googleUser.idToken || null;
+      const accessToken = authentication.accessToken || googleUser.accessToken || null;
+      if (!idToken && !accessToken) {
+        return { user: null, error: 'Google sign-in did not return an identity token.' };
+      }
+      const credential = GoogleAuthProvider.credential(idToken, accessToken);
       const result = await withTimeout(signInWithCredential(auth, credential));
       return { user: result.user, error: null };
     } catch (e) {
@@ -45,7 +50,7 @@ export async function signInGoogle() {
       if (code === '12501' || msg.toLowerCase().includes('cancel')) {
         return { user: null, error: null };
       }
-      return { user: null, error: friendlyError(code) || msg || 'Google sign-in failed.' };
+      return { user: null, error: friendlyError(code, msg) || msg || 'Google sign-in failed.' };
     }
   } else {
     // Web: standard Firebase popup flow
@@ -59,7 +64,7 @@ export async function signInGoogle() {
       ) {
         return { user: null, error: null };
       }
-      return { user: null, error: friendlyError(e.code) || e.message };
+      return { user: null, error: friendlyError(e.code, e.message) || e.message };
     }
   }
 }
@@ -69,7 +74,7 @@ export async function signInEmail(email, password) {
     const result = await withTimeout(signInWithEmailAndPassword(auth, email, password));
     return { user: result.user, error: null };
   } catch (e) {
-    return { user: null, error: friendlyError(e.code) || e.message };
+    return { user: null, error: friendlyError(e.code, e.message) || e.message };
   }
 }
 
@@ -81,7 +86,7 @@ export async function registerEmail(email, password, displayName) {
     }
     return { user: result.user, error: null };
   } catch (e) {
-    return { user: null, error: friendlyError(e.code) || e.message };
+    return { user: null, error: friendlyError(e.code, e.message) || e.message };
   }
 }
 
@@ -90,7 +95,7 @@ export async function resetPassword(email) {
     await withTimeout(sendPasswordResetEmail(auth, email));
     return { error: null };
   } catch (e) {
-    return { error: friendlyError(e.code) };
+    return { error: friendlyError(e.code, e.message) || e.message };
   }
 }
 
@@ -127,7 +132,10 @@ export async function signInApple() {
     if (e.code === '1001' || msg.includes('1001') || msg.toLowerCase().includes('cancel')) {
       return { user: null, error: null };
     }
-    return { user: null, error: msg || 'Sign in with Apple failed.' };
+    if (e.code === 'UNIMPLEMENTED' || msg.toLowerCase().includes('not implemented')) {
+      return { user: null, error: 'Sign in with Apple is not available in this build. Please install the latest build and try again.' };
+    }
+    return { user: null, error: friendlyError(e.code, msg) || msg || 'Sign in with Apple failed.' };
   }
 }
 
@@ -135,6 +143,9 @@ function getSignInWithApplePlugin() {
   const cap = window.Capacitor;
   if (!cap) return null;
   if (cap.Plugins?.SignInWithApple) return cap.Plugins.SignInWithApple;
+  if (typeof cap.isPluginAvailable === 'function' && !cap.isPluginAvailable('SignInWithApple')) {
+    return null;
+  }
   if (typeof cap.registerPlugin === 'function') {
     return cap.registerPlugin('SignInWithApple');
   }
@@ -173,7 +184,10 @@ export async function logout() {
   await signOut(auth);
 }
 
-function friendlyError(code) {
+function friendlyError(code, message = '') {
+  if (code === 'auth/network-request-failed' && message) {
+    return message;
+  }
   const map = {
     'auth/invalid-email': 'Invalid email address.',
     'auth/user-not-found': 'No account found with this email.',
@@ -183,6 +197,7 @@ function friendlyError(code) {
     'auth/too-many-requests': 'Too many attempts. Try again later.',
     'auth/network-request-failed': 'Network error. Check your connection.',
     'auth/invalid-credential': 'Incorrect email or password.',
+    'auth/popup-already-open': 'A sign-in window is already open.',
   };
   return map[code] || 'Something went wrong. Please try again.';
 }
