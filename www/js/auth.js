@@ -1,7 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js';
 import {
-  getAuth,
-  setPersistence,
+  initializeAuth,
   browserLocalPersistence,
   onAuthStateChanged,
   signInWithPopup,
@@ -17,9 +16,8 @@ import {
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-// Use localStorage instead of indexedDB — indexedDB can hang in Capacitor WKWebView
-setPersistence(auth, browserLocalPersistence).catch(e => console.warn('Auth persistence:', e));
+// initializeAuth with browserLocalPersistence — avoids indexedDB which hangs in Capacitor WKWebView
+export const auth = initializeAuth(app, { persistence: [browserLocalPersistence] });
 const googleProvider = new GoogleAuthProvider();
 const AUTH_TIMEOUT_MS = 30000;
 

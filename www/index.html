@@ -5837,6 +5837,7 @@ async function initAuth() {
   try {
     const { onAuth, signInEmail, registerEmail, signInGoogle, signInApple, resetPassword, logout: _logout } = await import('./js/auth.js');
     window._authFns = { signInEmail, registerEmail, signInGoogle, signInApple, resetPassword };
+    console.log('[NetCLI] Firebase auth initialized OK');
     const { loadUserData, saveSettings, saveProgress, saveStreak } = await import('./js/db.js');
 
     onAuth(async (user) => {
