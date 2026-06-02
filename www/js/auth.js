@@ -107,7 +107,7 @@ export async function signInApple() {
       return { user: null, error: 'Sign in with Apple is not available in this build.' };
     }
     const result = await withTimeout(appleProvider.authorize({
-      scopes: 'email name',
+      scopes: ['email', 'name'],
       nonce: hashed,
     }), 'Sign in with Apple timed out. Please try again.');
     const response = result?.response || {};
@@ -119,7 +119,20 @@ export async function signInApple() {
       idToken: response.identityToken,
       rawNonce: raw,
     });
-    const fbResult = await withTimeout(signInWithCredential(auth, credential));
+    let fbResult;
+    try {
+      fbResult = await withTimeout(signInWithCredential(auth, credential));
+    } catch (credErr) {
+      const code = credErr.code || '';
+      const msg2 = credErr.message || '';
+      if (code === 'auth/account-exists-with-different-credential') {
+        return { user: null, error: 'An account already exists with this email address. Please sign in with your email and password instead.' };
+      }
+      if (code === 'auth/invalid-credential') {
+        return { user: null, error: 'Sign in with Apple failed. Please try again.' };
+      }
+      return { user: null, error: friendlyError(code, msg2) || msg2 || 'Sign in with Apple failed.' };
+    }
     const fullName = response.givenName || response.familyName
       ? [response.givenName, response.familyName].filter(Boolean).join(' ')
       : null;
@@ -197,6 +210,7 @@ function friendlyError(code, message = '') {
     'auth/too-many-requests': 'Too many attempts. Try again later.',
     'auth/network-request-failed': 'Network error. Check your connection.',
     'auth/invalid-credential': 'Incorrect email or password.',
+    'auth/account-exists-with-different-credential': 'An account already exists with this email. Please sign in with your email and password.',
     'auth/popup-already-open': 'A sign-in window is already open.',
   };
   return map[code] || 'Something went wrong. Please try again.';
