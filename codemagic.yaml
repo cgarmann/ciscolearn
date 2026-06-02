@@ -16,6 +16,9 @@ workflows:
       - name: Install dependencies
         script: npm install --legacy-peer-deps
 
+      - name: Patch apple-sign-in for Capacitor 8
+        script: sed -i '' 's/from: "7.0.0"/from: "8.0.0"/' node_modules/@capacitor-community/apple-sign-in/Package.swift
+
       - name: Write Firebase config
         script: echo "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
 
