@@ -207,7 +207,7 @@ body::before {
 <body onclick="skip()">
 <div class="glow"></div>
 
-<div class="content" onclick="e => e.stopPropagation()">
+<div class="content" onclick="event.stopPropagation()">
   <div class="logo">NetCLI<span>:Learn</span></div>
   <div class="terminal-line" id="termLine"><span class="cursor"></span></div>
 
@@ -293,7 +293,7 @@ function getStarted() {
 
 function goLogin() {
   localStorage.setItem('cl-launched', '1');
-  window.location.href = 'login.html';
+  window.location.href = 'index.html?signin=1';
 }
 
 function skip() {

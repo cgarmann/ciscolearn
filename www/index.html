@@ -6131,7 +6131,12 @@ document.getElementById('authPanel').addEventListener('keydown', e => {
   else window.authRegister();
 });
 
-initAuth();
+initAuth().then(() => {
+  if (new URLSearchParams(window.location.search).get('signin') === '1') {
+    openAuthPanel();
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+});
 </script>
 
 <!-- ══════════════════════════════════════════
