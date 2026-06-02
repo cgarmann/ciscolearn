@@ -6058,16 +6058,22 @@ window.authSignIn = async function() {
   const password = document.getElementById('authPassword').value;
   if (!email || !password) { authShowError('Please fill in all fields.'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authShowError('Invalid email address.'); return; }
+  if (!window._authFns) { authShowError('App is still loading — please try again in a moment.'); return; }
   authSetInFlight(true);
   authSetLoading('authSubmitSignin', true, 'Sign In');
   authClearMessages();
-  const { user, error } = await window._authFns.signInEmail(email, password);
-  if (error) { authShowError(error); authResetInFlight(); return; }
-  if (user) {
-    localStorage.setItem('cl-launched', '1');
-    closeAuthPanel();
-  } else {
-    authShowError('Login did not complete. Please try again.');
+  try {
+    const { user, error } = await window._authFns.signInEmail(email, password);
+    if (error) { authShowError(error); authResetInFlight(); return; }
+    if (user) {
+      localStorage.setItem('cl-launched', '1');
+      closeAuthPanel();
+    } else {
+      authShowError('Login did not complete. Please try again.');
+      authResetInFlight();
+    }
+  } catch (e) {
+    authShowError('Something went wrong. Please try again.');
     authResetInFlight();
   }
 };
@@ -6084,16 +6090,22 @@ window.authRegister = async function() {
   if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
     authShowError('Password: min 8 chars, must include letters and a digit.'); return;
   }
+  if (!window._authFns) { authShowError('App is still loading — please try again in a moment.'); return; }
   authSetInFlight(true);
   authSetLoading('authSubmitRegister', true, 'Create Account');
   authClearMessages();
-  const { user, error } = await window._authFns.registerEmail(email, password, name);
-  if (error) { authShowError(error); authResetInFlight(); return; }
-  if (user) {
-    localStorage.setItem('cl-launched', '1');
-    closeAuthPanel();
-  } else {
-    authShowError('Account creation did not complete. Please try again.');
+  try {
+    const { user, error } = await window._authFns.registerEmail(email, password, name);
+    if (error) { authShowError(error); authResetInFlight(); return; }
+    if (user) {
+      localStorage.setItem('cl-launched', '1');
+      closeAuthPanel();
+    } else {
+      authShowError('Account creation did not complete. Please try again.');
+      authResetInFlight();
+    }
+  } catch (e) {
+    authShowError('Something went wrong. Please try again.');
     authResetInFlight();
   }
 };
