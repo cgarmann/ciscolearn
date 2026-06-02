@@ -11,7 +11,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: io.schjoldr.netcli
       vars:
-        XCODE_WORKSPACE: ios/App/App.xcworkspace
+        XCODE_PROJECT: ios/App/App.xcodeproj
         XCODE_SCHEME: App
       node: latest
 
@@ -28,6 +28,12 @@ workflows:
           echo "=== CFBundleVersion after sed ==="
           grep -A1 CFBundleVersion ios/App/App/Info.plist
 
+      - name: Resolve Swift packages
+        script: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME"
+
       - name: Set up code signing
         script: |
           keychain initialize
@@ -40,7 +46,7 @@ workflows:
       - name: Build IPA
         script: |
           xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
+            --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
 
     artifacts:
