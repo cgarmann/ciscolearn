@@ -8,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   GoogleAuthProvider,
+  OAuthProvider,
   signOut,
   updateProfile
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
@@ -84,6 +85,43 @@ export async function resetPassword(email) {
   } catch (e) {
     return { error: friendlyError(e.code) };
   }
+}
+
+export async function signInApple() {
+  try {
+    const { raw, hashed } = await generateNonce();
+    const result = await window.Capacitor.Plugins.SignInWithApple.authorize({
+      scopes: ['EMAIL', 'FULL_NAME'],
+      nonce: hashed,
+    });
+    const provider = new OAuthProvider('apple.com');
+    const credential = provider.credential({
+      idToken: result.response.identityToken,
+      rawNonce: raw,
+    });
+    const fbResult = await signInWithCredential(auth, credential);
+    // Apple only sends name on first sign-in; update profile if present
+    const fullName = result.response.givenName || result.response.familyName
+      ? [result.response.givenName, result.response.familyName].filter(Boolean).join(' ')
+      : null;
+    if (fullName && !fbResult.user.displayName) {
+      await updateProfile(fbResult.user, { displayName: fullName });
+    }
+    return { user: fbResult.user, error: null };
+  } catch (e) {
+    if (e.code === '1001' || (e.message || '').includes('cancel')) {
+      return { user: null, error: null };
+    }
+    return { user: null, error: e.message || 'Sign in with Apple failed.' };
+  }
+}
+
+async function generateNonce() {
+  const raw = Math.random().toString(36).substring(2) + Date.now().toString(36);
+  const data = new TextEncoder().encode(raw);
+  const hashBuf = await crypto.subtle.digest('SHA-256', data);
+  const hashed = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return { raw, hashed };
 }
 
 export async function logout() {
