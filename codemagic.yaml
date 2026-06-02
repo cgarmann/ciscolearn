@@ -26,6 +26,18 @@ workflows:
       - name: Write Firebase config
         script: echo "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
 
+      - name: Copy Capacitor config files
+        script: |
+          cp capacitor.config.json ios/App/App/capacitor.config.json
+          cat > ios/App/App/config.xml << 'EOF'
+          <?xml version='1.0' encoding='utf-8'?>
+          <widget version="1.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+            <name>NetCLI</name>
+            <content src="index.html" />
+            <access origin="*" />
+          </widget>
+          EOF
+
       - name: Copy web assets
         script: rsync -av --delete www/ ios/App/App/public/
 
