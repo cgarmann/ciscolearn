@@ -7,9 +7,6 @@ workflows:
     environment:
       groups:
         - apple_credentials
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: io.schjoldr.netcli
       vars:
         XCODE_PROJECT: ios/App/App.xcodeproj
         XCODE_SCHEME: App
@@ -18,6 +15,9 @@ workflows:
     scripts:
       - name: Install dependencies
         script: npm install --legacy-peer-deps
+
+      - name: Write Firebase config
+        script: echo "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
 
       - name: Copy web assets
         script: rsync -av --delete www/ ios/App/App/public/
