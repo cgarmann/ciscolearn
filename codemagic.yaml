@@ -22,9 +22,18 @@ workflows:
 
       - name: Write Firebase config
         script: |
-          printf '%s' "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
-          echo "=== firebase-config.js size: $(wc -c < www/js/firebase-config.js) bytes ==="
-          echo "=== first line: ===" && head -1 www/js/firebase-config.js
+          cat > www/js/firebase-config.js << ENDOFCONFIG
+          export const firebaseConfig = {
+            apiKey: "$FIREBASE_API_KEY",
+            authDomain: "ciscolearn-f8b38.firebaseapp.com",
+            projectId: "ciscolearn-f8b38",
+            storageBucket: "ciscolearn-f8b38.firebasestorage.app",
+            messagingSenderId: "208454589615",
+            appId: "1:208454589615:web:c735c63d6dfe921e82085a",
+            measurementId: "G-GZ7YRTR68C"
+          };
+          ENDOFCONFIG
+          echo "=== Config size: $(wc -c < www/js/firebase-config.js) bytes ==="
 
       - name: Copy Capacitor config files
         script: |
@@ -89,9 +98,18 @@ workflows:
 
       - name: Write Firebase config
         script: |
-          printf '%s' "$FIREBASE_CONFIG_JS" > www/js/firebase-config.js
-          echo "=== firebase-config.js size: $(wc -c < www/js/firebase-config.js) bytes ==="
-          echo "=== first line: ===" && head -1 www/js/firebase-config.js
+          cat > www/js/firebase-config.js << ENDOFCONFIG
+          export const firebaseConfig = {
+            apiKey: "$FIREBASE_API_KEY",
+            authDomain: "ciscolearn-f8b38.firebaseapp.com",
+            projectId: "ciscolearn-f8b38",
+            storageBucket: "ciscolearn-f8b38.firebasestorage.app",
+            messagingSenderId: "208454589615",
+            appId: "1:208454589615:web:c735c63d6dfe921e82085a",
+            measurementId: "G-GZ7YRTR68C"
+          };
+          ENDOFCONFIG
+          echo "=== Config size: $(wc -c < www/js/firebase-config.js) bytes ==="
 
       - name: Copy Capacitor config files
         script: |
