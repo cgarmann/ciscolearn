@@ -213,5 +213,5 @@ function friendlyError(code, message = '') {
     'auth/account-exists-with-different-credential': 'An account already exists with this email. Please sign in with your email and password.',
     'auth/popup-already-open': 'A sign-in window is already open.',
   };
-  return map[code] || 'Something went wrong. Please try again.';
+  return map[code] || message || `Error (${code || 'unknown'}). Please try again.`;
 }
