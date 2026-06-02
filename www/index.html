@@ -8,15 +8,15 @@
        blocks. Planned hardening: refactor to external modules + nonces. -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com;
+    script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://appleid.cdn-apple.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' data: https:;
-    connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://www.googleapis.com;
-    frame-src https://*.firebaseapp.com https://accounts.google.com;
+    connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://appleid.apple.com https://*.apple.com;
+    frame-src https://*.firebaseapp.com https://accounts.google.com https://appleid.apple.com https://*.apple.com;
     object-src 'none';
     base-uri 'self';
-    form-action 'self';
+    form-action 'self' https://appleid.apple.com;
   " />
   <script>if(!localStorage.getItem('cl-launched'))window.location.replace('landing.html');</script>
   <title>NetCLI — Cisco Networking Reference</title>
@@ -2282,7 +2282,7 @@ function profileMsg(id, text, isErr) {
 }
 
 async function profileReauth(password) {
-  const { EmailAuthProvider, reauthenticateWithCredential } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  const { EmailAuthProvider, reauthenticateWithCredential } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
   const cred = EmailAuthProvider.credential(currentUser.email, password);
   await reauthenticateWithCredential(currentUser, cred);
 }
@@ -2294,7 +2294,7 @@ window.profileSaveName = async function() {
   if(name.length > 40) return profileMsg('profileNameMsg','Navnet kan ikke være lengre enn 40 tegn.',true);
   if(!/^[\p{L}\p{N} '.\-_]+$/u.test(name)) return profileMsg('profileNameMsg','Bruk kun bokstaver, tall, mellomrom og - . _ \'',true);
   try {
-    const { updateProfile } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { updateProfile } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await updateProfile(currentUser, { displayName: name });
     document.getElementById('drawerName').textContent = name;
     document.getElementById('profileHeadName').textContent = name;
@@ -2313,7 +2313,7 @@ window.profileSaveEmail = async function() {
   if(!pw)    return profileMsg('profileEmailMsg','Password required',true);
   try {
     await profileReauth(pw);
-    const { updateEmail } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { updateEmail } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await updateEmail(currentUser, email);
     document.getElementById('drawerEmail').textContent = email;
     document.getElementById('profileHeadEmail').textContent = email;
@@ -2333,7 +2333,7 @@ window.profileSavePw = async function() {
     return profileMsg('profilePwMsg','Password must contain letters and at least one digit',true);
   try {
     await profileReauth(cur);
-    const { updatePassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { updatePassword } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await updatePassword(currentUser, nw);
     document.getElementById('profileCurPw').value = '';
     document.getElementById('profileNewPw').value = '';
@@ -2401,7 +2401,7 @@ window.profileSaveAvatar = async function(src) {
   profileMsg('profileAvatarMsg', 'Avatar saved!');
   if(currentUser) {
     try {
-      const { updateProfile } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+      const { updateProfile } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
       await updateProfile(currentUser, { photoURL: src });
     } catch(e) {}
   }
@@ -2455,7 +2455,7 @@ window.profileDelete = async function() {
   if(!confirm('Are you sure? This cannot be undone.')) return;
   try {
     await profileReauth(pw);
-    const { deleteUser } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const { deleteUser } = await import('https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js');
     await deleteUser(currentUser);
     window.location.href = 'landing.html';
   } catch(e) { profileMsg('profileDeleteMsg', e.message, true); }

@@ -1,4 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js';
 import {
   getAuth,
   onAuthStateChanged,
@@ -11,7 +11,7 @@ import {
   OAuthProvider,
   signOut,
   updateProfile
-} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+} from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js';
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);

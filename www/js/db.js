@@ -1,4 +1,4 @@
-import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js';
 import {
   getFirestore,
   doc,
@@ -7,7 +7,7 @@ import {
   updateDoc,
   deleteField,
   serverTimestamp
-} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+} from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
 
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);

@@ -1,4 +1,4 @@
-const CACHE = 'netcli-v18';
+const CACHE = 'netcli-v19';
 
 // App shell — cached on install for fast startup and offline fallback
 const SHELL = [
